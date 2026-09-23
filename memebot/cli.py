@@ -37,6 +37,14 @@ def listen() -> None:
 
 
 @app.command()
+def poll() -> None:
+    """One polling pass: GeckoTerminal new pools → deployer lookup → tokens/wallets tables."""
+    from memebot.collectors.poll import run_once
+
+    typer.echo(f"inserted {asyncio.run(run_once())}")
+
+
+@app.command()
 def scrape(channel: str) -> None:
     """Scrape a public Telegram channel (t.me/s/<channel>) for mints."""
     from memebot.signals.calls import scrape_channel
