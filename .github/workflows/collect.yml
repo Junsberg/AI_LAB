@@ -2,7 +2,7 @@ name: collect
 
 on:
   schedule:
-    - cron: "*/30 * * * *"   # 48 runs/day × ~1 min ≈ 1,440 min/month, inside the 2,000-min free cap for private repos
+    - cron: "*/10 * * * *"   # public repo: Actions minutes are unlimited
   workflow_dispatch:
 
 concurrency:
