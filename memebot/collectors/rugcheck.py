@@ -24,13 +24,42 @@ class RiskSnapshot:
     mint_authority: bool | None
     freeze_authority: bool | None
     risks: list[str]
+    raw_top: list[dict]  # first 5 unfiltered holders, for auditing the pool filter
+
+
+# Owners that hold supply structurally (AMM vaults, bonding curves), not as investors.
+POOL_OWNERS = {
+    "5Q544fKrFoe6tsEbD7S8EmxGTJYAKtTVhAW5Q5pge4j1",  # Raydium AMM authority
+    "pAMMBay6oceH9fJKBRHGP5D4bD4sWpmSwMn52FMfXEA",   # PumpSwap AMM program
+    "6EF8rrecthR5Dkzon8Nwu78hRvfCKubJ14M5uBEwF6P",   # pump.fun bonding curve program
+    "GpMZbSM2GgvTKHJirzeGfMFoaZ8UR2X7F4v8vHTvxFbL",  # PumpSwap pool authority
+}
+
+
+def _pool_accounts(markets: list[dict]) -> set[str]:
+    acc: set[str] = set()
+    for m in markets:
+        acc.add(str(m.get("pubkey", "")))
+        lp = m.get("lp") or {}
+        for k in ("lpMint", "quoteMint", "baseMint", "quoteVault", "baseVault"):
+            if lp.get(k):
+                acc.add(str(lp[k]))
+        for k in ("mintA", "mintB", "mintLP", "liquidityA", "liquidityB"):
+            if m.get(k):
+                acc.add(str(m[k]))
+    acc.discard("")
+    return acc
 
 
 def parse_report(r: dict) -> RiskSnapshot:
-    top = r.get("topHolders") or []
-    top10 = sum(float(h.get("pct") or 0) for h in top[:10]) if top else None
-    insiders = sum(float(h.get("pct") or 0) for h in top if h.get("insider")) if top else None
     markets = r.get("markets") or []
+    pool_acc = _pool_accounts(markets) | POOL_OWNERS
+    holders = [
+        h for h in (r.get("topHolders") or [])
+        if str(h.get("owner", "")) not in pool_acc and str(h.get("address", "")) not in pool_acc
+    ]
+    top10 = sum(float(h.get("pct") or 0) for h in holders[:10]) if holders else None
+    insiders = sum(float(h.get("pct") or 0) for h in holders if h.get("insider")) if holders else None
     lp_locked = None
     if markets:
         lp = markets[0].get("lp") or {}
@@ -43,6 +72,10 @@ def parse_report(r: dict) -> RiskSnapshot:
         mint_authority=r.get("mintAuthority") is not None,
         freeze_authority=r.get("freezeAuthority") is not None,
         risks=[x.get("name", "") for x in (r.get("risks") or [])],
+        raw_top=[
+            {"owner": str(h.get("owner", ""))[:8], "pct": round(float(h.get("pct") or 0), 2)}
+            for h in (r.get("topHolders") or [])[:5]
+        ],
     )
 
 

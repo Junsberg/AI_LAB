@@ -6,8 +6,9 @@ def test_parse_report_aggregates():
         "score_normalised": 42,
         "mintAuthority": None,
         "freezeAuthority": "SomeKey",
-        "topHolders": [{"pct": 12.0, "insider": True}] + [{"pct": 3.0, "insider": False}] * 12,
-        "markets": [{"lp": {"lpLockedPct": 100.0}}],
+        "topHolders": [{"owner": "POOLVAULT", "pct": 80.0}, {"pct": 12.0, "insider": True}]
+        + [{"pct": 3.0, "insider": False}] * 12,
+        "markets": [{"pubkey": "POOLVAULT", "lp": {"lpLockedPct": 100.0}}],
         "risks": [{"name": "Freeze Authority still enabled"}],
     }
     s = parse_report(report)
@@ -17,3 +18,4 @@ def test_parse_report_aggregates():
     assert s.lp_locked_pct == 100.0
     assert s.mint_authority is False and s.freeze_authority is True
     assert s.risks == ["Freeze Authority still enabled"]
+    assert s.raw_top[0]["pct"] == 80.0  # unfiltered audit trail keeps the pool row
