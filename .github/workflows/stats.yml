@@ -1,0 +1,40 @@
+name: stats
+
+on:
+  schedule:
+    - cron: "37 * * * *"   # hourly, after enrich
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/stats.yml"
+      - "memebot/review/stats.py"
+
+concurrency:
+  group: stats
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  stats:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - run: pip install -q -e .
+      - run: python -m memebot.review.stats
+      - name: commit stats
+        run: |
+          git config user.name "memebot-stats"
+          git config user.email "stats@users.noreply.github.com"
+          git add docs/stats
+          git diff --cached --quiet || git commit -m "stats: $(date -u +%Y-%m-%dT%H:%MZ) [skip ci]"
+          git push
