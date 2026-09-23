@@ -76,18 +76,25 @@ class Tracer:
             if not tx:
                 continue
             msg = tx["transaction"]["message"]
-            for ix in msg.get("instructions", []):
+            inner = [
+                i for grp in (tx.get("meta") or {}).get("innerInstructions", []) for i in grp.get("instructions", [])
+            ]
+            for ix in list(msg.get("instructions", [])) + inner:
                 if ix.get("programId") != SYSTEM_PROGRAM:
                     continue
                 p = ix.get("parsed") or {}
                 info = p.get("info") or {}
-                if p.get("type") in ("transfer", "transferWithSeed") and info.get("destination") == wallet:
-                    src = info.get("source")
-                    amt = int(info.get("lamports", 0)) / 1e9
-                    if not src or amt <= 0:
-                        continue
-                    kind = "cex" if src in KNOWN_CEX else "wallet"
-                    return FundingHop(wallet, src, amt, kind, tx.get("slot"), tx.get("blockTime"))
+                t = p.get("type")
+                if t in ("transfer", "transferWithSeed") and info.get("destination") == wallet:
+                    src, amt = info.get("source"), int(info.get("lamports", 0)) / 1e9
+                elif t in ("createAccount", "createAccountWithSeed") and info.get("newAccount") == wallet:
+                    src, amt = info.get("source"), int(info.get("lamports", 0)) / 1e9
+                else:
+                    continue
+                if not src or amt <= 0:
+                    continue
+                kind = "cex" if src in KNOWN_CEX else "wallet"
+                return FundingHop(wallet, src, amt, kind, tx.get("slot"), tx.get("blockTime"))
         return FundingHop(wallet, None, 0.0, "unknown")
 
     async def walk(self, deployer: str, depth: int = 3) -> tuple[list[Edge], list[FundingHop]]:

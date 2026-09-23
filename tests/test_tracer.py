@@ -58,3 +58,18 @@ async def test_walk_stops_at_cex():
     assert [(e.src, e.dst) for e in edges] == [("MID", "DEPLOYER"), (CEX, "MID")]
     assert hops[-1].source_type == "cex"
     assert edges[0].amount_sol == 2.0
+
+
+@pytest.mark.asyncio
+async def test_create_account_and_inner_instruction_funding():
+    inner_tx = {
+        "slot": 1, "blockTime": 1,
+        "transaction": {"message": {"instructions": [{"programId": "OTHER"}]}},
+        "meta": {"innerInstructions": [{"instructions": [
+            {"programId": SYS, "parsed": {"type": "createAccount",
+             "info": {"source": "FUNDER", "newAccount": "W", "lamports": 3_000_000_000}}}]}]},
+    }
+    responses = {"sigs": {"W": [{"signature": "x"}], "FUNDER": []}, "txs": {"x": inner_tx}}
+    async with httpx.AsyncClient(transport=httpx.MockTransport(rpc_handler(responses))) as c:
+        hop = await Tracer(c).first_inbound("W")
+    assert hop.funded_by == "FUNDER" and hop.amount_sol == 3.0
