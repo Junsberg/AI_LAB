@@ -24,3 +24,5 @@ jobs:
           cache: pip
       - run: pip install -q -e .
       - run: python -m memebot.collectors.poll
+      - name: rugcheck risk snapshot
+        run: python -m memebot.collectors.rugcheck
