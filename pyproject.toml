@@ -1,0 +1,40 @@
+[project]
+name = "memebot"
+version = "0.1.0"
+description = "Solana memecoin signal engine: deployer lineage, KOL reverse-map, survivor scan, rule-based exits"
+requires-python = ">=3.11"
+dependencies = [
+    "solana>=0.36",
+    "solders>=0.23",
+    "httpx>=0.27",
+    "websockets>=13",
+    "pydantic>=2.8",
+    "pydantic-settings>=2.4",
+    "pyyaml>=6",
+    "psycopg[binary]>=3.2",
+    "base58>=2.1",
+    "beautifulsoup4>=4.12",
+    "structlog>=24",
+    "typer>=0.12",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8", "pytest-asyncio>=0.24", "ruff>=0.6"]
+
+[project.scripts]
+memebot = "memebot.cli:app"
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["memebot*"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]

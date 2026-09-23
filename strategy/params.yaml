@@ -1,0 +1,31 @@
+# Single tuning surface. Every change = one hypothesis row in `hypotheses` table.
+# `risk` block is frozen: only the owner edits it by hand.
+version: 1
+
+risk:                      # FROZEN — hook blocks automated edits
+  max_position_sol: 0.5
+  max_open_positions: 20
+  max_daily_loss_sol: 2.0
+  hard_stop_pct: -50
+
+exits:
+  take_initial_at_x: 2.0
+  initial_recover_fraction: 0.5
+  trailing_stop_pct: 35
+  holder_drop_pct: 25
+  volume_dead_minutes: 45
+  deployer_sell_exit: true
+  kol_sell_exit: true
+
+weights:
+  lineage: 1.0
+  kol_precursor: 1.0
+  survivor: 0.8
+  narrative: 0.5
+
+thresholds:
+  enter_score: 0.65
+  lineage_reject_below: 0.2
+  min_liquidity_sol: 15
+  max_top10_holder_pct: 35
+  max_bundle_pct: 20
