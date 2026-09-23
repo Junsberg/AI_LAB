@@ -1,0 +1,197 @@
+{
+ "generated_at": "2026-09-23T23:13:32.956922+00:00",
+ "counts": [
+  {
+   "tokens": 129,
+   "tokens_24h": 129,
+   "deployers": 103,
+   "deployers_traced": 55,
+   "deployers_unknown_src": 14,
+   "edges": 128,
+   "clusters": 32,
+   "multi_token_clusters": 8,
+   "outcomes": 0,
+   "rugged": 0,
+   "tenx": 0,
+   "with_risk": 34,
+   "signals": 0,
+   "positions": 0,
+   "hypotheses": 0
+  }
+ ],
+ "risk_distribution": [
+  {
+   "top10_p50": 35.4,
+   "top10_p90": 89.0,
+   "insiders_avg": 0.0,
+   "lp_locked": 29,
+   "freeze_on": 0,
+   "mint_on": 0,
+   "n": 32
+  }
+ ],
+ "tokens_per_hour_24h": [
+  {
+   "h": "2026-09-23 22:00",
+   "n": 87
+  },
+  {
+   "h": "2026-09-23 23:00",
+   "n": 42
+  }
+ ],
+ "top_deployers": [
+  {
+   "deployer": "7mHmNh6BFNWpFp5qh2VXRNzsK63zZ5ZQGQY77khANBQW",
+   "n": 6,
+   "syms": "LaMisery,GOOPER,WEIRDCAT,SAVPIR,DOGE PAID,DOGE PAID",
+   "first_t": "09-23 22:17",
+   "last_t": "09-23 23:02"
+  },
+  {
+   "deployer": "6ATnpbwa43DtscAWjiR3uh5bEfpc4mhFpF42F5a5f68T",
+   "n": 6,
+   "syms": "kms,kms,kms,kms,kms,kms",
+   "first_t": "09-23 22:17",
+   "last_t": "09-23 23:02"
+  },
+  {
+   "deployer": "5Bqgq9hcXdWhLpmzp7pjWJcyWReeZi5cgMmXHZC1HBQX",
+   "n": 3,
+   "syms": "NICE,BTC,SILAS",
+   "first_t": "09-23 22:17",
+   "last_t": "09-23 23:02"
+  },
+  {
+   "deployer": "6FC9XFByifhgHYcbTDhy9tgGpgsKbnLVZs2kBTakoEPV",
+   "n": 2,
+   "syms": "goon,goon",
+   "first_t": "09-23 22:17",
+   "last_t": "09-23 22:17"
+  },
+  {
+   "deployer": "9kA1bC1PaWFia9EDeQxBdPw7jdQJQuGDempC5DjXEGdH",
+   "n": 2,
+   "syms": "$EGGPLANT,goonette",
+   "first_t": "09-23 22:17",
+   "last_t": "09-23 22:47"
+  },
+  {
+   "deployer": "9kEHnW7x8mpRBkDYkCcSdvn1eYwe8cwXwAXdPS9JUfJD",
+   "n": 2,
+   "syms": "STENKS,dogbaton",
+   "first_t": "09-23 22:47",
+   "last_t": "09-23 22:48"
+  },
+  {
+   "deployer": "Ab6JJb6yqYBFxY29RcPsS2cSDJVsAYuqVPeTzUGnDYh8",
+   "n": 2,
+   "syms": "KED,ers",
+   "first_t": "09-23 22:17",
+   "last_t": "09-23 23:02"
+  },
+  {
+   "deployer": "BB6Ty1MpBRmDoj2akQCPo9UDRTB5JvRyravkNWi9sSBF",
+   "n": 2,
+   "syms": "GAYMF,GAYMF",
+   "first_t": "09-23 23:02",
+   "last_t": "09-23 23:02"
+  },
+  {
+   "deployer": "DpnHfEwVeH7ByPqieojtUQxrcUTmUxwXet6HBvXEmyhg",
+   "n": 2,
+   "syms": "FOMOCAT,DICE",
+   "first_t": "09-23 22:17",
+   "last_t": "09-23 22:18"
+  },
+  {
+   "deployer": "dtrzJPj7yDdvm6eRqBAgxsK2sMJeD9HhBEBB3XMedXy",
+   "n": 2,
+   "syms": "FFFFF,NICHE",
+   "first_t": "09-23 22:17",
+   "last_t": "09-23 22:18"
+  }
+ ],
+ "top_clusters": [
+  {
+   "cluster_id": "310e4d5765c29644",
+   "tokens_total": 4,
+   "tokens_rugged": 0,
+   "tokens_10x": 0,
+   "score": 0.7857,
+   "deployers": 3
+  },
+  {
+   "cluster_id": "45538f9f1d5a9637",
+   "tokens_total": 2,
+   "tokens_rugged": 0,
+   "tokens_10x": 0,
+   "score": 0.7,
+   "deployers": 1
+  },
+  {
+   "cluster_id": "5c94498a078b702d",
+   "tokens_total": 2,
+   "tokens_rugged": 0,
+   "tokens_10x": 0,
+   "score": 0.7,
+   "deployers": 1
+  },
+  {
+   "cluster_id": "607178e39698c998",
+   "tokens_total": 2,
+   "tokens_rugged": 0,
+   "tokens_10x": 0,
+   "score": 0.7,
+   "deployers": 1
+  },
+  {
+   "cluster_id": "74c2a908dc4b42b0",
+   "tokens_total": 2,
+   "tokens_rugged": 0,
+   "tokens_10x": 0,
+   "score": 0.7,
+   "deployers": 1
+  },
+  {
+   "cluster_id": "d27de207017ade38",
+   "tokens_total": 2,
+   "tokens_rugged": 0,
+   "tokens_10x": 0,
+   "score": 0.7,
+   "deployers": 1
+  },
+  {
+   "cluster_id": "24cff7ef0b287d92",
+   "tokens_total": 2,
+   "tokens_rugged": 0,
+   "tokens_10x": 0,
+   "score": 0.7,
+   "deployers": 1
+  },
+  {
+   "cluster_id": "e7f15be1a89f6402",
+   "tokens_total": 2,
+   "tokens_rugged": 0,
+   "tokens_10x": 0,
+   "score": 0.7,
+   "deployers": 1
+  }
+ ],
+ "outcomes_summary": [],
+ "outcome_by_cluster_size": [],
+ "funding_sources": [
+  {
+   "src": "wallet",
+   "n": 55
+  },
+  {
+   "src": "untraced",
+   "n": 34
+  },
+  {
+   "src": "unknown",
+   "n": 14
+  }
+ ]
+}
