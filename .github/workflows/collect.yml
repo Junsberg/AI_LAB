@@ -4,6 +4,12 @@ on:
   schedule:
     - cron: "*/10 * * * *"   # public repo: Actions minutes are unlimited
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/collect.yml"
+      - "memebot/**"
+      - "pyproject.toml"
 
 concurrency:
   group: collect
