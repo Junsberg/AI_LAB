@@ -87,14 +87,16 @@ async def rugcheck_creator(client: httpx.AsyncClient, mint: str) -> str | None:
     """rugcheck.xyz report carries the mint creator; free and one call. Preferred over
     walking signatures, which is both expensive and wrong for busy tokens."""
     try:
-        r = await client.get(f"https://api.rugcheck.xyz/v1/tokens/{mint}/report/summary")
-        if r.status_code != 200:
-            r = await client.get(f"https://api.rugcheck.xyz/v1/tokens/{mint}/report")
+        # only the full report carries `creator`; /report/summary does not
+        r = await client.get(f"https://api.rugcheck.xyz/v1/tokens/{mint}/report")
         if r.status_code != 200:
             return None
         data = r.json()
         creator = data.get("creator")
-        return creator if isinstance(creator, str) and 32 <= len(creator) <= 44 else None
+        if isinstance(creator, str) and 32 <= len(creator) <= 44:
+            return creator
+        log.info("rugcheck.no_creator", mint=mint, keys=sorted(data.keys())[:12])
+        return None
     except (httpx.HTTPError, ValueError):
         return None
 
