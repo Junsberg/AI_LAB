@@ -1,19 +1,19 @@
 {
- "generated_at": "2026-09-24T12:37:17.977508+00:00",
+ "generated_at": "2026-09-24T13:37:16.991927+00:00",
  "counts": [
   {
-   "tokens": 1192,
-   "tokens_24h": 1192,
-   "deployers": 819,
-   "deployers_traced": 456,
-   "deployers_unknown_src": 51,
-   "edges": 902,
-   "clusters": 738,
-   "multi_token_clusters": 162,
+   "tokens": 1258,
+   "tokens_24h": 1258,
+   "deployers": 873,
+   "deployers_traced": 495,
+   "deployers_unknown_src": 75,
+   "edges": 978,
+   "clusters": 797,
+   "multi_token_clusters": 176,
    "outcomes": 0,
    "rugged": 0,
    "tenx": 0,
-   "with_risk": 1192,
+   "with_risk": 1258,
    "signals": 0,
    "positions": 0,
    "hypotheses": 0
@@ -21,13 +21,13 @@
  ],
  "risk_distribution": [
   {
-   "top10_p50": 10.2,
+   "top10_p50": 9.9,
    "top10_p90": 52.1,
    "insiders_avg": 0.0,
-   "lp_locked": 852,
+   "lp_locked": 874,
    "freeze_on": 1,
    "mint_on": 0,
-   "n": 1169
+   "n": 1235
   }
  ],
  "tokens_per_hour_24h": [
@@ -73,7 +73,11 @@
   },
   {
    "h": "2026-09-24 12:00",
-   "n": 38
+   "n": 78
+  },
+  {
+   "h": "2026-09-24 13:00",
+   "n": 26
   }
  ],
  "top_deployers": [
@@ -90,6 +94,13 @@
    "syms": "VWA,QUANTA,GTA IV,GEMINI,OPENAI,MM,DRAGONBALL,SPONGEBOB,POKER,GOOGLE,BITFOOTS,₽,ROCKET,₽,NS",
    "first_t": "09-24 06:30",
    "last_t": "09-24 07:26"
+  },
+  {
+   "deployer": "5whEE6vB9T7NJrB9bHLu67kiSet1DMvc2VQ9kmrdwb8e",
+   "n": 14,
+   "syms": "SI,SI,PESOS,MOONCATS,SIDELINED,TOKENS,Elephant,SDOG,VISE,IshiGo,Meme,PROM,fush,RETIRE",
+   "first_t": "09-24 05:06",
+   "last_t": "09-24 12:49"
   },
   {
    "deployer": "CGcbvoobbnPzAN1mduBYapAUak6FUe3PHLACkEZWv42P",
@@ -113,13 +124,6 @@
    "last_t": "09-24 09:24"
   },
   {
-   "deployer": "5whEE6vB9T7NJrB9bHLu67kiSet1DMvc2VQ9kmrdwb8e",
-   "n": 12,
-   "syms": "SI,SI,PESOS,MOONCATS,SIDELINED,TOKENS,Elephant,SDOG,VISE,IshiGo,Meme,PROM",
-   "first_t": "09-24 05:06",
-   "last_t": "09-24 12:28"
-  },
-  {
    "deployer": "6ATnpbwa43DtscAWjiR3uh5bEfpc4mhFpF42F5a5f68T",
    "n": 10,
    "syms": "kms,kms,kms,kms,kms,kms,kms,kms,kms,kms",
@@ -141,11 +145,11 @@
    "last_t": "09-24 07:22"
   },
   {
-   "deployer": "6FC9XFByifhgHYcbTDhy9tgGpgsKbnLVZs2kBTakoEPV",
+   "deployer": "9k7n6mMY7rrabkqS8uk9mRLCyM2MMtRXu6BkyxEaGBMs",
    "n": 8,
-   "syms": "goon,goon,goon,goon,goon,goon,goon,goon",
-   "first_t": "09-23 22:17",
-   "last_t": "09-24 07:06"
+   "syms": "Jackson,Jackson,Jackson,Jackson,Jackson,Jackson,Jackson,Jackson",
+   "first_t": "09-24 07:05",
+   "last_t": "09-24 07:14"
   }
  ],
  "top_clusters": [
@@ -168,15 +172,6 @@
    "deployers": 2
   },
   {
-   "cluster_id": "58a0b780fd60127d",
-   "tokens_total": 15,
-   "tokens_evaluated": 0,
-   "tokens_rugged": 0,
-   "tokens_10x": 0,
-   "score": 0.5,
-   "deployers": 1
-  },
-  {
    "cluster_id": "d5b774798b88ae15",
    "tokens_total": 15,
    "tokens_evaluated": 0,
@@ -186,8 +181,8 @@
    "deployers": 7
   },
   {
-   "cluster_id": "4af1a825ab9ffdac",
-   "tokens_total": 14,
+   "cluster_id": "58a0b780fd60127d",
+   "tokens_total": 15,
    "tokens_evaluated": 0,
    "tokens_rugged": 0,
    "tokens_10x": 0,
@@ -204,13 +199,13 @@
    "deployers": 1
   },
   {
-   "cluster_id": "6aaded3ea2e0c698",
-   "tokens_total": 10,
+   "cluster_id": "4af1a825ab9ffdac",
+   "tokens_total": 14,
    "tokens_evaluated": 0,
    "tokens_rugged": 0,
    "tokens_10x": 0,
    "score": 0.5,
-   "deployers": 10
+   "deployers": 1
   },
   {
    "cluster_id": "607178e39698c998",
@@ -238,6 +233,15 @@
    "tokens_10x": 0,
    "score": 0.5,
    "deployers": 1
+  },
+  {
+   "cluster_id": "f7f81c24233ddc3c",
+   "tokens_total": 9,
+   "tokens_evaluated": 0,
+   "tokens_rugged": 0,
+   "tokens_10x": 0,
+   "score": 0.5,
+   "deployers": 1
   }
  ],
  "outcomes_summary": [],
@@ -246,7 +250,7 @@
   {
    "src": "rugcheck",
    "verified": "-",
-   "n": 572
+   "n": 637
   },
   {
    "src": "pre-fix",
@@ -256,7 +260,7 @@
   {
    "src": "rpc",
    "verified": "-",
-   "n": 126
+   "n": 127
   },
   {
    "src": "pre-fix",
@@ -272,19 +276,19 @@
  "funding_sources": [
   {
    "src": "wallet",
-   "n": 433
+   "n": 472
   },
   {
    "src": "untraced",
-   "n": 248
-  },
-  {
-   "src": "hub",
-   "n": 66
+   "n": 234
   },
   {
    "src": "unknown",
-   "n": 51
+   "n": 75
+  },
+  {
+   "src": "hub",
+   "n": 71
   },
   {
    "src": "cex",
