@@ -1,24 +1,24 @@
 {
- "generated_at": "2026-09-24T17:37:36.494187+00:00",
+ "generated_at": "2026-09-24T18:37:20.859012+00:00",
  "status": "warn",
  "metrics": {
-  "tokens_70m": 56,
-  "tokens_24h": 1445,
+  "tokens_70m": 46,
+  "tokens_24h": 1489,
   "risk_missing": 0,
-  "risk_eligible": 1407,
-  "top10_over90": 52,
-  "top10_n": 1422,
-  "deployers": 1028,
-  "traced": 616,
-  "untraceable": 192,
-  "trace_backlog": 211,
+  "risk_eligible": 1467,
+  "top10_over90": 56,
+  "top10_n": 1466,
+  "deployers": 1067,
+  "traced": 678,
+  "untraceable": 212,
+  "trace_backlog": 180,
   "outcome_backlog": 0,
   "outcomes": 0,
   "outcomes_no_data": 0,
   "backfill_pending": 0,
   "deployers_corrected": 81,
   "out_of_universe": 0,
-  "funded_after_launch": 5,
+  "funded_after_launch": 32,
   "structural_deployer_unmarked": 0,
   "edge_huge": 1,
   "bad_timestamps": 0,
@@ -30,37 +30,37 @@
    "name": "collect_alive",
    "level": "critical",
    "ok": true,
-   "detail": "tokens last 70m = 56"
+   "detail": "tokens last 70m = 46"
   },
   {
    "name": "collect_flood",
    "level": "warn",
    "ok": true,
-   "detail": "tokens last 70m = 56 (>150 suggests bonding-stage leak)"
+   "detail": "tokens last 70m = 46 (>150 suggests bonding-stage leak)"
   },
   {
    "name": "risk_coverage",
    "level": "warn",
    "ok": true,
-   "detail": "risk missing 0/1407 (0%)"
+   "detail": "risk missing 0/1467 (0%)"
   },
   {
    "name": "holder_concentration_sane",
    "level": "warn",
    "ok": true,
-   "detail": "top10>90%: 52/1422 (4%) → pool filter gap"
+   "detail": "top10>90%: 56/1466 (4%) → pool filter gap"
   },
   {
    "name": "trace_quality",
    "level": "warn",
    "ok": true,
-   "detail": "unknown+hub 192/1028 (19%)"
+   "detail": "unknown+hub 212/1067 (20%)"
   },
   {
    "name": "trace_backlog",
    "level": "warn",
-   "ok": false,
-   "detail": "deployers untraced >3h: 211"
+   "ok": true,
+   "detail": "deployers untraced >3h: 180"
   },
   {
    "name": "outcome_backlog",
@@ -84,7 +84,7 @@
    "name": "funding_precedes_launch",
    "level": "warn",
    "ok": false,
-   "detail": "deployers funded after their first launch: 5 (auto-retraced by enrich)"
+   "detail": "deployers funded after their first launch: 32 (auto-retraced by enrich)"
   },
   {
    "name": "structural_deployers_marked",
