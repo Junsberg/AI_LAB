@@ -81,6 +81,29 @@ def _bump_attempts(c, addr: str) -> None:
     )
 
 
+def prune_orphans() -> dict:
+    """After deployer corrections: drop the 'deployer' tag from wallets no token names
+    any more, and delete funding edges not reachable (walking src←dst) from a current
+    deployer, so stale chains cannot union into real clusters."""
+    with conn() as c:
+        untagged = c.execute(
+            """update wallets set tags = array_remove(tags, 'deployer'), cluster_id = null
+               where 'deployer' = any(tags)
+                 and address not in (select deployer from tokens)"""
+        ).rowcount
+        pruned = c.execute(
+            """with recursive reach(addr) as (
+                 select distinct deployer from tokens
+                 union
+                 select e.src from wallet_edges e join reach r on e.dst = r.addr
+               )
+               delete from wallet_edges e
+               where e.dst not in (select addr from reach)"""
+        ).rowcount
+        c.commit()
+    return {"untagged": untagged, "edges_pruned": pruned}
+
+
 def rebuild_clusters() -> int:
     """Recompute cluster ids over all edges. CEX wallets are excluded from union so that
     every Binance-funded deployer does not collapse into one giant cluster."""
@@ -138,10 +161,11 @@ def refresh_cluster_scores() -> int:
 
 
 async def run() -> dict:
+    pruned = prune_orphans()
     traced = await trace_pending()
     clustered = rebuild_clusters()
     scored = refresh_cluster_scores()
-    out = {"traced": traced, "clustered_wallets": clustered, "clusters_scored": scored}
+    out = {**pruned, "traced": traced, "clustered_wallets": clustered, "clusters_scored": scored}
     log.info("lineage.job.done", **out)
     return out
 
