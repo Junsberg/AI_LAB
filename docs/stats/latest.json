@@ -1,19 +1,19 @@
 {
- "generated_at": "2026-09-24T14:37:18.717603+00:00",
+ "generated_at": "2026-09-24T15:37:18.901730+00:00",
  "counts": [
   {
-   "tokens": 1301,
-   "tokens_24h": 1301,
-   "deployers": 908,
-   "deployers_traced": 516,
-   "deployers_unknown_src": 79,
-   "edges": 1022,
-   "clusters": 828,
-   "multi_token_clusters": 181,
+   "tokens": 1336,
+   "tokens_24h": 1336,
+   "deployers": 935,
+   "deployers_traced": 534,
+   "deployers_unknown_src": 84,
+   "edges": 1060,
+   "clusters": 841,
+   "multi_token_clusters": 183,
    "outcomes": 0,
    "rugged": 0,
    "tenx": 0,
-   "with_risk": 1301,
+   "with_risk": 1336,
    "signals": 0,
    "positions": 0,
    "hypotheses": 0
@@ -21,13 +21,13 @@
  ],
  "risk_distribution": [
   {
-   "top10_p50": 10.2,
+   "top10_p50": 10.3,
    "top10_p90": 52.1,
    "insiders_avg": 0.0,
-   "lp_locked": 891,
+   "lp_locked": 912,
    "freeze_on": 1,
    "mint_on": 0,
-   "n": 1278
+   "n": 1313
   }
  ],
  "tokens_per_hour_24h": [
@@ -81,7 +81,11 @@
   },
   {
    "h": "2026-09-24 14:00",
-   "n": 15
+   "n": 34
+  },
+  {
+   "h": "2026-09-24 15:00",
+   "n": 16
   }
  ],
  "top_deployers": [
@@ -221,15 +225,6 @@
    "deployers": 1
   },
   {
-   "cluster_id": "a0502f79245c9b59",
-   "tokens_total": 9,
-   "tokens_evaluated": 0,
-   "tokens_rugged": 0,
-   "tokens_10x": 0,
-   "score": 0.5,
-   "deployers": 1
-  },
-  {
    "cluster_id": "45078babdbacdaca",
    "tokens_total": 9,
    "tokens_evaluated": 0,
@@ -239,13 +234,22 @@
    "deployers": 9
   },
   {
-   "cluster_id": "f7f81c24233ddc3c",
+   "cluster_id": "a0502f79245c9b59",
    "tokens_total": 9,
    "tokens_evaluated": 0,
    "tokens_rugged": 0,
    "tokens_10x": 0,
    "score": 0.5,
    "deployers": 1
+  },
+  {
+   "cluster_id": "bccfcb3bb15eadc9",
+   "tokens_total": 9,
+   "tokens_evaluated": 0,
+   "tokens_rugged": 0,
+   "tokens_10x": 0,
+   "score": 0.5,
+   "deployers": 9
   }
  ],
  "outcomes_summary": [],
@@ -254,7 +258,7 @@
   {
    "src": "rugcheck",
    "verified": "-",
-   "n": 676
+   "n": 711
   },
   {
    "src": "pre-fix",
@@ -280,23 +284,23 @@
  "funding_sources": [
   {
    "src": "wallet",
-   "n": 493
+   "n": 510
   },
   {
    "src": "untraced",
-   "n": 242
+   "n": 245
   },
   {
    "src": "unknown",
-   "n": 79
+   "n": 84
   },
   {
    "src": "hub",
-   "n": 73
+   "n": 74
   },
   {
    "src": "cex",
-   "n": 21
+   "n": 22
   }
  ]
 }
