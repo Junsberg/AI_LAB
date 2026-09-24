@@ -132,11 +132,14 @@ def structural_owners(min_tokens: int = 2, min_pct: float = 30.0, person_min_tok
         in lineage — that is exactly who lineage exists to catch."""
     with conn() as c:
         rows = c.execute(
-            """select h->>'owner' owner, count(distinct mint) n,
-                      exists(select 1 from tokens t2 where t2.deployer = h->>'owner') is_creator
-               from tokens, jsonb_array_elements(meta->'risk'->'raw_top') h
-               where (h->>'pct')::numeric >= %s and length(h->>'owner') >= 32
-               group by 1 having count(distinct mint) >= %s""",
+            """with top as (
+                 select h->>'owner' as owner, mint
+                 from tokens, jsonb_array_elements(meta->'risk'->'raw_top') h
+                 where (h->>'pct')::numeric >= %s and length(h->>'owner') >= 32
+               )
+               select owner, count(distinct mint) n,
+                      exists(select 1 from tokens t2 where t2.deployer = top.owner) is_creator
+               from top group by owner having count(distinct mint) >= %s""",
             (min_pct, min_tokens),
         ).fetchall()
     out: set[str] = set()
