@@ -1,60 +1,66 @@
 {
- "generated_at": "2026-09-24T11:37:21.275523+00:00",
- "status": "ok",
+ "generated_at": "2026-09-24T12:37:23.452990+00:00",
+ "status": "warn",
  "metrics": {
-  "tokens_70m": 60,
-  "tokens_24h": 1112,
+  "tokens_70m": 89,
+  "tokens_24h": 1192,
   "risk_missing": 0,
-  "risk_eligible": 1078,
-  "top10_over90": 39,
-  "top10_n": 1089,
-  "deployers": 755,
-  "traced": 449,
-  "untraceable": 103,
-  "trace_backlog": 177,
+  "risk_eligible": 1149,
+  "top10_over90": 42,
+  "top10_n": 1169,
+  "deployers": 819,
+  "traced": 457,
+  "untraceable": 117,
+  "trace_backlog": 228,
   "outcome_backlog": 0,
   "outcomes": 0,
   "outcomes_no_data": 0,
   "backfill_pending": 0,
   "deployers_corrected": 81,
-  "out_of_universe": 0
+  "out_of_universe": 0,
+  "funded_after_launch": 9,
+  "structural_deployer_unmarked": 0,
+  "edge_huge": 1,
+  "bad_timestamps": 0,
+  "self_edges": 0,
+  "max_cluster_wallets": 18
  },
  "checks": [
   {
    "name": "collect_alive",
    "level": "critical",
    "ok": true,
-   "detail": "tokens last 70m = 60"
+   "detail": "tokens last 70m = 89"
   },
   {
    "name": "collect_flood",
    "level": "warn",
    "ok": true,
-   "detail": "tokens last 70m = 60 (>150 suggests bonding-stage leak)"
+   "detail": "tokens last 70m = 89 (>150 suggests bonding-stage leak)"
   },
   {
    "name": "risk_coverage",
    "level": "warn",
    "ok": true,
-   "detail": "risk missing 0/1078 (0%)"
+   "detail": "risk missing 0/1149 (0%)"
   },
   {
    "name": "holder_concentration_sane",
    "level": "warn",
    "ok": true,
-   "detail": "top10>90%: 39/1089 (4%) → pool filter gap"
+   "detail": "top10>90%: 42/1169 (4%) → pool filter gap"
   },
   {
    "name": "trace_quality",
    "level": "warn",
    "ok": true,
-   "detail": "unknown+hub 103/755 (14%)"
+   "detail": "unknown+hub 117/819 (14%)"
   },
   {
    "name": "trace_backlog",
    "level": "warn",
-   "ok": true,
-   "detail": "deployers untraced >3h: 177"
+   "ok": false,
+   "detail": "deployers untraced >3h: 228"
   },
   {
    "name": "outcome_backlog",
@@ -73,6 +79,42 @@
    "level": "warn",
    "ok": true,
    "detail": "out-of-universe tokens: 0"
+  },
+  {
+   "name": "funding_precedes_launch",
+   "level": "warn",
+   "ok": false,
+   "detail": "deployers funded after their first launch: 9 (auto-retraced by enrich)"
+  },
+  {
+   "name": "structural_deployers_marked",
+   "level": "warn",
+   "ok": true,
+   "detail": "tokens whose deployer is a pool/launchpad account, unmarked: 0"
+  },
+  {
+   "name": "edge_amounts_sane",
+   "level": "warn",
+   "ok": true,
+   "detail": "funding edges > 10k SOL: 1"
+  },
+  {
+   "name": "timestamps_sane",
+   "level": "critical",
+   "ok": true,
+   "detail": "tokens with impossible created_at: 0"
+  },
+  {
+   "name": "no_self_edges",
+   "level": "critical",
+   "ok": true,
+   "detail": "self edges: 0"
+  },
+  {
+   "name": "cluster_size_sane",
+   "level": "warn",
+   "ok": true,
+   "detail": "largest cluster = 18 wallets (exchange acting as glue?)"
   }
  ]
 }
