@@ -81,6 +81,45 @@ def _bump_attempts(c, addr: str) -> None:
     )
 
 
+def repair_invalid_traces() -> dict:
+    """Two value-level invariants, enforced every run:
+    1. a deployer's first inbound funding must precede its earliest token launch;
+       violations are stale results from the pre-cap tracer → reset and re-trace.
+    2. a structural account (launchpad authority / AMM vault, learned from holder data)
+       is not a person → never a deployer for lineage purposes."""
+    from memebot.collectors.rugcheck import structural_owners
+
+    with conn() as c:
+        bad = c.execute(
+            """select w.address from wallets w
+               join (select deployer, min(created_at) first_launch from tokens group by 1) t
+                 on t.deployer = w.address
+               where w.funded_at is not null and w.funded_at > t.first_launch"""
+        ).fetchall()
+        for r in bad:
+            c.execute("delete from wallet_edges where dst=%s and kind='funded'", (r["address"],))
+            c.execute(
+                """update wallets set funded_by=null, funded_at=null, funding_source_type=null,
+                       cluster_id=null, meta = meta - 'trace_attempts' where address=%s""",
+                (r["address"],),
+            )
+        structural = structural_owners()
+        marked = 0
+        if structural:
+            marked = c.execute(
+                """update tokens set meta = meta || '{"deployer_kind":"structural"}'
+                   where deployer = any(%s) and coalesce(meta->>'deployer_kind','') <> 'structural'""",
+                (list(structural),),
+            ).rowcount
+            c.execute(
+                """update wallets set tags = array_remove(tags,'deployer'), cluster_id=null
+                   where address = any(%s) and 'deployer' = any(tags)""",
+                (list(structural),),
+            )
+        c.commit()
+    return {"retraced": len(bad), "structural_deployers_marked": marked}
+
+
 def prune_orphans() -> dict:
     """After deployer corrections: drop the 'deployer' tag from wallets no token names
     any more, and delete funding edges not reachable (walking src←dst) from a current
@@ -89,7 +128,8 @@ def prune_orphans() -> dict:
         untagged = c.execute(
             """update wallets set tags = array_remove(tags, 'deployer'), cluster_id = null
                where 'deployer' = any(tags)
-                 and address not in (select deployer from tokens)"""
+                 and address not in (select deployer from tokens
+                                     where coalesce(meta->>'deployer_kind','') <> 'structural')"""
         ).rowcount
         pruned = c.execute(
             """with recursive reach(addr) as (
@@ -142,6 +182,7 @@ def refresh_cluster_scores() -> int:
                join wallets w on w.address = t.deployer
                left join token_outcomes o on o.mint = t.mint
                where w.cluster_id is not null
+                 and coalesce(t.meta->>'deployer_kind','') <> 'structural'
                group by w.cluster_id"""
         ).fetchall()
         for r in rows:
@@ -161,11 +202,12 @@ def refresh_cluster_scores() -> int:
 
 
 async def run() -> dict:
+    repaired = repair_invalid_traces()
     pruned = prune_orphans()
     traced = await trace_pending()
     clustered = rebuild_clusters()
     scored = refresh_cluster_scores()
-    out = {**pruned, "traced": traced, "clustered_wallets": clustered, "clusters_scored": scored}
+    out = {**repaired, **pruned, "traced": traced, "clustered_wallets": clustered, "clusters_scored": scored}
     log.info("lineage.job.done", **out)
     return out
 

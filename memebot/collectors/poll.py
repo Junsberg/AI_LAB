@@ -122,6 +122,9 @@ async def run_once(max_new: int = 60) -> int:
             }
         fresh = [p for p in pools if p.mint not in known][:max_new]
         inserted = 0
+        from memebot.collectors.rugcheck import structural_owners
+
+        structural = structural_owners()
         for p in fresh:
             slot = None
             deployer = await rugcheck_creator(client, p.mint)
@@ -136,22 +139,25 @@ async def run_once(max_new: int = 60) -> int:
             if not deployer:
                 log.info("deployer.unresolved", mint=p.mint)
                 continue
+            kind = "structural" if deployer in structural else "wallet"
             platform = "pumpfun" if p.dex in PUMP_DEXES else p.dex or "other"
             with conn() as c:
                 c.execute(
                     """insert into tokens(mint, symbol, deployer, launch_platform, created_at,
                                           migrated_at, pool_address, first_seen_slot, meta)
                        values (%s,%s,%s,%s,%s,%s,%s,%s,
-                               jsonb_build_object('deployer_source', %s::text, 'dex', %s::text, 'stage', 'graduated'))
+                               jsonb_build_object('deployer_source', %s::text, 'dex', %s::text, 'stage', 'graduated',
+                                                  'deployer_kind', %s::text))
                        on conflict (mint) do nothing""",
-                    (p.mint, p.symbol, deployer, platform, p.created_at, p.created_at, p.pool, slot, source, p.dex),
+                    (p.mint, p.symbol, deployer, platform, p.created_at, p.created_at, p.pool, slot, source, p.dex, kind),
                 )
-                c.execute(
-                    """insert into wallets(address, tags) values (%s, '{deployer}')
-                       on conflict (address) do update set tags =
-                         (select array(select distinct unnest(wallets.tags || '{deployer}')))""",
-                    (deployer,),
-                )
+                if kind == "wallet":
+                    c.execute(
+                        """insert into wallets(address, tags) values (%s, '{deployer}')
+                           on conflict (address) do update set tags =
+                             (select array(select distinct unnest(wallets.tags || '{deployer}')))""",
+                        (deployer,),
+                    )
                 c.commit()
             inserted += 1
         log.info("poll.done", seen=len(pools), new=len(fresh), inserted=inserted)

@@ -41,7 +41,15 @@ def run() -> dict:
               (select count(*) from tokens where meta->>'deployer_source' is null and meta->>'deployer_verified' is null) backfill_pending,
               (select count(*) from tokens where meta->>'deployer_verified'='corrected') deployers_corrected,
               (select count(*) from tokens where meta->>'stage' = 'graduated'
-                 and meta->>'dex' not in ('pumpswap','meteora-damm-v2')) out_of_universe
+                 and meta->>'dex' not in ('pumpswap','meteora-damm-v2')) out_of_universe,
+              (select count(*) from wallets w join (select deployer, min(created_at) fl from tokens group by 1) t on t.deployer=w.address
+                 where w.funded_at is not null and w.funded_at > t.fl) funded_after_launch,
+              (select count(*) from tokens t where coalesce(t.meta->>'deployer_kind','') <> 'structural' and t.deployer in
+                 (select h->>'owner' from tokens, jsonb_array_elements(meta->'risk'->'raw_top') h
+                  where (h->>'pct')::numeric >= 30 group by 1 having count(distinct mint) >= 4)) structural_deployer_unmarked,
+              (select count(*) from wallet_edges where amount_sol > 10000) edge_huge,
+              (select count(*) from tokens where created_at > now() or created_at < '2026-09-01') bad_timestamps,
+              (select count(*) from wallet_edges where src = dst) self_edges
             """,
         )
     m = {k: (int(v) if v is not None else 0) for k, v in m.items()}
@@ -63,6 +71,12 @@ def run() -> dict:
     nd = m["outcomes_no_data"] / m["outcomes"] if m["outcomes"] else 0
     chk("outcome_data_quality", "warn", m["outcomes"] >= 20 and nd > 0.3, f"no_data outcomes {m['outcomes_no_data']}/{m['outcomes']} ({nd:.0%})")
     chk("universe_clean", "warn", m["out_of_universe"] > 0, f"out-of-universe tokens: {m['out_of_universe']}")
+    # value-level invariants: these are impossible if the data is right
+    chk("funding_precedes_launch", "warn", m["funded_after_launch"] > 0, f"deployers funded after their first launch: {m['funded_after_launch']} (auto-retraced by enrich)")
+    chk("structural_deployers_marked", "warn", m["structural_deployer_unmarked"] > 0, f"tokens whose deployer is a pool/launchpad account, unmarked: {m['structural_deployer_unmarked']}")
+    chk("edge_amounts_sane", "warn", m["edge_huge"] > 3, f"funding edges > 10k SOL: {m['edge_huge']}")
+    chk("timestamps_sane", "critical", m["bad_timestamps"] > 0, f"tokens with impossible created_at: {m['bad_timestamps']}")
+    chk("no_self_edges", "critical", m["self_edges"] > 0, f"self edges: {m['self_edges']}")
 
     critical = [x for x in checks if x["level"] == "critical" and not x["ok"]]
     warns = [x for x in checks if x["level"] == "warn" and not x["ok"]]
