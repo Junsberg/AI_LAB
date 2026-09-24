@@ -130,7 +130,7 @@ async def run_once(max_new: int = 60) -> int:
                 c.execute(
                     """insert into tokens(mint, symbol, deployer, launch_platform, created_at,
                                           migrated_at, pool_address, first_seen_slot, meta)
-                       values (%s,%s,%s,%s,%s,%s,%s,%s, jsonb_build_object('deployer_source', %s))
+                       values (%s,%s,%s,%s,%s,%s,%s,%s, jsonb_build_object('deployer_source', %s::text))
                        on conflict (mint) do nothing""",
                     (p.mint, p.symbol, deployer, platform, p.created_at, p.created_at, p.pool, slot, source),
                 )
