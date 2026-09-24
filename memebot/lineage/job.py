@@ -17,7 +17,7 @@ from memebot.rpc import RpcError
 log = structlog.get_logger()
 
 
-async def trace_pending(limit: int = 40) -> int:
+async def trace_pending(limit: int = 80) -> int:
     with conn() as c:
         rows = c.execute(
             """select address from wallets
