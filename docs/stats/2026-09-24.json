@@ -1,19 +1,19 @@
 {
- "generated_at": "2026-09-24T01:38:09.230180+00:00",
+ "generated_at": "2026-09-24T06:37:23.146568+00:00",
  "counts": [
   {
-   "tokens": 206,
-   "tokens_24h": 206,
-   "deployers": 162,
-   "deployers_traced": 121,
-   "deployers_unknown_src": 26,
-   "edges": 269,
-   "clusters": 177,
-   "multi_token_clusters": 35,
+   "tokens": 411,
+   "tokens_24h": 411,
+   "deployers": 324,
+   "deployers_traced": 153,
+   "deployers_unknown_src": 34,
+   "edges": 339,
+   "clusters": 259,
+   "multi_token_clusters": 49,
    "outcomes": 0,
    "rugged": 0,
    "tenx": 0,
-   "with_risk": 180,
+   "with_risk": 411,
    "signals": 0,
    "positions": 0,
    "hypotheses": 0
@@ -21,13 +21,13 @@
  ],
  "risk_distribution": [
   {
-   "top10_p50": 32.5,
-   "top10_p90": 98.6,
+   "top10_p50": 21.5,
+   "top10_p90": 97.8,
    "insiders_avg": 0.0,
-   "lp_locked": 153,
-   "freeze_on": 0,
+   "lp_locked": 344,
+   "freeze_on": 1,
    "mint_on": 0,
-   "n": 176
+   "n": 402
   }
  ],
  "tokens_per_hour_24h": [
@@ -42,6 +42,14 @@
   {
    "h": "2026-09-24 00:00",
    "n": 45
+  },
+  {
+   "h": "2026-09-24 05:00",
+   "n": 104
+  },
+  {
+   "h": "2026-09-24 06:00",
+   "n": 101
   }
  ],
  "top_deployers": [
@@ -60,6 +68,34 @@
    "last_t": "09-23 23:13"
   },
   {
+   "deployer": "3uT4VQCvaabRcPy4Mv8Q3FbHkJFmQdYgTA5Ho2sikJ5Y",
+   "n": 5,
+   "syms": "TOAD,$BWIZ,att,GNB,CHIMP",
+   "first_t": "09-24 06:19",
+   "last_t": "09-24 06:24"
+  },
+  {
+   "deployer": "3p27vcVRUQvcTnDGSWgPpEHeNKNXxdJpdPbCUzX2dQj8",
+   "n": 5,
+   "syms": "VENOM,VENOM,VENOM,VENOM,VENOM",
+   "first_t": "09-24 05:07",
+   "last_t": "09-24 05:22"
+  },
+  {
+   "deployer": "CGcbvoobbnPzAN1mduBYapAUak6FUe3PHLACkEZWv42P",
+   "n": 5,
+   "syms": "CV,CV,CV,CV,CV",
+   "first_t": "09-24 05:05",
+   "last_t": "09-24 05:23"
+  },
+  {
+   "deployer": "CvcvcX3B15aK9wwbJCtFc7Ef1ERwwsmJgwZCLSD9V2cj",
+   "n": 4,
+   "syms": "VELDA,VELDA,VELDA,VELDA",
+   "first_t": "09-24 06:18",
+   "last_t": "09-24 06:23"
+  },
+  {
    "deployer": "DpnHfEwVeH7ByPqieojtUQxrcUTmUxwXet6HBvXEmyhg",
    "n": 4,
    "syms": "FOMOCAT,DICE,$MFRG,INUX",
@@ -67,25 +103,11 @@
    "last_t": "09-24 00:34"
   },
   {
-   "deployer": "DwWt5SkytR5cv6DnSN4CNqqpFMG2yTLdGD5CJbag292F",
+   "deployer": "9DUEJ28d7RMje5NfZpemX6tp8EDs7LFj2Y1vuYdzhBvA",
    "n": 3,
-   "syms": "UNODREAMO,SUMUP,LUVALIEN",
-   "first_t": "09-23 22:18",
-   "last_t": "09-24 00:34"
-  },
-  {
-   "deployer": "5Bqgq9hcXdWhLpmzp7pjWJcyWReeZi5cgMmXHZC1HBQX",
-   "n": 3,
-   "syms": "NICE,BTC,SILAS",
-   "first_t": "09-23 22:17",
-   "last_t": "09-23 23:02"
-  },
-  {
-   "deployer": "2aFjaPidodQyWFfw6LLKUBm4EjTh6oxM2W3RT1J8vpgR",
-   "n": 3,
-   "syms": "wBTC,Hidden Mus,Hidden Mus",
+   "syms": "$MESSI,$SolWaifu,KaWeRe",
    "first_t": "09-23 23:03",
-   "last_t": "09-23 23:13"
+   "last_t": "09-24 05:05"
   },
   {
    "deployer": "Ab6JJb6yqYBFxY29RcPsS2cSDJVsAYuqVPeTzUGnDYh8",
@@ -95,42 +117,44 @@
    "last_t": "09-23 23:12"
   },
   {
-   "deployer": "74eL8YwThKLq6NFfaroaYEdERocnLYMLV7LfaSYhRAoS",
+   "deployer": "5Bqgq9hcXdWhLpmzp7pjWJcyWReeZi5cgMmXHZC1HBQX",
    "n": 3,
-   "syms": "Computer,Computer,Computer",
-   "first_t": "09-24 00:33",
-   "last_t": "09-24 00:35"
-  },
-  {
-   "deployer": "DfagdpbEUyWJGfUEorfcJqHeanQPeKT8XJNmEvtjs1TA",
-   "n": 3,
-   "syms": "$AURA,ch,beer",
-   "first_t": "09-24 00:32",
-   "last_t": "09-24 00:35"
-  },
-  {
-   "deployer": "J7mfert6r5L39pydN2tq8CjEbAgvoq66mQwmDnV2yanX",
-   "n": 3,
-   "syms": "WEENIE,WEENIE,WEENIE",
+   "syms": "NICE,BTC,SILAS",
    "first_t": "09-23 22:17",
-   "last_t": "09-23 23:13"
+   "last_t": "09-23 23:02"
   }
  ],
  "top_clusters": [
   {
-   "cluster_id": "1bd00e90538efb94",
-   "tokens_total": 13,
+   "cluster_id": "c11f7fc2e0601ea7",
+   "tokens_total": 14,
    "tokens_rugged": 0,
    "tokens_10x": 0,
-   "score": 0.9062,
-   "deployers": 6
+   "score": 0.5,
+   "deployers": 7
   },
   {
    "cluster_id": "607178e39698c998",
    "tokens_total": 10,
    "tokens_rugged": 0,
    "tokens_10x": 0,
-   "score": 0.8846,
+   "score": 0.5,
+   "deployers": 1
+  },
+  {
+   "cluster_id": "43339393b5e4cf75",
+   "tokens_total": 5,
+   "tokens_rugged": 0,
+   "tokens_10x": 0,
+   "score": 0.5,
+   "deployers": 1
+  },
+  {
+   "cluster_id": "4af1a825ab9ffdac",
+   "tokens_total": 5,
+   "tokens_rugged": 0,
+   "tokens_10x": 0,
+   "score": 0.5,
    "deployers": 1
   },
   {
@@ -138,7 +162,7 @@
    "tokens_total": 5,
    "tokens_rugged": 0,
    "tokens_10x": 0,
-   "score": 0.8125,
+   "score": 0.5,
    "deployers": 4
   },
   {
@@ -146,7 +170,7 @@
    "tokens_total": 4,
    "tokens_rugged": 0,
    "tokens_10x": 0,
-   "score": 0.7857,
+   "score": 0.5,
    "deployers": 1
   },
   {
@@ -154,23 +178,15 @@
    "tokens_total": 4,
    "tokens_rugged": 0,
    "tokens_10x": 0,
-   "score": 0.7857,
+   "score": 0.5,
    "deployers": 4
   },
   {
-   "cluster_id": "24cff7ef0b287d92",
+   "cluster_id": "5c94498a078b702d",
    "tokens_total": 3,
    "tokens_rugged": 0,
    "tokens_10x": 0,
-   "score": 0.75,
-   "deployers": 1
-  },
-  {
-   "cluster_id": "669ef0bc1f663517",
-   "tokens_total": 3,
-   "tokens_rugged": 0,
-   "tokens_10x": 0,
-   "score": 0.75,
+   "score": 0.5,
    "deployers": 1
   },
   {
@@ -178,23 +194,15 @@
    "tokens_total": 3,
    "tokens_rugged": 0,
    "tokens_10x": 0,
-   "score": 0.75,
+   "score": 0.5,
    "deployers": 2
   },
   {
-   "cluster_id": "7a39b628361c7e6d",
+   "cluster_id": "24cff7ef0b287d92",
    "tokens_total": 3,
    "tokens_rugged": 0,
    "tokens_10x": 0,
-   "score": 0.75,
-   "deployers": 1
-  },
-  {
-   "cluster_id": "9263e7182656c0cc",
-   "tokens_total": 3,
-   "tokens_rugged": 0,
-   "tokens_10x": 0,
-   "score": 0.75,
+   "score": 0.5,
    "deployers": 1
   }
  ],
@@ -203,19 +211,19 @@
  "funding_sources": [
   {
    "src": "wallet",
-   "n": 115
-  },
-  {
-   "src": "unknown",
-   "n": 26
+   "n": 146
   },
   {
    "src": "untraced",
-   "n": 17
+   "n": 139
+  },
+  {
+   "src": "unknown",
+   "n": 34
   },
   {
    "src": "cex",
-   "n": 4
+   "n": 5
   }
  ]
 }
