@@ -16,8 +16,14 @@ log = structlog.get_logger()
 GT = "https://api.geckoterminal.com/api/v2"
 
 
-async def _ohlcv(client: httpx.AsyncClient, pool: str) -> list[Candle]:
-    r = await client.get(f"{GT}/networks/solana/pools/{pool}/ohlcv/hour", params={"limit": 168})
+GT_SLEEP = 2.2  # ~27 req/min against the ~30/min public limit
+
+
+async def _ohlcv(client: httpx.AsyncClient, pool: str, age_hours: float) -> list[Candle]:
+    # hourly candles cover 7 days; older tokens need daily candles so the launch
+    # candle (our base price) is still inside the window
+    tf, limit = ("hour", 168) if age_hours <= 160 else ("day", 100)
+    r = await client.get(f"{GT}/networks/solana/pools/{pool}/ohlcv/{tf}", params={"limit": limit})
     if r.status_code == 404:
         return []
     r.raise_for_status()
@@ -50,21 +56,32 @@ async def run(limit: int = 80) -> int:
     if not rows:
         return 0
     n = 0
+    backoff = 0
     async with httpx.AsyncClient(timeout=30, headers={"Accept": "application/json"}) as client:
         for r in rows:
+            age_h = (datetime.now(timezone.utc) - r["created_at"]).total_seconds() / 3600
             try:
-                candles = await _ohlcv(client, r["pool_address"])
-                await asyncio.sleep(1.1)
+                candles = await _ohlcv(client, r["pool_address"], age_h)
+                await asyncio.sleep(GT_SLEEP)
                 attrs = await _pool(client, r["pool_address"])
-                await asyncio.sleep(1.1)
+                await asyncio.sleep(GT_SLEEP)
+            except httpx.HTTPStatusError as e:
+                if e.response.status_code == 429:
+                    backoff += 1
+                    log.warning("outcome.rate_limited", backoff=backoff)
+                    if backoff > 3:
+                        break
+                    await asyncio.sleep(60)
+                    continue
+                log.warning("outcome.fetch_failed", mint=r["mint"], error=str(e))
+                continue
             except httpx.HTTPError as e:
                 log.warning("outcome.fetch_failed", mint=r["mint"], error=str(e))
-                if "429" in str(e):
-                    break
                 continue
-            liq_now = float(attrs.get("reserve_in_usd") or 0) or None
+            raw_liq = attrs.get("reserve_in_usd")
+            liq_now = None if raw_liq is None else float(raw_liq)  # 0.0 is a real (drained) value
             # v1 proxy for peak liquidity: max(previous stored, now). Improves as we re-evaluate.
-            liq_peak = max(float(r["liq_peak"] or 0), liq_now or 0) or None
+            liq_peak = max(float(r["liq_peak"] or 0), liq_now or 0.0) or None
             price_now = float(attrs.get("base_token_price_usd") or 0) or None
             o = classify(candles, liq_now, liq_peak, price_now)
             with conn() as c:

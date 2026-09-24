@@ -65,7 +65,7 @@ def parse_report(r: dict) -> RiskSnapshot:
         lp = markets[0].get("lp") or {}
         lp_locked = float(lp.get("lpLockedPct") or 0)
     return RiskSnapshot(
-        score=r.get("score_normalised") or r.get("score"),
+        score=r["score_normalised"] if r.get("score_normalised") is not None else r.get("score"),
         top10_pct=round(top10, 2) if top10 is not None else None,
         insiders_pct=round(insiders, 2) if insiders is not None else None,
         lp_locked_pct=lp_locked,

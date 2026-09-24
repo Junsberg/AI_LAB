@@ -20,17 +20,21 @@ from memebot.strategy.scorer import Candidate, decide
 app = typer.Typer()
 
 
+def _f(v, default: float = 0.0) -> float:
+    return default if v is None else float(v)  # psycopg returns Decimal for numeric
+
+
 def _candidate(row: dict) -> Candidate:
     s = row["snapshot"] if isinstance(row["snapshot"], dict) else json.loads(row["snapshot"])
     return Candidate(
         mint=row["mint"],
-        lineage=row["lineage_score"],
-        kol=row["kol_score"] or 0.0,
-        survivor=row["survivor_score"] or 0.0,
-        narrative=row["narrative_score"] or 0.0,
-        liquidity_sol=s.get("liquidity_sol", 0.0),
-        top10_pct=s.get("top10_pct", 100.0),
-        bundle_pct=s.get("bundle_pct", 100.0),
+        lineage=None if row["lineage_score"] is None else float(row["lineage_score"]),
+        kol=_f(row["kol_score"]),
+        survivor=_f(row["survivor_score"]),
+        narrative=_f(row["narrative_score"]),
+        liquidity_sol=_f(s.get("liquidity_sol")),
+        top10_pct=_f(s.get("top10_pct"), 100.0),
+        bundle_pct=_f(s.get("bundle_pct"), 100.0),
         snapshot=s,
     )
 

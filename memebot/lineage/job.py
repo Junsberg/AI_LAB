@@ -12,6 +12,7 @@ import structlog
 from memebot.db import conn
 from memebot.lineage.cluster import ClusterStats, Edge, build_clusters, score_cluster
 from memebot.lineage.tracer import KNOWN_CEX, Tracer
+from memebot.rpc import RpcError
 
 log = structlog.get_logger()
 
@@ -34,15 +35,9 @@ async def trace_pending(limit: int = 40) -> int:
             addr = r["address"]
             try:
                 edges, hops = await tracer.walk(addr)
-            except httpx.HTTPError as e:
+            except (httpx.HTTPError, RpcError) as e:
+                # Transport / provider error: not the wallet's fault, do not burn an attempt.
                 log.warning("trace.failed", wallet=addr, error=str(e))
-                with conn() as c:
-                    c.execute(
-                        """update wallets set meta = meta || jsonb_build_object('trace_attempts',
-                           coalesce((meta->>'trace_attempts')::int,0)+1) where address=%s""",
-                        (addr,),
-                    )
-                    c.commit()
                 continue
             with conn() as c:
                 for h in hops:
@@ -71,15 +66,19 @@ async def trace_pending(limit: int = 40) -> int:
                         (e.src, e.dst, e.kind, e.amount_sol),
                     )
                 # mark attempted even when unknown, so we don't loop on dead wallets
-                c.execute(
-                    """update wallets set meta = meta || jsonb_build_object('trace_attempts',
-                       coalesce((meta->>'trace_attempts')::int,0)+1) where address=%s""",
-                    (addr,),
-                )
+                _bump_attempts(c, addr)
                 c.commit()
             traced += 1
     log.info("trace.done", traced=traced)
     return traced
+
+
+def _bump_attempts(c, addr: str) -> None:
+    c.execute(
+        """update wallets set meta = meta || jsonb_build_object('trace_attempts',
+           coalesce((meta->>'trace_attempts')::int,0)+1) where address=%s""",
+        (addr,),
+    )
 
 
 def rebuild_clusters() -> int:
@@ -101,6 +100,9 @@ def rebuild_clusters() -> int:
             """update wallets set cluster_id = left(encode(sha256(address::bytea),'hex'),16)
                where cluster_id is null and 'deployer' = any(tags)"""
         )
+        # cluster ids are content hashes: a membership change mints a new id, so drop
+        # score rows no wallet references any more
+        c.execute("delete from cluster_scores where cluster_id not in (select distinct cluster_id from wallets where cluster_id is not null)")
         c.commit()
     return len(mapping)
 
@@ -123,12 +125,13 @@ def refresh_cluster_scores() -> int:
             # Score only on evaluated tokens; unevaluated ones are neither clean nor rugged.
             st = ClusterStats(tokens_total=r["evaluated"], tokens_rugged=r["rugged"], tokens_10x=r["tenx"])
             c.execute(
-                """insert into cluster_scores(cluster_id, tokens_total, tokens_rugged, tokens_10x, score, updated_at)
-                   values (%s,%s,%s,%s,%s,now())
+                """insert into cluster_scores(cluster_id, tokens_total, tokens_evaluated, tokens_rugged, tokens_10x, score, updated_at)
+                   values (%s,%s,%s,%s,%s,%s,now())
                    on conflict (cluster_id) do update set
-                     tokens_total=excluded.tokens_total, tokens_rugged=excluded.tokens_rugged,
-                     tokens_10x=excluded.tokens_10x, score=excluded.score, updated_at=now()""",
-                (r["cluster_id"], r["total"], r["rugged"], r["tenx"], round(score_cluster(st), 4)),
+                     tokens_total=excluded.tokens_total, tokens_evaluated=excluded.tokens_evaluated,
+                     tokens_rugged=excluded.tokens_rugged, tokens_10x=excluded.tokens_10x,
+                     score=excluded.score, updated_at=now()""",
+                (r["cluster_id"], r["total"], r["evaluated"], r["rugged"], r["tenx"], round(score_cluster(st), 4)),
             )
         c.commit()
     return len(rows)

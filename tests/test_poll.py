@@ -34,3 +34,21 @@ async def test_fetch_new_pools_parses_and_skips_sol():
     p = pools[0]
     assert p.mint == "7GCihgDB8fe6KNjn2MYtkzZcRjQy3t9GHdC8uHYmW2hr"
     assert p.dex == "pumpswap" and p.symbol == "DOGE" and p.pool == "POOL1"
+
+
+@pytest.mark.asyncio
+async def test_find_deployer_refuses_when_history_too_long():
+    import json
+
+    from memebot.collectors.poll import find_deployer
+
+    full = [{"signature": f"s{i}"} for i in range(1000)]
+
+    async def handler(request: httpx.Request) -> httpx.Response:
+        req = json.loads(request.read())
+        if req["method"] == "getSignaturesForAddress":
+            return httpx.Response(200, json={"result": full})
+        return httpx.Response(200, json={"result": None})
+
+    async with httpx.AsyncClient(transport=httpx.MockTransport(handler)) as c:
+        assert await find_deployer(c, "MINT", max_pages=2) == (None, None)

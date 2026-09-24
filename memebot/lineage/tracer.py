@@ -4,8 +4,8 @@ from dataclasses import dataclass
 
 import httpx
 
-from memebot.config import settings
 from memebot.lineage.cluster import Edge
+from memebot.rpc import RpcError, signatures, transaction  # noqa: F401
 
 # Well-known CEX hot wallets on Solana. A funding hop that lands here ends the walk
 # (a CEX is not an operator). Extend from data as clusters surface new ones.
@@ -28,7 +28,7 @@ class FundingHop:
     wallet: str
     funded_by: str | None
     amount_sol: float
-    source_type: str  # cex | wallet | unknown
+    source_type: str  # cex | wallet | unknown | hub (too busy to find first inbound)
     slot: int | None = None
     block_time: int | None = None
 
@@ -39,40 +39,20 @@ class Tracer:
     Deployer wallets are usually young, so the oldest signature is 1-2 pages away.
     """
 
-    def __init__(self, client: httpx.AsyncClient | None = None) -> None:
+    def __init__(self, client: httpx.AsyncClient | None = None, max_pages: int = 3) -> None:
         self._client = client or httpx.AsyncClient(timeout=30)
-
-    async def _rpc(self, method: str, params: list) -> dict | list | None:
-        r = await self._client.post(
-            settings.helius_rpc, json={"jsonrpc": "2.0", "id": 1, "method": method, "params": params}
-        )
-        r.raise_for_status()
-        return r.json().get("result")
-
-    async def _oldest_signatures(self, wallet: str, max_pages: int = 3) -> list[dict]:
-        before: str | None = None
-        page: list[dict] = []
-        for _ in range(max_pages):
-            opts: dict = {"limit": 1000}
-            if before:
-                opts["before"] = before
-            res = await self._rpc("getSignaturesForAddress", [wallet, opts]) or []
-            if not res:
-                break
-            page = res
-            before = res[-1]["signature"]
-            if len(res) < 1000:
-                break
-        return page[-25:][::-1]  # oldest 25, oldest first
+        self._max_pages = max_pages
 
     async def first_inbound(self, wallet: str) -> FundingHop:
-        for s in await self._oldest_signatures(wallet):
+        sigs, exhausted = await signatures(self._client, wallet, self._max_pages)
+        if not exhausted:
+            # Busy hub wallet: the oldest page is mid-history. Refusing to guess here is
+            # what keeps unrelated deployers from being unioned through a shared hub.
+            return FundingHop(wallet, None, 0.0, "hub")
+        for s in sigs[-25:][::-1]:  # oldest 25, oldest first
             if s.get("err"):
                 continue
-            tx = await self._rpc(
-                "getTransaction",
-                [s["signature"], {"encoding": "jsonParsed", "maxSupportedTransactionVersion": 0}],
-            )
+            tx = await transaction(self._client, s["signature"])
             if not tx:
                 continue
             msg = tx["transaction"]["message"]

@@ -73,3 +73,25 @@ async def test_create_account_and_inner_instruction_funding():
     async with httpx.AsyncClient(transport=httpx.MockTransport(rpc_handler(responses))) as c:
         hop = await Tracer(c).first_inbound("W")
     assert hop.funded_by == "FUNDER" and hop.amount_sol == 3.0
+
+
+@pytest.mark.asyncio
+async def test_hub_wallet_is_not_guessed():
+    # 3 full pages → cap hit → source_type 'hub', no funded_by
+    full = [{"signature": f"s{i}"} for i in range(1000)]
+    responses = {"sigs": {"HUB": full}, "txs": {}}
+    async with httpx.AsyncClient(transport=httpx.MockTransport(rpc_handler(responses))) as c:
+        hop = await Tracer(c, max_pages=3).first_inbound("HUB")
+    assert hop.source_type == "hub" and hop.funded_by is None
+
+
+@pytest.mark.asyncio
+async def test_jsonrpc_error_raises():
+    from memebot.rpc import RpcError
+
+    async def handler(request: httpx.Request) -> httpx.Response:
+        return httpx.Response(200, json={"error": {"code": -32429, "message": "rate limited"}})
+
+    async with httpx.AsyncClient(transport=httpx.MockTransport(handler)) as c:
+        with pytest.raises(RpcError):
+            await Tracer(c).first_inbound("X")

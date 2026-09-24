@@ -35,16 +35,10 @@ class NewToken:
 async def _fetch_tx(sig: str) -> dict | None:
     import httpx
 
-    body = {
-        "jsonrpc": "2.0",
-        "id": 1,
-        "method": "getTransaction",
-        "params": [sig, {"encoding": "jsonParsed", "maxSupportedTransactionVersion": 0}],
-    }
+    from memebot.rpc import transaction
+
     async with httpx.AsyncClient(timeout=20) as c:
-        r = await c.post(settings.helius_rpc, json=body)
-        r.raise_for_status()
-        return r.json().get("result")
+        return await transaction(c, sig)
 
 
 def _parse_create(tx: dict, sig: str) -> NewToken | None:

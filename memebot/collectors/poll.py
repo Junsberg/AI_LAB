@@ -16,8 +16,8 @@ from datetime import datetime
 import httpx
 import structlog
 
-from memebot.config import settings
 from memebot.db import conn
+from memebot.rpc import RpcError, signatures, transaction
 
 log = structlog.get_logger()
 GT = "https://api.geckoterminal.com/api/v2"
@@ -67,47 +67,36 @@ async def fetch_new_pools(client: httpx.AsyncClient, pages: int = 3) -> list[New
     return out
 
 
-async def find_deployer(client: httpx.AsyncClient, mint: str) -> tuple[str | None, int | None]:
-    """Oldest signature for the mint → first signer. 1-3 RPC calls."""
-    before: str | None = None
-    oldest: dict | None = None
-    for _ in range(5):
-        params: list = [mint, {"limit": 1000}]
-        if before:
-            params[1]["before"] = before
-        r = await client.post(
-            settings.helius_rpc,
-            json={"jsonrpc": "2.0", "id": 1, "method": "getSignaturesForAddress", "params": params},
-        )
-        r.raise_for_status()
-        sigs = r.json().get("result") or []
-        if not sigs:
-            break
-        oldest = sigs[-1]
-        before = oldest["signature"]
-        if len(sigs) < 1000:
-            break
-    if not oldest:
+async def find_deployer(client: httpx.AsyncClient, mint: str, max_pages: int = 30) -> tuple[str | None, int | None]:
+    """Oldest signature for the mint → first signer. Returns (None, None) when the
+    history is longer than `max_pages`×1000 — a guessed deployer poisons lineage, so
+    we would rather leave the token out than store the wrong wallet."""
+    sigs, exhausted = await signatures(client, mint, max_pages)
+    if not sigs or not exhausted:
         return None, None
-    r = await client.post(
-        settings.helius_rpc,
-        json={
-            "jsonrpc": "2.0",
-            "id": 1,
-            "method": "getTransaction",
-            "params": [
-                oldest["signature"],
-                {"encoding": "jsonParsed", "maxSupportedTransactionVersion": 0},
-            ],
-        },
-    )
-    r.raise_for_status()
-    tx = r.json().get("result")
+    oldest = sigs[-1]
+    tx = await transaction(client, oldest["signature"])
     if not tx:
         return None, None
     keys = tx["transaction"]["message"]["accountKeys"]
     signer = next((k["pubkey"] for k in keys if k.get("signer")), None)
     return signer, tx.get("slot")
+
+
+async def rugcheck_creator(client: httpx.AsyncClient, mint: str) -> str | None:
+    """rugcheck.xyz report carries the mint creator; free and one call. Preferred over
+    walking signatures, which is both expensive and wrong for busy tokens."""
+    try:
+        r = await client.get(f"https://api.rugcheck.xyz/v1/tokens/{mint}/report/summary")
+        if r.status_code != 200:
+            r = await client.get(f"https://api.rugcheck.xyz/v1/tokens/{mint}/report")
+        if r.status_code != 200:
+            return None
+        data = r.json()
+        creator = data.get("creator")
+        return creator if isinstance(creator, str) and 32 <= len(creator) <= 44 else None
+    except (httpx.HTTPError, ValueError):
+        return None
 
 
 async def run_once(max_new: int = 60) -> int:
@@ -123,20 +112,27 @@ async def run_once(max_new: int = 60) -> int:
         fresh = [p for p in pools if p.mint not in known][:max_new]
         inserted = 0
         for p in fresh:
-            try:
-                deployer, slot = await find_deployer(client, p.mint)
-            except httpx.HTTPError as e:
-                log.warning("deployer.lookup_failed", mint=p.mint, error=str(e))
-                continue
+            slot = None
+            deployer = await rugcheck_creator(client, p.mint)
+            source = "rugcheck"
             if not deployer:
+                try:
+                    deployer, slot = await find_deployer(client, p.mint)
+                    source = "rpc"
+                except (httpx.HTTPError, RpcError) as e:
+                    log.warning("deployer.lookup_failed", mint=p.mint, error=str(e))
+                    continue
+            if not deployer:
+                log.info("deployer.unresolved", mint=p.mint)
                 continue
             platform = "pumpfun" if p.dex in PUMP_DEXES else p.dex or "other"
             with conn() as c:
                 c.execute(
                     """insert into tokens(mint, symbol, deployer, launch_platform, created_at,
-                                          migrated_at, pool_address, first_seen_slot)
-                       values (%s,%s,%s,%s,%s,%s,%s,%s) on conflict (mint) do nothing""",
-                    (p.mint, p.symbol, deployer, platform, p.created_at, p.created_at, p.pool, slot),
+                                          migrated_at, pool_address, first_seen_slot, meta)
+                       values (%s,%s,%s,%s,%s,%s,%s,%s, jsonb_build_object('deployer_source', %s))
+                       on conflict (mint) do nothing""",
+                    (p.mint, p.symbol, deployer, platform, p.created_at, p.created_at, p.pool, slot, source),
                 )
                 c.execute(
                     """insert into wallets(address, tags) values (%s, '{deployer}')

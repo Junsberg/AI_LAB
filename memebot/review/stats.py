@@ -52,10 +52,10 @@ QUERIES: dict[str, str] = {
         from tokens group by deployer having count(*)>1 order by n desc limit 10
     """,
     "top_clusters": """
-        select cs.cluster_id, cs.tokens_total, cs.tokens_rugged, cs.tokens_10x, cs.score,
+        select cs.cluster_id, cs.tokens_total, cs.tokens_evaluated, cs.tokens_rugged, cs.tokens_10x, cs.score,
                count(distinct w.address) deployers
         from cluster_scores cs join wallets w on w.cluster_id=cs.cluster_id and 'deployer'=any(w.tags)
-        where cs.tokens_total>1 group by 1,2,3,4,5 order by cs.tokens_total desc limit 10
+        where cs.tokens_total>1 group by 1,2,3,4,5,6 order by cs.tokens_total desc limit 10
     """,
     "outcomes_summary": """
         select rug_reason, count(*) n, round(avg(peak_multiple),2) avg_peak, round(max(peak_multiple),2) max_peak
