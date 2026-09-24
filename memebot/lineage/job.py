@@ -47,6 +47,12 @@ async def trace_pending(limit: int = 80) -> int:
                     funded_at = (
                         datetime.fromtimestamp(h.block_time, tz=timezone.utc) if h.block_time else None
                     )
+                    if h.source_type == "unknown" and h.first_tx_kinds:
+                        c.execute(
+                            """insert into wallets(address, meta) values (%s, jsonb_build_object('first_tx_kinds', %s::jsonb))
+                               on conflict (address) do update set meta = wallets.meta || excluded.meta""",
+                            (h.wallet, json.dumps(h.first_tx_kinds)),
+                        )
                     c.execute(
                         """insert into wallets(address, funded_by, funded_at, funding_source_type)
                            values (%s,%s,%s,%s)

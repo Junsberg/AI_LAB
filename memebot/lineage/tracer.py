@@ -31,6 +31,7 @@ class FundingHop:
     source_type: str  # cex | wallet | unknown | hub (too busy to find first inbound)
     slot: int | None = None
     block_time: int | None = None
+    first_tx_kinds: list[str] | None = None  # diagnostics when unknown: program:type of first txs
 
 
 class Tracer:
@@ -51,6 +52,7 @@ class Tracer:
             return FundingHop(wallet, None, 0.0, "hub")
         # Only the very first transactions can be the funding event. Scanning further
         # forward would pick a later top-up and violate "funding precedes launch".
+        kinds: list[str] = []
         for s in sigs[-5:][::-1]:  # oldest 5, oldest first
             if s.get("err"):
                 continue
@@ -62,6 +64,10 @@ class Tracer:
                 i for grp in (tx.get("meta") or {}).get("innerInstructions", []) for i in grp.get("instructions", [])
             ]
             for ix in list(msg.get("instructions", [])) + inner:
+                pid = str(ix.get("programId", ""))[:6]
+                ptype = ((ix.get("parsed") or {}).get("type") if isinstance(ix.get("parsed"), dict) else None) or "-"
+                if len(kinds) < 12:
+                    kinds.append(f"{pid}:{ptype}")
                 if ix.get("programId") != SYSTEM_PROGRAM:
                     continue
                 p = ix.get("parsed") or {}
@@ -77,7 +83,7 @@ class Tracer:
                     continue
                 kind = "cex" if src in KNOWN_CEX else "wallet"
                 return FundingHop(wallet, src, amt, kind, tx.get("slot"), tx.get("blockTime"))
-        return FundingHop(wallet, None, 0.0, "unknown")
+        return FundingHop(wallet, None, 0.0, "unknown", first_tx_kinds=kinds)
 
     async def walk(self, deployer: str, depth: int = 3) -> tuple[list[Edge], list[FundingHop]]:
         """Funded-edges from deployer up to `depth` hops or until a CEX / unknown."""

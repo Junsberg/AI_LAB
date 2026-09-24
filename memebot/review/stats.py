@@ -72,6 +72,26 @@ QUERIES: dict[str, str] = {
                coalesce(meta->>'deployer_verified', '-') verified, count(*) n
         from tokens group by 1,2 order by 3 desc
     """,
+    "unknown_funding_first_tx_kinds": """
+        select k as kind, count(*) n
+        from wallets, jsonb_array_elements_text(meta->'first_tx_kinds') k
+        where funding_source_type = 'unknown' and 'deployer' = any(tags)
+        group by 1 order by 2 desc limit 15
+    """,
+    "service_wallet_candidates": """
+        -- creators signing many different tokens in a day while holding ~nothing: launchpad
+        -- service wallets (observation only; not yet excluded from lineage)
+        select t.deployer, count(*) n_tokens, count(distinct t.symbol) n_symbols,
+               round(avg(coalesce((h->>'pct')::numeric, 0)), 2) avg_creator_pct
+        from tokens t
+        left join lateral (
+          select h from jsonb_array_elements(t.meta->'risk'->'raw_top') h where h->>'owner' = t.deployer limit 1
+        ) x on true
+        where t.created_at > now() - interval '24 hours'
+        group by t.deployer
+        having count(*) >= 10 and count(distinct t.symbol) >= 8
+        order by n_tokens desc limit 10
+    """,
     "funding_sources": """
         select coalesce(funding_source_type,'untraced') src, count(*) n
         from wallets where 'deployer'=any(tags) group by 1 order by 2 desc
