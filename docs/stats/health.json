@@ -1,19 +1,19 @@
 {
- "generated_at": "2026-09-24T21:37:26.234140+00:00",
+ "generated_at": "2026-09-24T22:37:22.711061+00:00",
  "status": "ok",
  "metrics": {
-  "tokens_70m": 27,
-  "tokens_24h": 1591,
+  "tokens_70m": 28,
+  "tokens_24h": 1577,
   "risk_missing": 0,
-  "risk_eligible": 1570,
-  "top10_over90": 65,
-  "top10_n": 1569,
-  "deployers": 1155,
-  "traced": 811,
-  "untraceable": 326,
-  "trace_backlog": 9,
+  "risk_eligible": 1603,
+  "top10_over90": 67,
+  "top10_n": 1597,
+  "deployers": 1181,
+  "traced": 842,
+  "untraceable": 334,
+  "trace_backlog": 5,
   "outcome_backlog": 0,
-  "outcomes": 0,
+  "outcomes": 5,
   "outcomes_no_data": 0,
   "backfill_pending": 0,
   "deployers_corrected": 81,
@@ -30,37 +30,37 @@
    "name": "collect_alive",
    "level": "critical",
    "ok": true,
-   "detail": "tokens last 70m = 27"
+   "detail": "tokens last 70m = 28"
   },
   {
    "name": "collect_flood",
    "level": "warn",
    "ok": true,
-   "detail": "tokens last 70m = 27 (>150 suggests bonding-stage leak)"
+   "detail": "tokens last 70m = 28 (>150 suggests bonding-stage leak)"
   },
   {
    "name": "risk_coverage",
    "level": "warn",
    "ok": true,
-   "detail": "risk missing 0/1570 (0%)"
+   "detail": "risk missing 0/1603 (0%)"
   },
   {
    "name": "holder_concentration_sane",
    "level": "warn",
    "ok": true,
-   "detail": "top10>90%: 65/1569 (4%) → pool filter gap"
+   "detail": "top10>90%: 67/1597 (4%) → pool filter gap"
   },
   {
    "name": "trace_quality",
    "level": "warn",
    "ok": true,
-   "detail": "unknown+hub 326/1155 (28%)"
+   "detail": "unknown+hub 334/1181 (28%)"
   },
   {
    "name": "trace_backlog",
    "level": "warn",
    "ok": true,
-   "detail": "deployers untraced >3h: 9"
+   "detail": "deployers untraced >3h: 5"
   },
   {
    "name": "outcome_backlog",
@@ -72,7 +72,7 @@
    "name": "outcome_data_quality",
    "level": "warn",
    "ok": true,
-   "detail": "no_data outcomes 0/0 (0%)"
+   "detail": "no_data outcomes 0/5 (0%)"
   },
   {
    "name": "universe_clean",
