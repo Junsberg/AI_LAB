@@ -1,19 +1,19 @@
 {
- "generated_at": "2026-09-24T07:40:22.391537+00:00",
+ "generated_at": "2026-09-24T07:48:09.866919+00:00",
  "counts": [
   {
-   "tokens": 843,
-   "tokens_24h": 843,
-   "deployers": 578,
-   "deployers_traced": 303,
+   "tokens": 880,
+   "tokens_24h": 880,
+   "deployers": 610,
+   "deployers_traced": 312,
    "deployers_unknown_src": 27,
-   "edges": 599,
-   "clusters": 521,
-   "multi_token_clusters": 114,
+   "edges": 611,
+   "clusters": 530,
+   "multi_token_clusters": 119,
    "outcomes": 0,
    "rugged": 0,
    "tenx": 0,
-   "with_risk": 842,
+   "with_risk": 880,
    "signals": 0,
    "positions": 0,
    "hypotheses": 0
@@ -21,19 +21,19 @@
  ],
  "risk_distribution": [
   {
-   "top10_p50": 17.9,
-   "top10_p90": 98.9,
+   "top10_p50": 17.8,
+   "top10_p90": 99.6,
    "insiders_avg": 0.0,
-   "lp_locked": 713,
+   "lp_locked": 750,
    "freeze_on": 1,
    "mint_on": 0,
-   "n": 822
+   "n": 858
   }
  ],
  "tokens_per_hour_24h": [
   {
    "h": "2026-09-23 22:00",
-   "n": 87
+   "n": 86
   },
   {
    "h": "2026-09-23 23:00",
@@ -45,24 +45,31 @@
   },
   {
    "h": "2026-09-24 05:00",
-   "n": 104
+   "n": 101
   },
   {
    "h": "2026-09-24 06:00",
-   "n": 277
+   "n": 270
   },
   {
    "h": "2026-09-24 07:00",
-   "n": 256
+   "n": 304
   }
  ],
  "top_deployers": [
   {
    "deployer": "E3jbmhG8VSfxJ8Ab2vgwjnDLY2Azk4sYCNvP4S9CD3yC",
-   "n": 17,
-   "syms": "kittylick,CHAROC,GNB,GNB,GNB,GNB,GNB,GNB,GNB,GNB,GNB,GNB,GNB,OTTER,OTTER,OTTER,OTTER",
+   "n": 18,
+   "syms": "kittylick,CHAROC,GNB,GNB,GNB,GNB,GNB,GNB,GNB,GNB,GNB,GNB,GNB,OTTER,OTTER,OTTER,OTTER,OTTER",
    "first_t": "09-24 05:05",
-   "last_t": "09-24 07:10"
+   "last_t": "09-24 07:21"
+  },
+  {
+   "deployer": "BAGSB9TpGrZxQbEsrEznv5jXXdwyP6AXerN8aVRiAmcv",
+   "n": 15,
+   "syms": "VWA,QUANTA,GTA IV,GEMINI,OPENAI,MM,DRAGONBALL,SPONGEBOB,POKER,GOOGLE,BITFOOTS,₽,ROCKET,₽,NS",
+   "first_t": "09-24 06:30",
+   "last_t": "09-24 07:26"
   },
   {
    "deployer": "CrVW9jpbbKssWULzncQtf31rSxvzJwPe56zg2o65sjA7",
@@ -72,18 +79,11 @@
    "last_t": "09-24 07:14"
   },
   {
-   "deployer": "BAGSB9TpGrZxQbEsrEznv5jXXdwyP6AXerN8aVRiAmcv",
-   "n": 12,
-   "syms": "VWA,QUANTA,GTA IV,GEMINI,OPENAI,MM,DRAGONBALL,SPONGEBOB,POKER,GOOGLE,BITFOOTS,₽",
-   "first_t": "09-24 06:30",
-   "last_t": "09-24 07:10"
-  },
-  {
    "deployer": "CGcbvoobbnPzAN1mduBYapAUak6FUe3PHLACkEZWv42P",
-   "n": 12,
-   "syms": "CV,CV,CV,CV,CV,CV,CV,CV,CV,CV,CV,CV",
+   "n": 13,
+   "syms": "CV,CV,CV,CV,CV,CV,CV,CV,CV,CV,CV,CV,CV",
    "first_t": "09-24 05:05",
-   "last_t": "09-24 07:14"
+   "last_t": "09-24 07:27"
   },
   {
    "deployer": "6ATnpbwa43DtscAWjiR3uh5bEfpc4mhFpF42F5a5f68T",
@@ -100,11 +100,18 @@
    "last_t": "09-24 07:12"
   },
   {
-   "deployer": "6FC9XFByifhgHYcbTDhy9tgGpgsKbnLVZs2kBTakoEPV",
+   "deployer": "CvcvcX3B15aK9wwbJCtFc7Ef1ERwwsmJgwZCLSD9V2cj",
+   "n": 9,
+   "syms": "VELDA,VELDA,VELDA,VELDA,VELDA,VELDA,VELDA,VELDA,VELDA",
+   "first_t": "09-24 06:18",
+   "last_t": "09-24 07:22"
+  },
+  {
+   "deployer": "C1fxEJim6hjPBhUhfAGxD3hbZzRhU8ouJY2Y21bfSBi1",
    "n": 8,
-   "syms": "goon,goon,goon,goon,goon,goon,goon,goon",
-   "first_t": "09-23 22:17",
-   "last_t": "09-24 07:06"
+   "syms": "RICK,lptp,dogbaton,OTTER,kittylick,SOOTS,lptp,beer",
+   "first_t": "09-24 06:57",
+   "last_t": "09-24 07:21"
   },
   {
    "deployer": "9Tr5rh2RFoBYqXuDbaVgixCAL4hFRk5S9N2gkLrG2PxV",
@@ -119,19 +126,12 @@
    "syms": "Jackson,Jackson,Jackson,Jackson,Jackson,Jackson,Jackson,Jackson",
    "first_t": "09-24 07:05",
    "last_t": "09-24 07:14"
-  },
-  {
-   "deployer": "CvcvcX3B15aK9wwbJCtFc7Ef1ERwwsmJgwZCLSD9V2cj",
-   "n": 8,
-   "syms": "VELDA,VELDA,VELDA,VELDA,VELDA,VELDA,VELDA,VELDA",
-   "first_t": "09-24 06:18",
-   "last_t": "09-24 07:08"
   }
  ],
  "top_clusters": [
   {
    "cluster_id": "758a3f6f9d0f1d23",
-   "tokens_total": 19,
+   "tokens_total": 21,
    "tokens_evaluated": 0,
    "tokens_rugged": 0,
    "tokens_10x": 0,
@@ -148,17 +148,17 @@
    "deployers": 2
   },
   {
-   "cluster_id": "6c5f285c2cc07a23",
-   "tokens_total": 13,
+   "cluster_id": "c743ab511b1d853b",
+   "tokens_total": 15,
    "tokens_evaluated": 0,
    "tokens_rugged": 0,
    "tokens_10x": 0,
    "score": 0.5,
-   "deployers": 7
+   "deployers": 8
   },
   {
    "cluster_id": "37898eeee8a756cd",
-   "tokens_total": 13,
+   "tokens_total": 14,
    "tokens_evaluated": 0,
    "tokens_rugged": 0,
    "tokens_10x": 0,
@@ -175,8 +175,8 @@
    "deployers": 1
   },
   {
-   "cluster_id": "607178e39698c998",
-   "tokens_total": 10,
+   "cluster_id": "4af1a825ab9ffdac",
+   "tokens_total": 12,
    "tokens_evaluated": 0,
    "tokens_rugged": 0,
    "tokens_10x": 0,
@@ -184,7 +184,7 @@
    "deployers": 1
   },
   {
-   "cluster_id": "4af1a825ab9ffdac",
+   "cluster_id": "607178e39698c998",
    "tokens_total": 10,
    "tokens_evaluated": 0,
    "tokens_rugged": 0,
@@ -211,8 +211,8 @@
    "deployers": 1
   },
   {
-   "cluster_id": "74c2a908dc4b42b0",
-   "tokens_total": 8,
+   "cluster_id": "f7f81c24233ddc3c",
+   "tokens_total": 9,
    "tokens_evaluated": 0,
    "tokens_rugged": 0,
    "tokens_10x": 0,
@@ -226,46 +226,46 @@
   {
    "src": "rugcheck",
    "verified": "-",
-   "n": 248
+   "n": 294
   },
   {
    "src": "pre-fix",
    "verified": "match",
-   "n": 225
+   "n": 275
   },
   {
    "src": "pre-fix",
    "verified": "-",
-   "n": 205
+   "n": 134
   },
   {
    "src": "rpc",
    "verified": "-",
-   "n": 90
+   "n": 92
   },
   {
    "src": "pre-fix",
    "verified": "corrected",
-   "n": 61
+   "n": 67
   },
   {
    "src": "pre-fix",
    "verified": "unavailable",
-   "n": 14
+   "n": 18
   }
  ],
  "funding_sources": [
   {
    "src": "wallet",
-   "n": 287
+   "n": 295
   },
   {
    "src": "untraced",
-   "n": 217
+   "n": 238
   },
   {
    "src": "hub",
-   "n": 33
+   "n": 35
   },
   {
    "src": "unknown",
@@ -273,7 +273,7 @@
   },
   {
    "src": "cex",
-   "n": 14
+   "n": 15
   }
  ]
 }
