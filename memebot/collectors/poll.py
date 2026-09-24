@@ -15,6 +15,7 @@ from dataclasses import dataclass
 from datetime import datetime
 
 import httpx
+import psycopg
 import structlog
 
 from memebot.db import conn
@@ -148,28 +149,36 @@ async def run_once(max_new: int = 60) -> int:
                 continue
             kind = "structural" if deployer in structural else "wallet"
             platform = "pumpfun" if p.dex in PUMP_DEXES else p.dex or "other"
-            with conn() as c:
-                meta = {"deployer_source": source, "dex": p.dex, "stage": "graduated", "deployer_kind": kind}
-                if risk:
-                    meta["risk"] = risk
-                c.execute(
-                    """insert into tokens(mint, symbol, deployer, launch_platform, created_at,
-                                          migrated_at, pool_address, first_seen_slot, meta)
-                       values (%s,%s,%s,%s,%s,%s,%s,%s,%s::jsonb)
-                       on conflict (mint) do nothing""",
-                    (p.mint, p.symbol, deployer, platform, p.created_at, p.created_at, p.pool, slot, json.dumps(meta)),
-                )
-                if kind == "wallet":
-                    c.execute(
-                        """insert into wallets(address, tags) values (%s, '{deployer}')
-                           on conflict (address) do update set tags =
-                             (select array(select distinct unnest(wallets.tags || '{deployer}')))""",
-                        (deployer,),
-                    )
-                c.commit()
+            try:
+                _insert_token(p, deployer, platform, slot, source, kind, risk)
+            except (psycopg.errors.LockNotAvailable, psycopg.errors.QueryCanceled) as e:
+                log.warning("token.insert_blocked", mint=p.mint, error=type(e).__name__)
+                continue  # enrich holds wallets briefly; next run picks the token up
             inserted += 1
         log.info("poll.done", seen=len(pools), new=len(fresh), inserted=inserted)
         return inserted
+
+
+def _insert_token(p: NewPool, deployer: str, platform: str, slot, source: str, kind: str, risk) -> None:
+    meta = {"deployer_source": source, "dex": p.dex, "stage": "graduated", "deployer_kind": kind}
+    if risk:
+        meta["risk"] = risk
+    with conn() as c:
+        c.execute(
+            """insert into tokens(mint, symbol, deployer, launch_platform, created_at,
+                                  migrated_at, pool_address, first_seen_slot, meta)
+               values (%s,%s,%s,%s,%s,%s,%s,%s,%s::jsonb)
+               on conflict (mint) do nothing""",
+            (p.mint, p.symbol, deployer, platform, p.created_at, p.created_at, p.pool, slot, json.dumps(meta)),
+        )
+        if kind == "wallet":
+            c.execute(
+                """insert into wallets(address, tags) values (%s, '{deployer}')
+                   on conflict (address) do update set tags =
+                     (select array(select distinct unnest(wallets.tags || '{deployer}')))""",
+                (deployer,),
+            )
+        c.commit()
 
 
 if __name__ == "__main__":

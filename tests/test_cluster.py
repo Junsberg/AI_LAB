@@ -29,3 +29,12 @@ def test_score_serial_rugger_low_and_builder_high():
     builder = ClusterStats(tokens_total=5, tokens_rugged=0, tokens_10x=3)
     assert score_cluster(rugger) < 0.2
     assert score_cluster(builder) > 0.8
+
+
+def test_sql_score_formula_matches_python():
+    """refresh_cluster_scores() reimplements score_cluster() in SQL; keep them equal."""
+    def sql_formula(evaluated, rugged, tenx):
+        return round(min(1.0, max(0.0, ((evaluated - rugged) + 2.0 * tenx + 1.5) / (evaluated + 2.0 * tenx + 3.0))), 4)
+
+    for ev, rg, tx in [(0, 0, 0), (12, 11, 0), (5, 0, 3), (30, 10, 1), (1, 1, 0)]:
+        assert sql_formula(ev, rg, tx) == round(score_cluster(ClusterStats(ev, rg, tx)), 4)

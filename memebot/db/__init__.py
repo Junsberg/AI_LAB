@@ -16,7 +16,13 @@ MIGRATIONS = ROOT / "db" / "migrations"
 def conn() -> Iterator[psycopg.Connection]:
     if not settings.database_url:
         raise RuntimeError("DATABASE_URL not set (.env)")
-    with psycopg.connect(settings.database_url, row_factory=dict_row) as c:
+    # Bounded waits: a blocked statement must fail fast and be retried by the caller,
+    # never sit for Supabase's 2-minute statement_timeout inside a 10-minute job.
+    with psycopg.connect(
+        settings.database_url,
+        row_factory=dict_row,
+        options="-c lock_timeout=20000 -c statement_timeout=90000",
+    ) as c:
         yield c
 
 
