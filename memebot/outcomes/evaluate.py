@@ -40,7 +40,7 @@ async def _pool(client: httpx.AsyncClient, pool: str) -> dict:
     return r.json().get("data", {}).get("attributes", {}) or {}
 
 
-async def run(limit: int = 80) -> int:
+async def run(limit: int = 150) -> int:
     with conn() as c:
         rows = c.execute(
             """select t.mint, t.pool_address, t.created_at, o.evaluated_at, o.peak_mcap_usd as liq_peak

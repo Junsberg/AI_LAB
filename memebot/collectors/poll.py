@@ -22,6 +22,11 @@ from memebot.rpc import RpcError, signatures, transaction
 log = structlog.get_logger()
 GT = "https://api.geckoterminal.com/api/v2"
 PUMP_DEXES = {"pumpswap", "pump-fun", "pumpfun"}
+# memecoin launchpads only; generic AMM pools (orca, fluxbeam, plain raydium) are noise
+UNIVERSE = PUMP_DEXES | {
+    "meteora-dbc", "meteora-damm-v2", "raydium-launchlab", "bags-fm", "moonshot", "letsbonk", "bonk",
+}
+MIN_RESERVE_USD = 3000.0
 
 
 @dataclass(frozen=True)
@@ -49,6 +54,10 @@ async def fetch_new_pools(client: httpx.AsyncClient, pages: int = 3) -> list[New
             dex = rel.get("dex", {}).get("data", {}).get("id", "")
             mint = base.split("_", 1)[-1] if base else ""
             if not mint or mint.startswith("So1111"):
+                continue
+            if dex not in UNIVERSE:
+                continue
+            if float(a.get("reserve_in_usd") or 0) < MIN_RESERVE_USD:
                 continue
             sym = (a.get("name") or "").split(" / ")[0] or None
             out.append(

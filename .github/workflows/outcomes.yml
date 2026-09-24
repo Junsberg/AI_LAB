@@ -1,0 +1,30 @@
+name: outcomes
+
+on:
+  schedule:
+    - cron: "5,35 * * * *"
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/outcomes.yml"
+      - "memebot/outcomes/**"
+
+concurrency:
+  group: outcomes
+  cancel-in-progress: false
+
+jobs:
+  outcomes:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - run: pip install -q -e .
+      - run: python -m memebot.outcomes.evaluate

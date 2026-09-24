@@ -51,9 +51,9 @@ def _pool_accounts(markets: list[dict]) -> set[str]:
     return acc
 
 
-def parse_report(r: dict) -> RiskSnapshot:
+def parse_report(r: dict, structural: set[str] | None = None) -> RiskSnapshot:
     markets = r.get("markets") or []
-    pool_acc = _pool_accounts(markets) | POOL_OWNERS
+    pool_acc = _pool_accounts(markets) | POOL_OWNERS | (structural or set())
     holders = [
         h for h in (r.get("topHolders") or [])
         if str(h.get("owner", "")) not in pool_acc and str(h.get("address", "")) not in pool_acc
@@ -73,32 +73,52 @@ def parse_report(r: dict) -> RiskSnapshot:
         freeze_authority=r.get("freezeAuthority") is not None,
         risks=[x.get("name", "") for x in (r.get("risks") or [])],
         raw_top=[
-            {"owner": str(h.get("owner", ""))[:8], "pct": round(float(h.get("pct") or 0), 2)}
+            {"owner": str(h.get("owner", "")), "pct": round(float(h.get("pct") or 0), 2)}
             for h in (r.get("topHolders") or [])[:5]
         ],
     )
 
 
-async def fetch(client: httpx.AsyncClient, mint: str) -> RiskSnapshot | None:
+async def fetch(client: httpx.AsyncClient, mint: str, structural: set[str] | None = None) -> RiskSnapshot | None:
     r = await client.get(f"{RC}/{mint}/report")
     if r.status_code in (404, 400):
         return None
     r.raise_for_status()
-    return parse_report(r.json())
+    return parse_report(r.json(), structural)
+
+
+def structural_owners(min_tokens: int = 4, min_pct: float = 30.0) -> set[str]:
+    """Owners that sit in the top-5 with ≥min_pct across ≥min_tokens distinct tokens are
+    AMM vaults / launchpad authorities, not investors. Learned from our own data so new
+    DEXes are handled without a code change."""
+    with conn() as c:
+        rows = c.execute(
+            """select h->>'owner' owner, count(distinct mint) n
+               from tokens, jsonb_array_elements(meta->'risk'->'raw_top') h
+               where (h->>'pct')::numeric >= %s and length(h->>'owner') >= 32
+               group by 1 having count(distinct mint) >= %s""",
+            (min_pct, min_tokens),
+        ).fetchall()
+    return {r["owner"] for r in rows}
 
 
 async def run(limit: int = 60) -> int:
     with conn() as c:
         rows = c.execute(
-            """select mint from tokens where meta->'risk' is null
-               order by created_at desc limit %s""",
+            """select mint from tokens
+               where meta->'risk' is null
+                  or ((meta->'risk'->>'top10_pct')::numeric > 90
+                      and coalesce((meta->'risk'->>'recheck')::int, 0) < 2)
+               order by (meta->'risk' is null) desc, created_at desc limit %s""",
             (limit,),
         ).fetchall()
     n = 0
+    structural = structural_owners()
+    log.info("rugcheck.structural_owners", n=len(structural))
     async with httpx.AsyncClient(timeout=30, headers={"Accept": "application/json"}) as client:
         for r in rows:
             try:
-                snap = await fetch(client, r["mint"])
+                snap = await fetch(client, r["mint"], structural)
             except httpx.HTTPError as e:
                 log.warning("rugcheck.failed", mint=r["mint"], error=str(e))
                 if "429" in str(e):
@@ -113,7 +133,10 @@ async def run(limit: int = 60) -> int:
                 import json
 
                 c.execute(
-                    "update tokens set meta = meta || jsonb_build_object('risk', %s::jsonb) where mint=%s",
+                    """update tokens set meta = meta || jsonb_build_object('risk',
+                         %s::jsonb || jsonb_build_object('recheck',
+                           coalesce((meta->'risk'->>'recheck')::int, -1) + 1))
+                       where mint=%s""",
                     (json.dumps(payload), r["mint"]),
                 )
                 c.commit()

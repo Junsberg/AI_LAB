@@ -6,17 +6,31 @@ from memebot.collectors.poll import fetch_new_pools
 SAMPLE = {
     "data": [
         {
-            "attributes": {"address": "POOL1", "name": "DOGE / SOL", "pool_created_at": "2026-09-23T10:00:00Z"},
+            "attributes": {"address": "POOL1", "name": "DOGE / SOL", "pool_created_at": "2026-09-23T10:00:00Z", "reserve_in_usd": "12000"},
             "relationships": {
                 "base_token": {"data": {"id": "solana_7GCihgDB8fe6KNjn2MYtkzZcRjQy3t9GHdC8uHYmW2hr"}},
                 "dex": {"data": {"id": "pumpswap"}},
             },
         },
         {   # wrapped SOL as base → skipped
-            "attributes": {"address": "POOL2", "name": "SOL / USDC", "pool_created_at": "2026-09-23T10:00:00Z"},
+            "attributes": {"address": "POOL2", "name": "SOL / USDC", "pool_created_at": "2026-09-23T10:00:00Z", "reserve_in_usd": "99999"},
             "relationships": {
                 "base_token": {"data": {"id": "solana_So11111111111111111111111111111111111111112"}},
                 "dex": {"data": {"id": "raydium"}},
+            },
+        },
+        {   # generic AMM (orca) → outside universe
+            "attributes": {"address": "POOL3", "name": "X / SOL", "pool_created_at": "2026-09-23T10:00:00Z", "reserve_in_usd": "50000"},
+            "relationships": {
+                "base_token": {"data": {"id": "solana_7GCihgDB8fe6KNjn2MYtkzZcRjQy3t9GHdC8uHYmW2hs"}},
+                "dex": {"data": {"id": "orca"}},
+            },
+        },
+        {   # dust liquidity → skipped
+            "attributes": {"address": "POOL4", "name": "Y / SOL", "pool_created_at": "2026-09-23T10:00:00Z", "reserve_in_usd": "800"},
+            "relationships": {
+                "base_token": {"data": {"id": "solana_7GCihgDB8fe6KNjn2MYtkzZcRjQy3t9GHdC8uHYmW2ht"}},
+                "dex": {"data": {"id": "pumpswap"}},
             },
         },
     ]

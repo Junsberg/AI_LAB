@@ -31,7 +31,5 @@ jobs:
       - run: pip install -q -e .
       - name: backfill deployer verification (pre-fix tokens)
         run: python -m memebot.lineage.backfill
-      - name: outcomes (24h/72h evaluation)
-        run: python -m memebot.outcomes.evaluate
       - name: lineage (trace → cluster → score)
         run: python -m memebot.lineage.job

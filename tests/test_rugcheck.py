@@ -19,3 +19,13 @@ def test_parse_report_aggregates():
     assert s.mint_authority is False and s.freeze_authority is True
     assert s.risks == ["Freeze Authority still enabled"]
     assert s.raw_top[0]["pct"] == 80.0  # unfiltered audit trail keeps the pool row
+    assert s.raw_top[0]["owner"] == "POOLVAULT"  # full address, not truncated
+
+
+def test_structural_owner_excluded():
+    report = {
+        "topHolders": [{"owner": "LEARNEDVAULT", "pct": 90.0}, {"owner": "human", "pct": 5.0}],
+        "markets": [],
+    }
+    assert parse_report(report).top10_pct == 95.0
+    assert parse_report(report, structural={"LEARNEDVAULT"}).top10_pct == 5.0

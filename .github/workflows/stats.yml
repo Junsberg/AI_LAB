@@ -16,6 +16,7 @@ concurrency:
 
 permissions:
   contents: write
+  issues: write
 
 jobs:
   stats:
@@ -31,6 +32,23 @@ jobs:
           cache: pip
       - run: pip install -q -e .
       - run: python -m memebot.review.stats
+      - name: health check
+        id: health
+        continue-on-error: true
+        run: python -m memebot.review.health
+      - name: open issue on critical health
+        if: steps.health.outcome == 'failure'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          body="$(python -c "import json;d=json.load(open('docs/stats/health.json'));print('\n'.join(f\"- **{c['name']}** ({c['level']}): {c['detail']}\" for c in d['checks'] if not c['ok']))")"
+          existing=$(gh issue list --label health --state open --json number --jq '.[0].number')
+          if [ -n "$existing" ]; then
+            gh issue comment "$existing" --body "Still critical at $(date -u +%FT%TZ):"$'\n'"$body"
+          else
+            gh label create health --color B60205 --force >/dev/null 2>&1 || true
+            gh issue create --title "memebot health: CRITICAL" --label health --body "$body"
+          fi
       - name: commit stats
         run: |
           git config user.name "memebot-stats"
