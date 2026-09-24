@@ -1,19 +1,19 @@
 {
- "generated_at": "2026-09-24T23:14:48.274140+00:00",
+ "generated_at": "2026-09-24T23:37:22.918332+00:00",
  "status": "ok",
  "metrics": {
-  "tokens_70m": 31,
-  "tokens_24h": 1479,
+  "tokens_70m": 40,
+  "tokens_24h": 1499,
   "risk_missing": 0,
-  "risk_eligible": 1619,
+  "risk_eligible": 1630,
   "top10_over90": 67,
-  "top10_n": 1617,
-  "deployers": 1199,
-  "traced": 854,
-  "untraceable": 334,
+  "top10_n": 1637,
+  "deployers": 1215,
+  "traced": 859,
+  "untraceable": 338,
   "trace_backlog": 5,
-  "outcome_backlog": 0,
-  "outcomes": 19,
+  "outcome_backlog": 17,
+  "outcomes": 25,
   "outcomes_no_data": 0,
   "backfill_pending": 0,
   "deployers_corrected": 81,
@@ -30,31 +30,31 @@
    "name": "collect_alive",
    "level": "critical",
    "ok": true,
-   "detail": "tokens last 70m = 31"
+   "detail": "tokens last 70m = 40"
   },
   {
    "name": "collect_flood",
    "level": "warn",
    "ok": true,
-   "detail": "tokens last 70m = 31 (>150 suggests bonding-stage leak)"
+   "detail": "tokens last 70m = 40 (>150 suggests bonding-stage leak)"
   },
   {
    "name": "risk_coverage",
    "level": "warn",
    "ok": true,
-   "detail": "risk missing 0/1619 (0%)"
+   "detail": "risk missing 0/1630 (0%)"
   },
   {
    "name": "holder_concentration_sane",
    "level": "warn",
    "ok": true,
-   "detail": "top10>90%: 67/1617 (4%) → pool filter gap"
+   "detail": "top10>90%: 67/1637 (4%) → pool filter gap"
   },
   {
    "name": "trace_quality",
    "level": "warn",
    "ok": true,
-   "detail": "unknown+hub 334/1199 (28%)"
+   "detail": "unknown+hub 338/1215 (28%)"
   },
   {
    "name": "trace_backlog",
@@ -66,13 +66,13 @@
    "name": "outcome_backlog",
    "level": "warn",
    "ok": true,
-   "detail": "tokens >25h without outcome: 0"
+   "detail": "tokens >25h without outcome: 17"
   },
   {
    "name": "outcome_data_quality",
    "level": "warn",
    "ok": true,
-   "detail": "no_data outcomes 0/19 (0%)"
+   "detail": "no_data outcomes 0/25 (0%)"
   },
   {
    "name": "universe_clean",
