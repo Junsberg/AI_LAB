@@ -116,7 +116,12 @@ async def run_once(max_new: int = 60) -> int:
         inserted = 0
         from dataclasses import asdict
 
-        from memebot.collectors.rugcheck import creator_of, fetch_report, parse_report, structural_owners
+        from memebot.collectors.rugcheck import (
+            creator_of,
+            fetch_report,
+            parse_report,
+            structural_owners,
+        )
 
         structural = structural_owners()
         for p in fresh:

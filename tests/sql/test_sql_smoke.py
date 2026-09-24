@@ -41,7 +41,12 @@ def test_structural_owners_query():
 
 
 def test_lineage_job_queries():
-    from memebot.lineage.job import prune_orphans, rebuild_clusters, refresh_cluster_scores, repair_invalid_traces
+    from memebot.lineage.job import (
+        prune_orphans,
+        rebuild_clusters,
+        refresh_cluster_scores,
+        repair_invalid_traces,
+    )
 
     assert repair_invalid_traces() == {"retraced": 0, "structural_deployers_marked": 0}
     assert prune_orphans() == {"untagged": 0, "edges_pruned": 0}

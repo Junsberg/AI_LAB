@@ -4,6 +4,7 @@ Runs hourly on GitHub Actions. Bounded per run to stay inside Helius free credit
 from __future__ import annotations
 
 import asyncio
+import json
 from datetime import datetime, timezone
 
 import httpx
@@ -62,7 +63,7 @@ async def trace_pending(limit: int = 80) -> int:
                         c.execute(
                             """insert into wallets(address, tags, meta) values (%s, '{cex}', %s)
                                on conflict (address) do nothing""",
-                            (h.funded_by, '{"exchange": "%s"}' % KNOWN_CEX[h.funded_by]),
+                            (h.funded_by, json.dumps({"exchange": KNOWN_CEX[h.funded_by]})),
                         )
                 for e in edges:
                     c.execute(

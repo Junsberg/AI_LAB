@@ -75,7 +75,7 @@ class Params(BaseModel):
 
 
 def load_params(path: Path = PARAMS_PATH) -> Params:
-    with open(path, "r", encoding="utf-8") as f:
+    with open(path, encoding="utf-8") as f:
         return Params.model_validate(yaml.safe_load(f))
 
 

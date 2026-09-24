@@ -8,9 +8,9 @@ from __future__ import annotations
 
 import asyncio
 import json
+from collections.abc import AsyncIterator
 from dataclasses import dataclass
 from datetime import datetime, timezone
-from typing import AsyncIterator
 
 import structlog
 import websockets
