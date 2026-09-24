@@ -1,60 +1,60 @@
 {
- "generated_at": "2026-09-24T07:48:13.912038+00:00",
- "status": "warn",
+ "generated_at": "2026-09-24T08:37:27.722982+00:00",
+ "status": "ok",
  "metrics": {
-  "tokens_70m": 431,
-  "tokens_24h": 880,
+  "tokens_70m": 57,
+  "tokens_24h": 934,
   "risk_missing": 0,
-  "risk_eligible": 700,
-  "top10_over90": 120,
-  "top10_n": 858,
-  "deployers": 610,
-  "traced": 312,
-  "untraceable": 62,
-  "trace_backlog": 39,
+  "risk_eligible": 891,
+  "top10_over90": 33,
+  "top10_n": 911,
+  "deployers": 626,
+  "traced": 349,
+  "untraceable": 83,
+  "trace_backlog": 72,
   "outcome_backlog": 0,
   "outcomes": 0,
   "outcomes_no_data": 0,
-  "backfill_pending": 134,
-  "deployers_corrected": 67,
-  "out_of_universe": 1
+  "backfill_pending": 0,
+  "deployers_corrected": 81,
+  "out_of_universe": 0
  },
  "checks": [
   {
    "name": "collect_alive",
    "level": "critical",
    "ok": true,
-   "detail": "tokens last 70m = 431"
+   "detail": "tokens last 70m = 57"
   },
   {
    "name": "collect_flood",
    "level": "warn",
-   "ok": false,
-   "detail": "tokens last 70m = 431 (>400 suggests filter broke)"
+   "ok": true,
+   "detail": "tokens last 70m = 57 (>150 suggests bonding-stage leak)"
   },
   {
    "name": "risk_coverage",
    "level": "warn",
    "ok": true,
-   "detail": "risk missing 0/700 (0%)"
+   "detail": "risk missing 0/891 (0%)"
   },
   {
    "name": "holder_concentration_sane",
    "level": "warn",
-   "ok": false,
-   "detail": "top10>90%: 120/858 (14%) → pool filter gap"
+   "ok": true,
+   "detail": "top10>90%: 33/911 (4%) → pool filter gap"
   },
   {
    "name": "trace_quality",
    "level": "warn",
    "ok": true,
-   "detail": "unknown+hub 62/610 (10%)"
+   "detail": "unknown+hub 83/626 (13%)"
   },
   {
    "name": "trace_backlog",
    "level": "warn",
    "ok": true,
-   "detail": "deployers untraced >3h: 39"
+   "detail": "deployers untraced >3h: 72"
   },
   {
    "name": "outcome_backlog",
@@ -71,8 +71,8 @@
   {
    "name": "universe_clean",
    "level": "warn",
-   "ok": false,
-   "detail": "out-of-universe tokens: 1"
+   "ok": true,
+   "detail": "out-of-universe tokens: 0"
   }
  ]
 }
