@@ -1,19 +1,19 @@
 {
- "generated_at": "2026-09-24T16:37:18.716286+00:00",
+ "generated_at": "2026-09-24T17:37:31.777538+00:00",
  "counts": [
   {
-   "tokens": 1391,
-   "tokens_24h": 1391,
-   "deployers": 977,
-   "deployers_traced": 565,
-   "deployers_unknown_src": 90,
-   "edges": 1125,
-   "clusters": 887,
-   "multi_token_clusters": 192,
+   "tokens": 1445,
+   "tokens_24h": 1445,
+   "deployers": 1028,
+   "deployers_traced": 616,
+   "deployers_unknown_src": 108,
+   "edges": 1231,
+   "clusters": 922,
+   "multi_token_clusters": 197,
    "outcomes": 0,
    "rugged": 0,
    "tenx": 0,
-   "with_risk": 1391,
+   "with_risk": 1445,
    "signals": 0,
    "positions": 0,
    "hypotheses": 0
@@ -21,13 +21,13 @@
  ],
  "risk_distribution": [
   {
-   "top10_p50": 10.2,
+   "top10_p50": 9.7,
    "top10_p90": 52.0,
    "insiders_avg": 0.0,
-   "lp_locked": 926,
+   "lp_locked": 945,
    "freeze_on": 1,
    "mint_on": 0,
-   "n": 1368
+   "n": 1422
   }
  ],
  "tokens_per_hour_24h": [
@@ -89,7 +89,11 @@
   },
   {
    "h": "2026-09-24 16:00",
-   "n": 22
+   "n": 44
+  },
+  {
+   "h": "2026-09-24 17:00",
+   "n": 32
   }
  ],
  "top_deployers": [
@@ -238,6 +242,15 @@
    "deployers": 9
   },
   {
+   "cluster_id": "1ea1b6fd5f096c15",
+   "tokens_total": 9,
+   "tokens_evaluated": 0,
+   "tokens_rugged": 0,
+   "tokens_10x": 0,
+   "score": 0.5,
+   "deployers": 4
+  },
+  {
    "cluster_id": "a0502f79245c9b59",
    "tokens_total": 9,
    "tokens_evaluated": 0,
@@ -245,15 +258,6 @@
    "tokens_10x": 0,
    "score": 0.5,
    "deployers": 1
-  },
-  {
-   "cluster_id": "bccfcb3bb15eadc9",
-   "tokens_total": 9,
-   "tokens_evaluated": 0,
-   "tokens_rugged": 0,
-   "tokens_10x": 0,
-   "score": 0.5,
-   "deployers": 9
   }
  ],
  "outcomes_summary": [],
@@ -262,7 +266,7 @@
   {
    "src": "rugcheck",
    "verified": "-",
-   "n": 756
+   "n": 805
   },
   {
    "src": "pre-fix",
@@ -272,7 +276,7 @@
   {
    "src": "rpc",
    "verified": "-",
-   "n": 141
+   "n": 146
   },
   {
    "src": "pre-fix",
@@ -288,23 +292,23 @@
  "funding_sources": [
   {
    "src": "wallet",
-   "n": 539
+   "n": 589
   },
   {
    "src": "untraced",
-   "n": 247
+   "n": 222
   },
   {
    "src": "unknown",
-   "n": 90
+   "n": 108
   },
   {
    "src": "hub",
-   "n": 77
+   "n": 84
   },
   {
    "src": "cex",
-   "n": 24
+   "n": 25
   }
  ]
 }
