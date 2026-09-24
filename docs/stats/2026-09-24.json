@@ -1,19 +1,19 @@
 {
- "generated_at": "2026-09-24T09:37:14.543862+00:00",
+ "generated_at": "2026-09-24T10:37:18.722408+00:00",
  "counts": [
   {
-   "tokens": 987,
-   "tokens_24h": 987,
-   "deployers": 659,
-   "deployers_traced": 377,
-   "deployers_unknown_src": 42,
-   "edges": 746,
-   "clusters": 591,
-   "multi_token_clusters": 134,
+   "tokens": 1052,
+   "tokens_24h": 1052,
+   "deployers": 708,
+   "deployers_traced": 414,
+   "deployers_unknown_src": 43,
+   "edges": 829,
+   "clusters": 622,
+   "multi_token_clusters": 144,
    "outcomes": 0,
    "rugged": 0,
    "tenx": 0,
-   "with_risk": 987,
+   "with_risk": 1052,
    "signals": 0,
    "positions": 0,
    "hypotheses": 0
@@ -22,12 +22,12 @@
  "risk_distribution": [
   {
    "top10_p50": 12.2,
-   "top10_p90": 52.2,
+   "top10_p90": 52.1,
    "insiders_avg": 0.0,
-   "lp_locked": 785,
+   "lp_locked": 813,
    "freeze_on": 1,
    "mint_on": 0,
-   "n": 964
+   "n": 1029
   }
  ],
  "tokens_per_hour_24h": [
@@ -61,7 +61,11 @@
   },
   {
    "h": "2026-09-24 09:00",
-   "n": 25
+   "n": 55
+  },
+  {
+   "h": "2026-09-24 10:00",
+   "n": 35
   }
  ],
  "top_deployers": [
@@ -101,18 +105,18 @@
    "last_t": "09-24 09:24"
   },
   {
+   "deployer": "5whEE6vB9T7NJrB9bHLu67kiSet1DMvc2VQ9kmrdwb8e",
+   "n": 11,
+   "syms": "SI,SI,PESOS,MOONCATS,SIDELINED,TOKENS,Elephant,SDOG,VISE,IshiGo,Meme",
+   "first_t": "09-24 05:06",
+   "last_t": "09-24 10:01"
+  },
+  {
    "deployer": "6ATnpbwa43DtscAWjiR3uh5bEfpc4mhFpF42F5a5f68T",
    "n": 10,
    "syms": "kms,kms,kms,kms,kms,kms,kms,kms,kms,kms",
    "first_t": "09-23 22:17",
    "last_t": "09-24 00:35"
-  },
-  {
-   "deployer": "5whEE6vB9T7NJrB9bHLu67kiSet1DMvc2VQ9kmrdwb8e",
-   "n": 10,
-   "syms": "SI,SI,PESOS,MOONCATS,SIDELINED,TOKENS,Elephant,SDOG,VISE,IshiGo",
-   "first_t": "09-24 05:06",
-   "last_t": "09-24 09:23"
   },
   {
    "deployer": "HtLYVya345Po3nif2qmmsj5ip5aa1z3YN4zqCnk9UY6V",
@@ -156,15 +160,6 @@
    "deployers": 2
   },
   {
-   "cluster_id": "58a0b780fd60127d",
-   "tokens_total": 15,
-   "tokens_evaluated": 0,
-   "tokens_rugged": 0,
-   "tokens_10x": 0,
-   "score": 0.5,
-   "deployers": 1
-  },
-  {
    "cluster_id": "d5b774798b88ae15",
    "tokens_total": 15,
    "tokens_evaluated": 0,
@@ -174,8 +169,8 @@
    "deployers": 7
   },
   {
-   "cluster_id": "37898eeee8a756cd",
-   "tokens_total": 14,
+   "cluster_id": "58a0b780fd60127d",
+   "tokens_total": 15,
    "tokens_evaluated": 0,
    "tokens_rugged": 0,
    "tokens_10x": 0,
@@ -192,8 +187,26 @@
    "deployers": 1
   },
   {
+   "cluster_id": "37898eeee8a756cd",
+   "tokens_total": 14,
+   "tokens_evaluated": 0,
+   "tokens_rugged": 0,
+   "tokens_10x": 0,
+   "score": 0.5,
+   "deployers": 1
+  },
+  {
    "cluster_id": "dadbd2df44e904f0",
-   "tokens_total": 12,
+   "tokens_total": 13,
+   "tokens_evaluated": 0,
+   "tokens_rugged": 0,
+   "tokens_10x": 0,
+   "score": 0.5,
+   "deployers": 1
+  },
+  {
+   "cluster_id": "98ba72603f12d76d",
+   "tokens_total": 11,
    "tokens_evaluated": 0,
    "tokens_rugged": 0,
    "tokens_10x": 0,
@@ -203,15 +216,6 @@
   {
    "cluster_id": "607178e39698c998",
    "tokens_total": 10,
-   "tokens_evaluated": 0,
-   "tokens_rugged": 0,
-   "tokens_10x": 0,
-   "score": 0.5,
-   "deployers": 1
-  },
-  {
-   "cluster_id": "98ba72603f12d76d",
-   "tokens_total": 9,
    "tokens_evaluated": 0,
    "tokens_rugged": 0,
    "tokens_10x": 0,
@@ -232,19 +236,19 @@
  "outcome_by_cluster_size": [],
  "deployer_provenance": [
   {
+   "src": "rugcheck",
+   "verified": "-",
+   "n": 442
+  },
+  {
    "src": "pre-fix",
    "verified": "match",
    "n": 393
   },
   {
-   "src": "rugcheck",
-   "verified": "-",
-   "n": 379
-  },
-  {
    "src": "rpc",
    "verified": "-",
-   "n": 114
+   "n": 116
   },
   {
    "src": "pre-fix",
@@ -260,23 +264,23 @@
  "funding_sources": [
   {
    "src": "wallet",
-   "n": 360
+   "n": 395
   },
   {
    "src": "untraced",
-   "n": 190
+   "n": 199
   },
   {
    "src": "hub",
-   "n": 52
+   "n": 54
   },
   {
    "src": "unknown",
-   "n": 42
+   "n": 43
   },
   {
    "src": "cex",
-   "n": 15
+   "n": 17
   }
  ]
 }

@@ -1,17 +1,17 @@
 {
- "generated_at": "2026-09-24T09:37:19.021382+00:00",
+ "generated_at": "2026-09-24T10:37:22.837991+00:00",
  "status": "ok",
  "metrics": {
-  "tokens_70m": 57,
-  "tokens_24h": 987,
+  "tokens_70m": 65,
+  "tokens_24h": 1052,
   "risk_missing": 0,
-  "risk_eligible": 955,
-  "top10_over90": 34,
-  "top10_n": 964,
-  "deployers": 659,
-  "traced": 377,
-  "untraceable": 94,
-  "trace_backlog": 125,
+  "risk_eligible": 1016,
+  "top10_over90": 35,
+  "top10_n": 1029,
+  "deployers": 708,
+  "traced": 414,
+  "untraceable": 97,
+  "trace_backlog": 175,
   "outcome_backlog": 0,
   "outcomes": 0,
   "outcomes_no_data": 0,
@@ -24,37 +24,37 @@
    "name": "collect_alive",
    "level": "critical",
    "ok": true,
-   "detail": "tokens last 70m = 57"
+   "detail": "tokens last 70m = 65"
   },
   {
    "name": "collect_flood",
    "level": "warn",
    "ok": true,
-   "detail": "tokens last 70m = 57 (>150 suggests bonding-stage leak)"
+   "detail": "tokens last 70m = 65 (>150 suggests bonding-stage leak)"
   },
   {
    "name": "risk_coverage",
    "level": "warn",
    "ok": true,
-   "detail": "risk missing 0/955 (0%)"
+   "detail": "risk missing 0/1016 (0%)"
   },
   {
    "name": "holder_concentration_sane",
    "level": "warn",
    "ok": true,
-   "detail": "top10>90%: 34/964 (4%) → pool filter gap"
+   "detail": "top10>90%: 35/1029 (3%) → pool filter gap"
   },
   {
    "name": "trace_quality",
    "level": "warn",
    "ok": true,
-   "detail": "unknown+hub 94/659 (14%)"
+   "detail": "unknown+hub 97/708 (14%)"
   },
   {
    "name": "trace_backlog",
    "level": "warn",
    "ok": true,
-   "detail": "deployers untraced >3h: 125"
+   "detail": "deployers untraced >3h: 175"
   },
   {
    "name": "outcome_backlog",
