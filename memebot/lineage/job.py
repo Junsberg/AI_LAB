@@ -110,6 +110,7 @@ def refresh_cluster_scores() -> int:
         rows = c.execute(
             """select w.cluster_id,
                       count(t.mint) as total,
+                      count(o.mint) as evaluated,
                       count(*) filter (where o.rugged) as rugged,
                       count(*) filter (where o.peak_multiple >= 10) as tenx
                from tokens t
@@ -119,7 +120,8 @@ def refresh_cluster_scores() -> int:
                group by w.cluster_id"""
         ).fetchall()
         for r in rows:
-            st = ClusterStats(tokens_total=r["total"], tokens_rugged=r["rugged"], tokens_10x=r["tenx"])
+            # Score only on evaluated tokens; unevaluated ones are neither clean nor rugged.
+            st = ClusterStats(tokens_total=r["evaluated"], tokens_rugged=r["rugged"], tokens_10x=r["tenx"])
             c.execute(
                 """insert into cluster_scores(cluster_id, tokens_total, tokens_rugged, tokens_10x, score, updated_at)
                    values (%s,%s,%s,%s,%s,now())
