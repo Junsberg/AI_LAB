@@ -67,6 +67,11 @@ QUERIES: dict[str, str] = {
         from token_outcomes o join tokens t on t.mint=o.mint join wallets w on w.address=t.deployer
         join cluster_scores cs on cs.cluster_id=w.cluster_id group by 1 order by 1
     """,
+    "deployer_provenance": """
+        select coalesce(meta->>'deployer_source', 'pre-fix') src,
+               coalesce(meta->>'deployer_verified', '-') verified, count(*) n
+        from tokens group by 1,2 order by 3 desc
+    """,
     "funding_sources": """
         select coalesce(funding_source_type,'untraced') src, count(*) n
         from wallets where 'deployer'=any(tags) group by 1 order by 2 desc
