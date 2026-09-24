@@ -49,7 +49,8 @@ def run() -> dict:
                   where (h->>'pct')::numeric >= 30 group by 1 having count(distinct mint) >= 4)) structural_deployer_unmarked,
               (select count(*) from wallet_edges where amount_sol > 10000) edge_huge,
               (select count(*) from tokens where created_at > now() or created_at < '2026-09-01') bad_timestamps,
-              (select count(*) from wallet_edges where src = dst) self_edges
+              (select count(*) from wallet_edges where src = dst) self_edges,
+              (select coalesce(max(cnt),0) from (select cluster_id, count(*) cnt from wallets where cluster_id is not null group by 1) x) max_cluster_wallets
             """,
         )
     m = {k: (int(v) if v is not None else 0) for k, v in m.items()}
@@ -77,6 +78,7 @@ def run() -> dict:
     chk("edge_amounts_sane", "warn", m["edge_huge"] > 3, f"funding edges > 10k SOL: {m['edge_huge']}")
     chk("timestamps_sane", "critical", m["bad_timestamps"] > 0, f"tokens with impossible created_at: {m['bad_timestamps']}")
     chk("no_self_edges", "critical", m["self_edges"] > 0, f"self edges: {m['self_edges']}")
+    chk("cluster_size_sane", "warn", m["max_cluster_wallets"] > 40, f"largest cluster = {m['max_cluster_wallets']} wallets (exchange acting as glue?)")
 
     critical = [x for x in checks if x["level"] == "critical" and not x["ok"]]
     warns = [x for x in checks if x["level"] == "warn" and not x["ok"]]

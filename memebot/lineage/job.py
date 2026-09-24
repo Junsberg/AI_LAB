@@ -149,10 +149,20 @@ def rebuild_clusters() -> int:
     every Binance-funded deployer does not collapse into one giant cluster."""
     with conn() as c:
         rows = c.execute("select src, dst, kind, amount_sol from wallet_edges").fetchall()
+        # Funding sources that are themselves too busy to trace are exchanges / services:
+        # they fund unrelated people, so they must not act as cluster glue. A launch-farm
+        # funder has a short history and stays in the union.
+        hubs = {
+            r["address"]
+            for r in c.execute(
+                "select address from wallets where funding_source_type = 'hub'"
+            ).fetchall()
+        }
+    glue_blocked = KNOWN_CEX.keys() | hubs
     edges = [
         Edge(r["src"], r["dst"], r["kind"], float(r["amount_sol"] or 0))
         for r in rows
-        if r["src"] not in KNOWN_CEX and r["dst"] not in KNOWN_CEX
+        if r["src"] not in glue_blocked and r["dst"] not in KNOWN_CEX
     ]
     mapping = build_clusters(edges)
     with conn() as c:
