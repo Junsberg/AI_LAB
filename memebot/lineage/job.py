@@ -98,9 +98,14 @@ def repair_invalid_traces() -> dict:
         ).fetchall()
         for r in bad:
             c.execute("delete from wallet_edges where dst=%s and kind='funded'", (r["address"],))
+            # second violation → the parser cannot see this wallet's real funding; stop guessing
             c.execute(
-                """update wallets set funded_by=null, funded_at=null, funding_source_type=null,
-                       cluster_id=null, meta = meta - 'trace_attempts' where address=%s""",
+                """update wallets set funded_by=null, funded_at=null, cluster_id=null,
+                       meta = (meta - 'trace_attempts') || jsonb_build_object('invalid_trace',
+                              coalesce((meta->>'invalid_trace')::int,0)+1),
+                       funding_source_type = case when coalesce((meta->>'invalid_trace')::int,0) >= 1
+                                                  then 'unknown' else null end
+                   where address=%s""",
                 (r["address"],),
             )
         structural = structural_owners()

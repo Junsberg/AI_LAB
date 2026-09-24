@@ -95,3 +95,14 @@ async def test_jsonrpc_error_raises():
     async with httpx.AsyncClient(transport=httpx.MockTransport(handler)) as c:
         with pytest.raises(RpcError):
             await Tracer(c).first_inbound("X")
+
+
+@pytest.mark.asyncio
+async def test_late_topup_is_not_first_funding():
+    # 8 txs; only the 7th (late) contains a transfer → must NOT be reported as funding
+    sigs = [{"signature": f"s{i}"} for i in range(8)]  # newest first: s0 newest, s7 oldest
+    txs = {f"s{i}": {"slot": i, "blockTime": 100 - i, "transaction": {"message": {"instructions": [{"programId": "OTHER"}]}}} for i in range(8)}
+    txs["s1"] = transfer_tx("LATE", "W", 5_000_000_000)  # second-newest = a late top-up
+    async with httpx.AsyncClient(transport=httpx.MockTransport(rpc_handler({"sigs": {"W": sigs}, "txs": txs}))) as c:
+        hop = await Tracer(c).first_inbound("W")
+    assert hop.funded_by is None and hop.source_type == "unknown"

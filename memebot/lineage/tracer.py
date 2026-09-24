@@ -49,7 +49,9 @@ class Tracer:
             # Busy hub wallet: the oldest page is mid-history. Refusing to guess here is
             # what keeps unrelated deployers from being unioned through a shared hub.
             return FundingHop(wallet, None, 0.0, "hub")
-        for s in sigs[-25:][::-1]:  # oldest 25, oldest first
+        # Only the very first transactions can be the funding event. Scanning further
+        # forward would pick a later top-up and violate "funding precedes launch".
+        for s in sigs[-5:][::-1]:  # oldest 5, oldest first
             if s.get("err"):
                 continue
             tx = await transaction(self._client, s["signature"])
