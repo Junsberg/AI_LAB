@@ -10,6 +10,7 @@ work on the post-migration universe, which is also where the noise is lowest.
 from __future__ import annotations
 
 import asyncio
+import json
 from dataclasses import dataclass
 from datetime import datetime
 
@@ -93,21 +94,12 @@ async def find_deployer(client: httpx.AsyncClient, mint: str, max_pages: int = 3
 
 
 async def rugcheck_creator(client: httpx.AsyncClient, mint: str) -> str | None:
-    """rugcheck.xyz report carries the mint creator; free and one call. Preferred over
-    walking signatures, which is both expensive and wrong for busy tokens."""
-    try:
-        # only the full report carries `creator`; /report/summary does not
-        r = await client.get(f"https://api.rugcheck.xyz/v1/tokens/{mint}/report")
-        if r.status_code != 200:
-            return None
-        data = r.json()
-        creator = data.get("creator")
-        if isinstance(creator, str) and 32 <= len(creator) <= 44:
-            return creator
-        log.info("rugcheck.no_creator", mint=mint, keys=sorted(data.keys())[:12])
-        return None
-    except (httpx.HTTPError, ValueError):
-        return None
+    """Creator from the rugcheck report (one call). Kept for backfill; poll uses
+    fetch_report directly so the same report also yields the risk snapshot."""
+    from memebot.collectors.rugcheck import creator_of, fetch_report
+
+    status, report = await fetch_report(client, mint)
+    return creator_of(report) if status == "ok" else None
 
 
 async def run_once(max_new: int = 60) -> int:
@@ -122,12 +114,17 @@ async def run_once(max_new: int = 60) -> int:
             }
         fresh = [p for p in pools if p.mint not in known][:max_new]
         inserted = 0
-        from memebot.collectors.rugcheck import structural_owners
+        from dataclasses import asdict
+
+        from memebot.collectors.rugcheck import creator_of, fetch_report, parse_report, structural_owners
 
         structural = structural_owners()
         for p in fresh:
             slot = None
-            deployer = await rugcheck_creator(client, p.mint)
+            status, report = await fetch_report(client, p.mint)
+            await asyncio.sleep(0.6)  # rugcheck pacing (same as the snapshot step)
+            deployer = creator_of(report) if status == "ok" else None
+            risk = asdict(parse_report(report, structural)) | {"attempts": 1} if status == "ok" else None
             source = "rugcheck"
             if not deployer:
                 try:
@@ -142,14 +139,15 @@ async def run_once(max_new: int = 60) -> int:
             kind = "structural" if deployer in structural else "wallet"
             platform = "pumpfun" if p.dex in PUMP_DEXES else p.dex or "other"
             with conn() as c:
+                meta = {"deployer_source": source, "dex": p.dex, "stage": "graduated", "deployer_kind": kind}
+                if risk:
+                    meta["risk"] = risk
                 c.execute(
                     """insert into tokens(mint, symbol, deployer, launch_platform, created_at,
                                           migrated_at, pool_address, first_seen_slot, meta)
-                       values (%s,%s,%s,%s,%s,%s,%s,%s,
-                               jsonb_build_object('deployer_source', %s::text, 'dex', %s::text, 'stage', 'graduated',
-                                                  'deployer_kind', %s::text))
+                       values (%s,%s,%s,%s,%s,%s,%s,%s,%s::jsonb)
                        on conflict (mint) do nothing""",
-                    (p.mint, p.symbol, deployer, platform, p.created_at, p.created_at, p.pool, slot, source, p.dex, kind),
+                    (p.mint, p.symbol, deployer, platform, p.created_at, p.created_at, p.pool, slot, json.dumps(meta)),
                 )
                 if kind == "wallet":
                     c.execute(

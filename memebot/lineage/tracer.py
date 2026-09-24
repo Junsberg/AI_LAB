@@ -73,7 +73,7 @@ class Tracer:
                     src, amt = info.get("source"), int(info.get("lamports", 0)) / 1e9
                 else:
                     continue
-                if not src or amt <= 0:
+                if not src or src == wallet or amt <= 0:
                     continue
                 kind = "cex" if src in KNOWN_CEX else "wallet"
                 return FundingHop(wallet, src, amt, kind, tx.get("slot"), tx.get("blockTime"))

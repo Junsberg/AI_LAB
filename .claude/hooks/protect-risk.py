@@ -9,7 +9,7 @@ import sys
 payload = json.load(sys.stdin)
 tool = payload.get("tool_name", "")
 inp = payload.get("tool_input", {}) or {}
-path = str(inp.get("file_path", ""))
+path = str(inp.get("file_path", "")).replace("\\", "/")
 
 SECRET = re.compile(r"(\.env$|keypair.*\.json$|\.key$)")
 if tool in {"Edit", "Write", "MultiEdit"} and SECRET.search(path):
@@ -19,6 +19,9 @@ if tool in {"Edit", "Write", "MultiEdit"} and SECRET.search(path):
 if tool in {"Edit", "Write", "MultiEdit"} and path.endswith("strategy/params.yaml"):
     new = inp.get("new_string") or inp.get("content") or ""
     old = inp.get("old_string") or ""
+    for e in inp.get("edits") or []:  # MultiEdit carries its changes here
+        new += "\n" + str(e.get("new_string") or "")
+        old += "\n" + str(e.get("old_string") or "")
     if re.search(r"^\s*risk\s*:", new, re.M) or re.search(r"^\s*risk\s*:", old, re.M) or any(
         k in (new + old) for k in ("max_position_sol", "max_open_positions", "max_daily_loss_sol", "hard_stop_pct")
     ):

@@ -106,3 +106,11 @@ async def test_late_topup_is_not_first_funding():
     async with httpx.AsyncClient(transport=httpx.MockTransport(rpc_handler({"sigs": {"W": sigs}, "txs": txs}))) as c:
         hop = await Tracer(c).first_inbound("W")
     assert hop.funded_by is None and hop.source_type == "unknown"
+
+
+@pytest.mark.asyncio
+async def test_self_transfer_is_not_funding():
+    responses = {"sigs": {"W": [{"signature": "a"}]}, "txs": {"a": transfer_tx("W", "W", 1_000_000_000)}}
+    async with httpx.AsyncClient(transport=httpx.MockTransport(rpc_handler(responses))) as c:
+        hop = await Tracer(c).first_inbound("W")
+    assert hop.funded_by is None

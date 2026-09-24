@@ -29,7 +29,12 @@ ORANGE = "\x1b[38;2;251;146;60m"
 RED = "\x1b[38;2;248;113;113m"
 BADGE = "\x1b[48;2;163;230;53m\x1b[38;2;17;24;39m"  # bg #A3E635, fg #111827
 
-ASCII = os.environ.get("STATUSLINE_ASCII") == "1" or (sys.stdout.encoding or "").lower().replace("-", "") not in ("utf8",)
+# Claude Code decodes the command's stdout as UTF-8, whatever the console code page is.
+try:
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+except Exception:
+    pass
+ASCII = os.environ.get("STATUSLINE_ASCII") == "1"
 FULL, EMPTY, STAR, SEP, RESET_GLYPH, CHECK = ("#", "-", "*", "|", "~", "ok") if ASCII else ("▰", "▱", "✦", "│", "↻", "✓")
 
 ANSI_RE = re.compile(r"\x1b\[[0-9;]*m")

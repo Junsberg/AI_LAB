@@ -48,6 +48,9 @@ case("missing limits", lambda d: d.__setitem__("rate_limits", {}))
 case("null five_hour pct", lambda d: d["rate_limits"]["five_hour"].__setitem__("used_percentage", None))
 case("expired reset", lambda d: d["rate_limits"]["five_hour"].__setitem__("resets_at", (now - timedelta(minutes=5)).isoformat()))
 case("no model/effort", lambda d: (d.pop("model"), d.pop("effort")))
+_orig_git = sl.git_info
+sl.git_info = lambda cwd: ("feature/very-long-branch-name-that-keeps-going-on", "*")
 case("long branch narrow", lambda d: None, columns=80)
+sl.git_info = _orig_git
 case("very narrow", lambda d: None, columns=60)
 print("ALL OK")

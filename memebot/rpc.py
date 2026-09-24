@@ -49,9 +49,13 @@ async def signatures(
     return out, False
 
 
-async def transaction(client: httpx.AsyncClient, sig: str) -> dict | None:
+async def transaction(
+    client: httpx.AsyncClient, sig: str, commitment: str = "confirmed"
+) -> dict | None:
+    """`confirmed` (not the RPC default `finalized`) so a tx seen at processed commitment
+    is readable within ~1s instead of returning null for 12-15s."""
     return await rpc(
         client,
         "getTransaction",
-        [sig, {"encoding": "jsonParsed", "maxSupportedTransactionVersion": 0}],
+        [sig, {"encoding": "jsonParsed", "maxSupportedTransactionVersion": 0, "commitment": commitment}],
     )

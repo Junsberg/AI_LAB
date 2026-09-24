@@ -9,7 +9,7 @@ import asyncio
 import httpx
 import structlog
 
-from memebot.collectors.poll import rugcheck_creator
+from memebot.collectors.rugcheck import creator_of, fetch_report
 from memebot.db import conn
 
 log = structlog.get_logger()
@@ -26,8 +26,11 @@ async def run(limit: int = 100) -> dict:
     checked = fixed = unknown = 0
     async with httpx.AsyncClient(timeout=30, headers={"Accept": "application/json"}) as client:
         for r in rows:
-            creator = await rugcheck_creator(client, r["mint"])
+            status, report = await fetch_report(client, r["mint"])
             await asyncio.sleep(0.6)
+            if status == "error":
+                continue  # transient: leave unmarked, retried next run
+            creator = creator_of(report) if status == "ok" else None
             with conn() as c:
                 if creator is None:
                     unknown += 1

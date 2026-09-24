@@ -35,10 +35,19 @@ class NewToken:
 async def _fetch_tx(sig: str) -> dict | None:
     import httpx
 
-    from memebot.rpc import transaction
+    from memebot.rpc import RpcError, transaction
 
     async with httpx.AsyncClient(timeout=20) as c:
-        return await transaction(c, sig)
+        for attempt in range(3):
+            try:
+                tx = await transaction(c, sig)
+            except (httpx.HTTPError, RpcError) as e:
+                log.warning("pumpfun.fetch_tx.failed", sig=sig[:12], error=str(e))
+                return None
+            if tx:
+                return tx
+            await asyncio.sleep(0.7 * (attempt + 1))  # confirmed commitment can lag processed
+        return None
 
 
 def _parse_create(tx: dict, sig: str) -> NewToken | None:
@@ -50,12 +59,13 @@ def _parse_create(tx: dict, sig: str) -> NewToken | None:
         accts = ix.get("accounts", [])
         # pump.fun Create: accounts[0]=mint, accounts[7]=user (deployer)
         if len(accts) >= 8:
+            bt = tx.get("blockTime")
             return NewToken(
                 mint=accts[0],
                 deployer=accts[7],
                 signature=sig,
                 slot=tx["slot"],
-                ts=datetime.fromtimestamp(tx["blockTime"], tz=timezone.utc),
+                ts=datetime.fromtimestamp(bt, tz=timezone.utc) if bt else datetime.now(timezone.utc),
             )
     _ = keys
     return None
@@ -84,9 +94,13 @@ async def listen_new_tokens() -> AsyncIterator[NewToken]:
                     tx = await _fetch_tx(sig)
                     if not tx:
                         continue
-                    tok = _parse_create(tx, sig)
+                    try:
+                        tok = _parse_create(tx, sig)
+                    except (KeyError, TypeError) as e:
+                        log.warning("pumpfun.parse_failed", sig=sig[:12], error=str(e))
+                        continue
                     if tok:
                         yield tok
-        except (websockets.ConnectionClosed, OSError) as e:
+        except (websockets.ConnectionClosed, OSError, json.JSONDecodeError) as e:
             log.warning("pumpfun.listener.reconnect", error=str(e))
             await asyncio.sleep(2)

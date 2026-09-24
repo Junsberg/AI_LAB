@@ -22,6 +22,8 @@ async def trace_pending(limit: int = 80) -> int:
         rows = c.execute(
             """select address from wallets
                where 'deployer' = any(tags) and funded_by is null
+                 and coalesce(funding_source_type, '') <> 'hub'
+                 and coalesce((meta->>'invalid_trace')::int, 0) = 0
                  and coalesce((meta->>'trace_attempts')::int, 0) < 3
                order by first_seen desc limit %s""",
             (limit,),
@@ -98,13 +100,13 @@ def repair_invalid_traces() -> dict:
         ).fetchall()
         for r in bad:
             c.execute("delete from wallet_edges where dst=%s and kind='funded'", (r["address"],))
-            # second violation → the parser cannot see this wallet's real funding; stop guessing
+            # the parser cannot see this wallet's real funding: record it and never re-trace
+            # (trace_pending excludes invalid_trace > 0), so no hourly retrace loop
             c.execute(
                 """update wallets set funded_by=null, funded_at=null, cluster_id=null,
-                       meta = (meta - 'trace_attempts') || jsonb_build_object('invalid_trace',
-                              coalesce((meta->>'invalid_trace')::int,0)+1),
-                       funding_source_type = case when coalesce((meta->>'invalid_trace')::int,0) >= 1
-                                                  then 'unknown' else null end
+                       funding_source_type='unknown',
+                       meta = meta || jsonb_build_object('invalid_trace',
+                              coalesce((meta->>'invalid_trace')::int,0)+1)
                    where address=%s""",
                 (r["address"],),
             )
@@ -171,6 +173,9 @@ def rebuild_clusters() -> int:
     ]
     mapping = build_clusters(edges)
     with conn() as c:
+        # a real rebuild: clear first, so wallets whose edges are now filtered out do not
+        # keep a stale multi-member id
+        c.execute("update wallets set cluster_id = null where cluster_id is not null")
         for addr, cid in mapping.items():
             c.execute("update wallets set cluster_id=%s where address=%s", (cid, addr))
         # singleton deployers: cluster = own address hash, so scoring still works
