@@ -1,19 +1,19 @@
 {
- "generated_at": "2026-09-24T19:37:19.865493+00:00",
+ "generated_at": "2026-09-24T20:37:20.046183+00:00",
  "counts": [
   {
-   "tokens": 1521,
-   "tokens_24h": 1521,
-   "deployers": 1098,
-   "deployers_traced": 691,
-   "deployers_unknown_src": 156,
-   "edges": 1364,
-   "clusters": 928,
-   "multi_token_clusters": 191,
+   "tokens": 1564,
+   "tokens_24h": 1564,
+   "deployers": 1133,
+   "deployers_traced": 781,
+   "deployers_unknown_src": 168,
+   "edges": 1524,
+   "clusters": 978,
+   "multi_token_clusters": 197,
    "outcomes": 0,
    "rugged": 0,
    "tenx": 0,
-   "with_risk": 1521,
+   "with_risk": 1564,
    "signals": 0,
    "positions": 0,
    "hypotheses": 0
@@ -21,13 +21,13 @@
  ],
  "risk_distribution": [
   {
-   "top10_p50": 9.5,
-   "top10_p90": 51.9,
+   "top10_p50": 9.2,
+   "top10_p90": 52.0,
    "insiders_avg": 0.0,
-   "lp_locked": 969,
-   "freeze_on": 1,
+   "lp_locked": 986,
+   "freeze_on": 2,
    "mint_on": 0,
-   "n": 1498
+   "n": 1542
   }
  ],
  "tokens_per_hour_24h": [
@@ -101,7 +101,11 @@
   },
   {
    "h": "2026-09-24 19:00",
-   "n": 10
+   "n": 37
+  },
+  {
+   "h": "2026-09-24 20:00",
+   "n": 16
   }
  ],
  "top_deployers": [
@@ -155,11 +159,11 @@
    "last_t": "09-24 00:35"
   },
   {
-   "deployer": "HtLYVya345Po3nif2qmmsj5ip5aa1z3YN4zqCnk9UY6V",
+   "deployer": "Be3MwhYqH9Y7NMVZqUJBL7fmEshHgQnU5prttJbGRCpW",
    "n": 9,
-   "syms": "SUSSS,SUSSS,MOSS,FBIC,NMCT,UP100,FBICAT,BIG,FBICAT",
-   "first_t": "09-24 05:22",
-   "last_t": "09-24 07:12"
+   "syms": "Hybrid cat,Hybrid cat,Hybrid cat,Kitty,Kitty,Kitty,Kitty,Kitty,🍒Cherry",
+   "first_t": "09-24 06:22",
+   "last_t": "09-24 20:23"
   },
   {
    "deployer": "CvcvcX3B15aK9wwbJCtFc7Ef1ERwwsmJgwZCLSD9V2cj",
@@ -169,25 +173,16 @@
    "last_t": "09-24 07:22"
   },
   {
-   "deployer": "9k7n6mMY7rrabkqS8uk9mRLCyM2MMtRXu6BkyxEaGBMs",
-   "n": 8,
-   "syms": "Jackson,Jackson,Jackson,Jackson,Jackson,Jackson,Jackson,Jackson",
-   "first_t": "09-24 07:05",
-   "last_t": "09-24 07:14"
+   "deployer": "HtLYVya345Po3nif2qmmsj5ip5aa1z3YN4zqCnk9UY6V",
+   "n": 9,
+   "syms": "SUSSS,SUSSS,MOSS,FBIC,NMCT,UP100,FBICAT,BIG,FBICAT",
+   "first_t": "09-24 05:22",
+   "last_t": "09-24 07:12"
   }
  ],
  "top_clusters": [
   {
-   "cluster_id": "e0fec2ebc98be799",
-   "tokens_total": 23,
-   "tokens_evaluated": 0,
-   "tokens_rugged": 0,
-   "tokens_10x": 0,
-   "score": 0.5,
-   "deployers": 11
-  },
-  {
-   "cluster_id": "3abc5a0475262652",
+   "cluster_id": "95af409d0d3b0e2b",
    "tokens_total": 19,
    "tokens_evaluated": 0,
    "tokens_rugged": 0,
@@ -214,16 +209,7 @@
    "deployers": 1
   },
   {
-   "cluster_id": "d5b774798b88ae15",
-   "tokens_total": 15,
-   "tokens_evaluated": 0,
-   "tokens_rugged": 0,
-   "tokens_10x": 0,
-   "score": 0.5,
-   "deployers": 7
-  },
-  {
-   "cluster_id": "4af1a825ab9ffdac",
+   "cluster_id": "98ba72603f12d76d",
    "tokens_total": 14,
    "tokens_evaluated": 0,
    "tokens_rugged": 0,
@@ -241,13 +227,22 @@
    "deployers": 1
   },
   {
-   "cluster_id": "98ba72603f12d76d",
+   "cluster_id": "4af1a825ab9ffdac",
    "tokens_total": 14,
    "tokens_evaluated": 0,
    "tokens_rugged": 0,
    "tokens_10x": 0,
    "score": 0.5,
    "deployers": 1
+  },
+  {
+   "cluster_id": "a4de3b9f12e88699",
+   "tokens_total": 11,
+   "tokens_evaluated": 0,
+   "tokens_rugged": 0,
+   "tokens_10x": 0,
+   "score": 0.5,
+   "deployers": 11
   },
   {
    "cluster_id": "607178e39698c998",
@@ -266,6 +261,15 @@
    "tokens_10x": 0,
    "score": 0.5,
    "deployers": 5
+  },
+  {
+   "cluster_id": "a0502f79245c9b59",
+   "tokens_total": 9,
+   "tokens_evaluated": 0,
+   "tokens_rugged": 0,
+   "tokens_10x": 0,
+   "score": 0.5,
+   "deployers": 1
   }
  ],
  "outcomes_summary": [],
@@ -274,7 +278,7 @@
   {
    "src": "rugcheck",
    "verified": "-",
-   "n": 876
+   "n": 900
   },
   {
    "src": "pre-fix",
@@ -284,7 +288,7 @@
   {
    "src": "rpc",
    "verified": "-",
-   "n": 151
+   "n": 170
   },
   {
    "src": "pre-fix",
@@ -300,23 +304,23 @@
  "funding_sources": [
   {
    "src": "wallet",
-   "n": 662
+   "n": 746
   },
   {
    "src": "unknown",
-   "n": 156
-  },
-  {
-   "src": "untraced",
-   "n": 155
+   "n": 168
   },
   {
    "src": "hub",
-   "n": 98
+   "n": 121
+  },
+  {
+   "src": "untraced",
+   "n": 65
   },
   {
    "src": "cex",
-   "n": 27
+   "n": 33
   }
  ]
 }
