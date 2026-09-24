@@ -1,17 +1,17 @@
 {
- "generated_at": "2026-09-24T08:37:27.722982+00:00",
+ "generated_at": "2026-09-24T09:37:19.021382+00:00",
  "status": "ok",
  "metrics": {
   "tokens_70m": 57,
-  "tokens_24h": 934,
+  "tokens_24h": 987,
   "risk_missing": 0,
-  "risk_eligible": 891,
-  "top10_over90": 33,
-  "top10_n": 911,
-  "deployers": 626,
-  "traced": 349,
-  "untraceable": 83,
-  "trace_backlog": 72,
+  "risk_eligible": 955,
+  "top10_over90": 34,
+  "top10_n": 964,
+  "deployers": 659,
+  "traced": 377,
+  "untraceable": 94,
+  "trace_backlog": 125,
   "outcome_backlog": 0,
   "outcomes": 0,
   "outcomes_no_data": 0,
@@ -36,25 +36,25 @@
    "name": "risk_coverage",
    "level": "warn",
    "ok": true,
-   "detail": "risk missing 0/891 (0%)"
+   "detail": "risk missing 0/955 (0%)"
   },
   {
    "name": "holder_concentration_sane",
    "level": "warn",
    "ok": true,
-   "detail": "top10>90%: 33/911 (4%) → pool filter gap"
+   "detail": "top10>90%: 34/964 (4%) → pool filter gap"
   },
   {
    "name": "trace_quality",
    "level": "warn",
    "ok": true,
-   "detail": "unknown+hub 83/626 (13%)"
+   "detail": "unknown+hub 94/659 (14%)"
   },
   {
    "name": "trace_backlog",
    "level": "warn",
    "ok": true,
-   "detail": "deployers untraced >3h: 72"
+   "detail": "deployers untraced >3h: 125"
   },
   {
    "name": "outcome_backlog",
