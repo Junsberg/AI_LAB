@@ -39,7 +39,7 @@ class NewPool:
     created_at: datetime
 
 
-async def fetch_new_pools(client: httpx.AsyncClient, pages: int = 3) -> list[NewPool]:
+async def fetch_new_pools(client: httpx.AsyncClient, pages: int = 6) -> list[NewPool]:
     out: list[NewPool] = []
     for page in range(1, pages + 1):
         r = await client.get(f"{GT}/networks/solana/new_pools", params={"page": page})
