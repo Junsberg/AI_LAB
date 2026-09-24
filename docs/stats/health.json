@@ -1,16 +1,16 @@
 {
- "generated_at": "2026-09-24T15:37:22.866119+00:00",
+ "generated_at": "2026-09-24T16:37:24.352785+00:00",
  "status": "warn",
  "metrics": {
-  "tokens_70m": 33,
-  "tokens_24h": 1336,
+  "tokens_70m": 55,
+  "tokens_24h": 1391,
   "risk_missing": 0,
-  "risk_eligible": 1320,
-  "top10_over90": 48,
-  "top10_n": 1313,
-  "deployers": 935,
-  "traced": 534,
-  "untraceable": 158,
+  "risk_eligible": 1367,
+  "top10_over90": 50,
+  "top10_n": 1368,
+  "deployers": 977,
+  "traced": 565,
+  "untraceable": 167,
   "trace_backlog": 234,
   "outcome_backlog": 0,
   "outcomes": 0,
@@ -23,38 +23,38 @@
   "edge_huge": 1,
   "bad_timestamps": 0,
   "self_edges": 0,
-  "max_cluster_wallets": 18
+  "max_cluster_wallets": 21
  },
  "checks": [
   {
    "name": "collect_alive",
    "level": "critical",
    "ok": true,
-   "detail": "tokens last 70m = 33"
+   "detail": "tokens last 70m = 55"
   },
   {
    "name": "collect_flood",
    "level": "warn",
    "ok": true,
-   "detail": "tokens last 70m = 33 (>150 suggests bonding-stage leak)"
+   "detail": "tokens last 70m = 55 (>150 suggests bonding-stage leak)"
   },
   {
    "name": "risk_coverage",
    "level": "warn",
    "ok": true,
-   "detail": "risk missing 0/1320 (0%)"
+   "detail": "risk missing 0/1367 (0%)"
   },
   {
    "name": "holder_concentration_sane",
    "level": "warn",
    "ok": true,
-   "detail": "top10>90%: 48/1313 (4%) → pool filter gap"
+   "detail": "top10>90%: 50/1368 (4%) → pool filter gap"
   },
   {
    "name": "trace_quality",
    "level": "warn",
    "ok": true,
-   "detail": "unknown+hub 158/935 (17%)"
+   "detail": "unknown+hub 167/977 (17%)"
   },
   {
    "name": "trace_backlog",
@@ -114,7 +114,7 @@
    "name": "cluster_size_sane",
    "level": "warn",
    "ok": true,
-   "detail": "largest cluster = 18 wallets (exchange acting as glue?)"
+   "detail": "largest cluster = 21 wallets (exchange acting as glue?)"
   }
  ]
 }
