@@ -1,11 +1,11 @@
 {
- "generated_at": "2026-09-24T18:37:20.859012+00:00",
+ "generated_at": "2026-09-24T18:38:56.926685+00:00",
  "status": "warn",
  "metrics": {
-  "tokens_70m": 46,
+  "tokens_70m": 44,
   "tokens_24h": 1489,
   "risk_missing": 0,
-  "risk_eligible": 1467,
+  "risk_eligible": 1469,
   "top10_over90": 56,
   "top10_n": 1466,
   "deployers": 1067,
@@ -30,19 +30,19 @@
    "name": "collect_alive",
    "level": "critical",
    "ok": true,
-   "detail": "tokens last 70m = 46"
+   "detail": "tokens last 70m = 44"
   },
   {
    "name": "collect_flood",
    "level": "warn",
    "ok": true,
-   "detail": "tokens last 70m = 46 (>150 suggests bonding-stage leak)"
+   "detail": "tokens last 70m = 44 (>150 suggests bonding-stage leak)"
   },
   {
    "name": "risk_coverage",
    "level": "warn",
    "ok": true,
-   "detail": "risk missing 0/1467 (0%)"
+   "detail": "risk missing 0/1469 (0%)"
   },
   {
    "name": "holder_concentration_sane",
