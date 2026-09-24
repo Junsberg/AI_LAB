@@ -23,13 +23,17 @@ async def run(limit: int = 100) -> dict:
                order by created_at desc limit %s""",
             (limit,),
         ).fetchall()
-    checked = fixed = unknown = 0
+    checked = fixed = unknown = errors = 0
     async with httpx.AsyncClient(timeout=30, headers={"Accept": "application/json"}) as client:
         for r in rows:
             status, report = await fetch_report(client, r["mint"])
             await asyncio.sleep(0.6)
             if status == "error":
+                errors += 1
+                if errors >= 5:
+                    break
                 continue  # transient: leave unmarked, retried next run
+            errors = 0
             creator = creator_of(report) if status == "ok" else None
             with conn() as c:
                 if creator is None:

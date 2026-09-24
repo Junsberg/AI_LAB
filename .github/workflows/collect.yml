@@ -11,6 +11,9 @@ on:
       - "memebot/**"
       - "pyproject.toml"
 
+permissions:
+  contents: read
+
 concurrency:
   group: collect
   cancel-in-progress: false
@@ -29,7 +32,8 @@ jobs:
           python-version: "3.11"
           cache: pip
       - run: pip install -q -e .
+        id: setup
       - run: python -m memebot.collectors.poll
       - name: rugcheck risk snapshot
-        if: always()
+        if: ${{ !cancelled() && steps.setup.outcome == 'success' }}
         run: python -m memebot.collectors.rugcheck

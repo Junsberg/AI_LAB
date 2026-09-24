@@ -28,6 +28,7 @@ async def _ohlcv(client: httpx.AsyncClient, pool: str, age_hours: float) -> list
         return []
     r.raise_for_status()
     rows = r.json().get("data", {}).get("attributes", {}).get("ohlcv_list", [])
+    rows = [x for x in rows if isinstance(x, list) and len(x) >= 6 and all(v is not None for v in x[:6])]
     rows.sort(key=lambda x: x[0])
     return [Candle(int(x[0]), float(x[1]), float(x[2]), float(x[3]), float(x[4]), float(x[5])) for x in rows]
 
@@ -75,7 +76,7 @@ async def run(limit: int = 150) -> int:
                     continue
                 log.warning("outcome.fetch_failed", mint=r["mint"], error=str(e))
                 continue
-            except httpx.HTTPError as e:
+            except (httpx.HTTPError, TypeError, ValueError) as e:
                 log.warning("outcome.fetch_failed", mint=r["mint"], error=str(e))
                 continue
             raw_liq = attrs.get("reserve_in_usd")

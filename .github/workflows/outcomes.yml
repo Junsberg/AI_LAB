@@ -10,6 +10,9 @@ on:
       - ".github/workflows/outcomes.yml"
       - "memebot/outcomes/**"
 
+permissions:
+  contents: read
+
 concurrency:
   group: outcomes
   cancel-in-progress: false

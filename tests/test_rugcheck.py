@@ -59,3 +59,16 @@ async def test_fetch_report_distinguishes_transient_from_missing():
         assert (await fetch_report(c, "m429"))[0] == "error"
         assert (await fetch_report(c, "mhtml"))[0] == "error"
         assert (await fetch_report(c, "ok"))[0] == "ok"
+
+
+@pytest.mark.asyncio
+async def test_fetch_report_rejects_non_dict_json():
+    import httpx
+
+    from memebot.collectors.rugcheck import fetch_report
+
+    async def h(req: httpx.Request) -> httpx.Response:
+        return httpx.Response(200, json=None)
+
+    async with httpx.AsyncClient(transport=httpx.MockTransport(h)) as c:
+        assert (await fetch_report(c, "x"))[0] == "error"

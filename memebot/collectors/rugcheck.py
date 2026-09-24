@@ -92,9 +92,12 @@ async def fetch_report(client: httpx.AsyncClient, mint: str) -> tuple[str, dict 
     if r.status_code != 200:
         return "error", None
     try:
-        return "ok", r.json()
+        body = r.json()
     except ValueError:
         return "error", None
+    if not isinstance(body, dict):
+        return "error", None
+    return "ok", body
 
 
 def creator_of(report: dict | None) -> str | None:
@@ -129,7 +132,8 @@ def structural_owners(min_tokens: int = 2, min_pct: float = 30.0, person_min_tok
         in lineage — that is exactly who lineage exists to catch."""
     with conn() as c:
         rows = c.execute(
-            """select h->>'owner' owner, count(distinct mint) n
+            """select h->>'owner' owner, count(distinct mint) n,
+                      exists(select 1 from tokens t2 where t2.deployer = h->>'owner') is_creator
                from tokens, jsonb_array_elements(meta->'risk'->'raw_top') h
                where (h->>'pct')::numeric >= %s and length(h->>'owner') >= 32
                group by 1 having count(distinct mint) >= %s""",
@@ -137,7 +141,10 @@ def structural_owners(min_tokens: int = 2, min_pct: float = 30.0, person_min_tok
         ).fetchall()
     out: set[str] = set()
     for r in rows:
-        if _is_off_curve(r["owner"]) or r["n"] >= person_min_tokens:
+        if _is_off_curve(r["owner"]):
+            out.add(r["owner"])
+        elif r["n"] >= person_min_tokens and not r["is_creator"]:
+            # a wallet that CREATES tokens is a launch farm, never a fee wallet
             out.add(r["owner"])
     return out
 
@@ -147,7 +154,7 @@ async def run(limit: int = 60) -> int:
         rows = c.execute(
             """select mint from tokens
                where meta->'risk' is null
-                  or ((meta->'risk'->>'unavailable')::bool
+                  or (((meta->'risk'->>'unavailable')::bool or meta->'risk'->>'top10_pct' is null)
                       and coalesce((meta->'risk'->>'attempts')::int, 0) < 4
                       and created_at < now() - interval '20 minutes')
                   or ((meta->'risk'->>'top10_pct')::numeric > 90
@@ -156,6 +163,7 @@ async def run(limit: int = 60) -> int:
             (limit,),
         ).fetchall()
     n = 0
+    errors = 0
     structural = structural_owners()
     log.info("rugcheck.structural_owners", n=len(structural))
     async with httpx.AsyncClient(timeout=30, headers={"Accept": "application/json"}) as client:
@@ -163,12 +171,20 @@ async def run(limit: int = 60) -> int:
             status, report = await fetch_report(client, r["mint"])
             await asyncio.sleep(0.6)
             if status == "error":
-                log.warning("rugcheck.transient", mint=r["mint"])
-                continue  # leave state untouched; next run retries
+                errors += 1
+                log.warning("rugcheck.transient", mint=r["mint"], consecutive=errors)
+                if errors >= 5:
+                    break  # outage / rate limit: stop hammering, next run retries
+                continue
+            errors = 0
             if status == "missing":
                 payload = {"unavailable": True}  # attempts counter bumped below
             else:
-                payload = asdict(parse_report(report, structural))
+                try:
+                    payload = asdict(parse_report(report, structural))
+                except (AttributeError, TypeError, ValueError) as e:
+                    log.warning("rugcheck.bad_shape", mint=r["mint"], error=str(e))
+                    continue
             with conn() as c:
                 import json
 

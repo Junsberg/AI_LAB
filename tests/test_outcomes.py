@@ -37,3 +37,21 @@ def test_drained_pool_zero_liquidity_is_lp_pull():
     candles = [c(1, 1.0, 5.0, 0.9, 4.0), c(2, 4.0, 4.1, 0.1, 0.2)]
     o = classify(candles, liquidity_now_usd=0.0, liquidity_peak_usd=40_000)
     assert o.rugged and o.rug_reason == "lp_pull"
+
+
+def test_ohlcv_null_rows_are_skipped():
+    import asyncio
+
+    import httpx
+
+    from memebot.outcomes.evaluate import _ohlcv
+
+    async def h(req: httpx.Request) -> httpx.Response:
+        return httpx.Response(200, json={"data": {"attributes": {"ohlcv_list": [[2, 1, 2, 0.5, 1.5, None], [1, 1, 1, 1, 1, 10]]}}})
+
+    async def go():
+        async with httpx.AsyncClient(transport=httpx.MockTransport(h)) as c:
+            return await _ohlcv(c, "POOL", 5.0)
+
+    candles = asyncio.run(go())
+    assert [c.ts for c in candles] == [1]

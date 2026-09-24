@@ -124,7 +124,12 @@ async def run_once(max_new: int = 60) -> int:
             status, report = await fetch_report(client, p.mint)
             await asyncio.sleep(0.6)  # rugcheck pacing (same as the snapshot step)
             deployer = creator_of(report) if status == "ok" else None
-            risk = asdict(parse_report(report, structural)) | {"attempts": 1} if status == "ok" else None
+            risk = None
+            if status == "ok" and report.get("topHolders"):  # empty holders = too fresh; snapshot later
+                try:
+                    risk = asdict(parse_report(report, structural)) | {"attempts": 1, "recheck": 0}
+                except (AttributeError, TypeError, ValueError) as e:
+                    log.warning("rugcheck.bad_shape", mint=p.mint, error=str(e))
             source = "rugcheck"
             if not deployer:
                 try:

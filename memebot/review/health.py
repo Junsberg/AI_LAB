@@ -15,11 +15,14 @@ from memebot.db import conn
 OUT = ROOT / "docs" / "stats" / "health.json"
 
 
-def _one(c, q: str) -> dict:
-    return c.execute(q).fetchone()
+def _one(c, q: str, params: tuple = ()) -> dict:
+    return c.execute(q, params).fetchone()
 
 
 def run() -> dict:
+    from memebot.collectors.rugcheck import structural_owners
+
+    structural = sorted(structural_owners())  # same rule the repair step uses
     with conn() as c:
         m = _one(
             c,
@@ -44,14 +47,14 @@ def run() -> dict:
                  and meta->>'dex' not in ('pumpswap','meteora-damm-v2')) out_of_universe,
               (select count(*) from wallets w join (select deployer, min(created_at) fl from tokens group by 1) t on t.deployer=w.address
                  where w.funded_at is not null and w.funded_at > t.fl) funded_after_launch,
-              (select count(*) from tokens t where coalesce(t.meta->>'deployer_kind','') <> 'structural' and t.deployer in
-                 (select h->>'owner' from tokens, jsonb_array_elements(meta->'risk'->'raw_top') h
-                  where (h->>'pct')::numeric >= 30 group by 1 having count(distinct mint) >= 4)) structural_deployer_unmarked,
+              (select count(*) from tokens t where coalesce(t.meta->>'deployer_kind','') <> 'structural'
+                 and t.deployer = any(%s)) structural_deployer_unmarked,
               (select count(*) from wallet_edges where amount_sol > 10000) edge_huge,
               (select count(*) from tokens where created_at > now() or created_at < '2026-09-01') bad_timestamps,
               (select count(*) from wallet_edges where src = dst) self_edges,
               (select coalesce(max(cnt),0) from (select cluster_id, count(*) cnt from wallets where cluster_id is not null group by 1) x) max_cluster_wallets
             """,
+            (structural,),
         )
     m = {k: (int(v) if v is not None else 0) for k, v in m.items()}
     checks: list[dict] = []
@@ -94,6 +97,13 @@ def run() -> dict:
 
 
 if __name__ == "__main__":
-    o = run()
+    try:
+        o = run()
+    except Exception as e:  # DB down etc.: say so instead of leaving last hour's file in place
+        OUT.parent.mkdir(parents=True, exist_ok=True)
+        OUT.write_text(json.dumps({"generated_at": datetime.now(timezone.utc).isoformat(), "status": "error",
+                                   "checks": [{"name": "health_check_ran", "level": "critical", "ok": False, "detail": str(e)[:300]}]}), encoding="utf-8")
+        print(json.dumps({"status": "error", "error": str(e)[:200]}))
+        sys.exit(2)
     print(json.dumps({"status": o["status"], "failing": [c["name"] for c in o["checks"] if not c["ok"]]}))
     sys.exit(2 if o["status"] == "critical" else 0)

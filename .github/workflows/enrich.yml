@@ -11,6 +11,9 @@ on:
       - "memebot/**"
       - "pyproject.toml"
 
+permissions:
+  contents: read
+
 concurrency:
   group: enrich
   cancel-in-progress: false
@@ -29,7 +32,10 @@ jobs:
           python-version: "3.11"
           cache: pip
       - run: pip install -q -e .
+        id: setup
       - name: backfill deployer verification (pre-fix tokens)
+        continue-on-error: true
         run: python -m memebot.lineage.backfill
       - name: lineage (trace → cluster → score)
+        if: ${{ !cancelled() && steps.setup.outcome == 'success' }}
         run: python -m memebot.lineage.job

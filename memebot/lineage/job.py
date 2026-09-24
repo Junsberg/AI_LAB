@@ -52,7 +52,10 @@ async def trace_pending(limit: int = 80) -> int:
                            on conflict (address) do update set
                              funded_by = coalesce(wallets.funded_by, excluded.funded_by),
                              funded_at = coalesce(wallets.funded_at, excluded.funded_at),
-                             funding_source_type = coalesce(wallets.funding_source_type, excluded.funding_source_type)""",
+                             funding_source_type = case when wallets.funded_by is null
+                                                        then excluded.funding_source_type
+                                                        else wallets.funding_source_type end
+                           where coalesce((wallets.meta->>'invalid_trace')::int, 0) = 0""",
                         (h.wallet, h.funded_by, funded_at, h.source_type),
                     )
                     if h.funded_by and h.funded_by in KNOWN_CEX:
