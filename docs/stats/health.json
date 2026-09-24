@@ -1,0 +1,78 @@
+{
+ "generated_at": "2026-09-24T07:40:26.419085+00:00",
+ "status": "warn",
+ "metrics": {
+  "tokens_70m": 404,
+  "tokens_24h": 844,
+  "risk_missing": 0,
+  "risk_eligible": 587,
+  "top10_over90": 111,
+  "top10_n": 822,
+  "deployers": 579,
+  "traced": 304,
+  "untraceable": 60,
+  "trace_backlog": 39,
+  "outcome_backlog": 0,
+  "outcomes": 0,
+  "outcomes_no_data": 0,
+  "backfill_pending": 205,
+  "deployers_corrected": 61,
+  "out_of_universe": 12
+ },
+ "checks": [
+  {
+   "name": "collect_alive",
+   "level": "critical",
+   "ok": true,
+   "detail": "tokens last 70m = 404"
+  },
+  {
+   "name": "collect_flood",
+   "level": "warn",
+   "ok": false,
+   "detail": "tokens last 70m = 404 (>400 suggests filter broke)"
+  },
+  {
+   "name": "risk_coverage",
+   "level": "warn",
+   "ok": true,
+   "detail": "risk missing 0/587 (0%)"
+  },
+  {
+   "name": "holder_concentration_sane",
+   "level": "warn",
+   "ok": false,
+   "detail": "top10>90%: 111/822 (14%) → pool filter gap"
+  },
+  {
+   "name": "trace_quality",
+   "level": "warn",
+   "ok": true,
+   "detail": "unknown+hub 60/579 (10%)"
+  },
+  {
+   "name": "trace_backlog",
+   "level": "warn",
+   "ok": true,
+   "detail": "deployers untraced >3h: 39"
+  },
+  {
+   "name": "outcome_backlog",
+   "level": "warn",
+   "ok": true,
+   "detail": "tokens >25h without outcome: 0"
+  },
+  {
+   "name": "outcome_data_quality",
+   "level": "warn",
+   "ok": true,
+   "detail": "no_data outcomes 0/0 (0%)"
+  },
+  {
+   "name": "universe_clean",
+   "level": "warn",
+   "ok": false,
+   "detail": "out-of-universe tokens: 12"
+  }
+ ]
+}

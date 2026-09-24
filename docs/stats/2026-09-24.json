@@ -1,13 +1,13 @@
 {
- "generated_at": "2026-09-24T07:37:16.418013+00:00",
+ "generated_at": "2026-09-24T07:40:22.391537+00:00",
  "counts": [
   {
-   "tokens": 842,
-   "tokens_24h": 842,
-   "deployers": 618,
-   "deployers_traced": 302,
-   "deployers_unknown_src": 23,
-   "edges": 593,
+   "tokens": 843,
+   "tokens_24h": 843,
+   "deployers": 578,
+   "deployers_traced": 303,
+   "deployers_unknown_src": 27,
+   "edges": 599,
    "clusters": 521,
    "multi_token_clusters": 114,
    "outcomes": 0,
@@ -53,7 +53,7 @@
   },
   {
    "h": "2026-09-24 07:00",
-   "n": 255
+   "n": 256
   }
  ],
  "top_deployers": [
@@ -72,18 +72,18 @@
    "last_t": "09-24 07:14"
   },
   {
-   "deployer": "CGcbvoobbnPzAN1mduBYapAUak6FUe3PHLACkEZWv42P",
-   "n": 12,
-   "syms": "CV,CV,CV,CV,CV,CV,CV,CV,CV,CV,CV,CV",
-   "first_t": "09-24 05:05",
-   "last_t": "09-24 07:14"
-  },
-  {
    "deployer": "BAGSB9TpGrZxQbEsrEznv5jXXdwyP6AXerN8aVRiAmcv",
    "n": 12,
    "syms": "VWA,QUANTA,GTA IV,GEMINI,OPENAI,MM,DRAGONBALL,SPONGEBOB,POKER,GOOGLE,BITFOOTS,₽",
    "first_t": "09-24 06:30",
    "last_t": "09-24 07:10"
+  },
+  {
+   "deployer": "CGcbvoobbnPzAN1mduBYapAUak6FUe3PHLACkEZWv42P",
+   "n": 12,
+   "syms": "CV,CV,CV,CV,CV,CV,CV,CV,CV,CV,CV,CV",
+   "first_t": "09-24 05:05",
+   "last_t": "09-24 07:14"
   },
   {
    "deployer": "6ATnpbwa43DtscAWjiR3uh5bEfpc4mhFpF42F5a5f68T",
@@ -107,17 +107,17 @@
    "last_t": "09-24 07:06"
   },
   {
-   "deployer": "9k7n6mMY7rrabkqS8uk9mRLCyM2MMtRXu6BkyxEaGBMs",
-   "n": 8,
-   "syms": "Jackson,Jackson,Jackson,Jackson,Jackson,Jackson,Jackson,Jackson",
-   "first_t": "09-24 07:05",
-   "last_t": "09-24 07:14"
-  },
-  {
    "deployer": "9Tr5rh2RFoBYqXuDbaVgixCAL4hFRk5S9N2gkLrG2PxV",
    "n": 8,
    "syms": "FIGH,FIGH,FIGH,FIGH,FIGH,FIGH,FIGH,FIGH",
    "first_t": "09-24 06:20",
+   "last_t": "09-24 07:14"
+  },
+  {
+   "deployer": "9k7n6mMY7rrabkqS8uk9mRLCyM2MMtRXu6BkyxEaGBMs",
+   "n": 8,
+   "syms": "Jackson,Jackson,Jackson,Jackson,Jackson,Jackson,Jackson,Jackson",
+   "first_t": "09-24 07:05",
    "last_t": "09-24 07:14"
   },
   {
@@ -230,28 +230,28 @@
   },
   {
    "src": "pre-fix",
-   "verified": "-",
-   "n": 236
+   "verified": "match",
+   "n": 225
   },
   {
    "src": "pre-fix",
-   "verified": "match",
-   "n": 203
+   "verified": "-",
+   "n": 205
   },
   {
    "src": "rpc",
    "verified": "-",
-   "n": 89
+   "n": 90
   },
   {
    "src": "pre-fix",
    "verified": "corrected",
-   "n": 56
+   "n": 61
   },
   {
    "src": "pre-fix",
    "verified": "unavailable",
-   "n": 10
+   "n": 14
   }
  ],
  "funding_sources": [
@@ -261,19 +261,19 @@
   },
   {
    "src": "untraced",
-   "n": 261
+   "n": 217
   },
   {
    "src": "hub",
-   "n": 34
+   "n": 33
   },
   {
    "src": "unknown",
-   "n": 23
+   "n": 27
   },
   {
    "src": "cex",
-   "n": 13
+   "n": 14
   }
  ]
 }
