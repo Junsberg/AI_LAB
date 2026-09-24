@@ -1,19 +1,19 @@
 {
- "generated_at": "2026-09-24T13:37:16.991927+00:00",
+ "generated_at": "2026-09-24T13:46:29.189739+00:00",
  "counts": [
   {
-   "tokens": 1258,
-   "tokens_24h": 1258,
-   "deployers": 873,
+   "tokens": 1268,
+   "tokens_24h": 1268,
+   "deployers": 882,
    "deployers_traced": 495,
    "deployers_unknown_src": 75,
    "edges": 978,
-   "clusters": 797,
-   "multi_token_clusters": 176,
+   "clusters": 798,
+   "multi_token_clusters": 177,
    "outcomes": 0,
    "rugged": 0,
    "tenx": 0,
-   "with_risk": 1258,
+   "with_risk": 1268,
    "signals": 0,
    "positions": 0,
    "hypotheses": 0
@@ -21,13 +21,13 @@
  ],
  "risk_distribution": [
   {
-   "top10_p50": 9.9,
-   "top10_p90": 52.1,
+   "top10_p50": 10.1,
+   "top10_p90": 52.0,
    "insiders_avg": 0.0,
-   "lp_locked": 874,
+   "lp_locked": 879,
    "freeze_on": 1,
    "mint_on": 0,
-   "n": 1235
+   "n": 1245
   }
  ],
  "tokens_per_hour_24h": [
@@ -77,7 +77,7 @@
   },
   {
    "h": "2026-09-24 13:00",
-   "n": 26
+   "n": 36
   }
  ],
  "top_deployers": [
@@ -250,7 +250,7 @@
   {
    "src": "rugcheck",
    "verified": "-",
-   "n": 637
+   "n": 647
   },
   {
    "src": "pre-fix",
@@ -280,7 +280,7 @@
   },
   {
    "src": "untraced",
-   "n": 234
+   "n": 243
   },
   {
    "src": "unknown",
