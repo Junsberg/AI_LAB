@@ -1,11 +1,11 @@
 {
- "generated_at": "2026-09-24T22:37:22.711061+00:00",
+ "generated_at": "2026-09-24T22:43:44.288047+00:00",
  "status": "ok",
  "metrics": {
-  "tokens_70m": 28,
+  "tokens_70m": 24,
   "tokens_24h": 1577,
   "risk_missing": 0,
-  "risk_eligible": 1603,
+  "risk_eligible": 1608,
   "top10_over90": 67,
   "top10_n": 1597,
   "deployers": 1181,
@@ -13,7 +13,7 @@
   "untraceable": 334,
   "trace_backlog": 5,
   "outcome_backlog": 0,
-  "outcomes": 5,
+  "outcomes": 9,
   "outcomes_no_data": 0,
   "backfill_pending": 0,
   "deployers_corrected": 81,
@@ -30,19 +30,19 @@
    "name": "collect_alive",
    "level": "critical",
    "ok": true,
-   "detail": "tokens last 70m = 28"
+   "detail": "tokens last 70m = 24"
   },
   {
    "name": "collect_flood",
    "level": "warn",
    "ok": true,
-   "detail": "tokens last 70m = 28 (>150 suggests bonding-stage leak)"
+   "detail": "tokens last 70m = 24 (>150 suggests bonding-stage leak)"
   },
   {
    "name": "risk_coverage",
    "level": "warn",
    "ok": true,
-   "detail": "risk missing 0/1603 (0%)"
+   "detail": "risk missing 0/1608 (0%)"
   },
   {
    "name": "holder_concentration_sane",
@@ -72,7 +72,7 @@
    "name": "outcome_data_quality",
    "level": "warn",
    "ok": true,
-   "detail": "no_data outcomes 0/5 (0%)"
+   "detail": "no_data outcomes 0/9 (0%)"
   },
   {
    "name": "universe_clean",

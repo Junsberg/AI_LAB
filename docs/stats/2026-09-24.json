@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-09-24T22:37:15.559311+00:00",
+ "generated_at": "2026-09-24T22:43:39.077790+00:00",
  "counts": [
   {
    "tokens": 1619,
@@ -10,7 +10,7 @@
    "edges": 1649,
    "clusters": 1018,
    "multi_token_clusters": 203,
-   "outcomes": 5,
+   "outcomes": 9,
    "rugged": 0,
    "tenx": 0,
    "with_risk": 1619,
@@ -283,23 +283,29 @@
  "outcomes_summary": [
   {
    "rug_reason": "none",
-   "n": 5,
-   "avg_peak": 1.76,
-   "max_peak": 2.46
+   "n": 9,
+   "avg_peak": 2.33,
+   "max_peak": 8.01
   }
  ],
  "outcome_by_cluster_size": [
   {
    "bucket": "2-3",
-   "n": 1,
+   "n": 2,
    "rug_rate": 0.0,
-   "avg_peak": 1.83
+   "avg_peak": 1.97
   },
   {
    "bucket": "4+",
-   "n": 4,
+   "n": 6,
    "rug_rate": 0.0,
-   "avg_peak": 1.75
+   "avg_peak": 2.67
+  },
+  {
+   "bucket": "single",
+   "n": 1,
+   "rug_rate": 0.0,
+   "avg_peak": 1.06
   }
  ],
  "deployer_provenance": [
