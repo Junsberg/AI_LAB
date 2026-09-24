@@ -23,7 +23,7 @@ SAMPLE = {
             "attributes": {"address": "POOL3", "name": "X / SOL", "pool_created_at": "2026-09-23T10:00:00Z", "reserve_in_usd": "50000"},
             "relationships": {
                 "base_token": {"data": {"id": "solana_7GCihgDB8fe6KNjn2MYtkzZcRjQy3t9GHdC8uHYmW2hs"}},
-                "dex": {"data": {"id": "orca"}},
+                "dex": {"data": {"id": "pump-fun"}},  # bonding-curve stage → outside universe
             },
         },
         {   # dust liquidity → skipped

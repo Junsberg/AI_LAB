@@ -22,10 +22,10 @@ from memebot.rpc import RpcError, signatures, transaction
 log = structlog.get_logger()
 GT = "https://api.geckoterminal.com/api/v2"
 PUMP_DEXES = {"pumpswap", "pump-fun", "pumpfun"}
-# memecoin launchpads only; generic AMM pools (orca, fluxbeam, plain raydium) are noise
-UNIVERSE = PUMP_DEXES | {
-    "meteora-dbc", "meteora-damm-v2", "raydium-launchlab", "bags-fm", "moonshot", "letsbonk", "bonk",
-}
+# Graduated pools only. GeckoTerminal also lists bonding-curve stage "pools"
+# (pump-fun, meteora-dbc, raydium-launchlab, moonshot, bags-fm): ~10k/day, mostly dead
+# within minutes, and outside the strategy (post-migration survivors + lineage).
+UNIVERSE = {"pumpswap", "meteora-damm-v2"}
 MIN_RESERVE_USD = 3000.0
 
 
@@ -141,9 +141,10 @@ async def run_once(max_new: int = 60) -> int:
                 c.execute(
                     """insert into tokens(mint, symbol, deployer, launch_platform, created_at,
                                           migrated_at, pool_address, first_seen_slot, meta)
-                       values (%s,%s,%s,%s,%s,%s,%s,%s, jsonb_build_object('deployer_source', %s::text))
+                       values (%s,%s,%s,%s,%s,%s,%s,%s,
+                               jsonb_build_object('deployer_source', %s::text, 'dex', %s::text, 'stage', 'graduated'))
                        on conflict (mint) do nothing""",
-                    (p.mint, p.symbol, deployer, platform, p.created_at, p.created_at, p.pool, slot, source),
+                    (p.mint, p.symbol, deployer, platform, p.created_at, p.created_at, p.pool, slot, source, p.dex),
                 )
                 c.execute(
                     """insert into wallets(address, tags) values (%s, '{deployer}')

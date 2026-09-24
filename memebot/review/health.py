@@ -40,8 +40,8 @@ def run() -> dict:
               (select count(*) from token_outcomes where rug_reason='no_data') outcomes_no_data,
               (select count(*) from tokens where meta->>'deployer_source' is null and meta->>'deployer_verified' is null) backfill_pending,
               (select count(*) from tokens where meta->>'deployer_verified'='corrected') deployers_corrected,
-              (select count(*) from tokens where launch_platform not in
-                 ('pumpfun','pumpswap','pump-fun','meteora-dbc','meteora-damm-v2','raydium-launchlab','bags-fm','moonshot','letsbonk','bonk')) out_of_universe
+              (select count(*) from tokens where meta->>'stage' = 'graduated'
+                 and meta->>'dex' not in ('pumpswap','meteora-damm-v2')) out_of_universe
             """,
         )
     m = {k: (int(v) if v is not None else 0) for k, v in m.items()}
@@ -51,7 +51,7 @@ def run() -> dict:
         checks.append({"name": name, "level": level, "ok": not bad, "detail": detail})
 
     chk("collect_alive", "critical", m["tokens_70m"] == 0, f"tokens last 70m = {m['tokens_70m']}")
-    chk("collect_flood", "warn", m["tokens_70m"] > 400, f"tokens last 70m = {m['tokens_70m']} (>400 suggests filter broke)")
+    chk("collect_flood", "warn", m["tokens_70m"] > 150, f"tokens last 70m = {m['tokens_70m']} (>150 suggests bonding-stage leak)")
     rm = m["risk_missing"] / m["risk_eligible"] if m["risk_eligible"] else 0
     chk("risk_coverage", "warn", rm > 0.2, f"risk missing {m['risk_missing']}/{m['risk_eligible']} ({rm:.0%})")
     t90 = m["top10_over90"] / m["top10_n"] if m["top10_n"] else 0
