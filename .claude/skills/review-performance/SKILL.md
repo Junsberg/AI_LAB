@@ -15,7 +15,7 @@ Read-only. Never edits strategy/params.yaml.
    - **Reject audit**: sample 20 `signals.decision='reject'` mints, fetch current mcap (DexScreener free API) → did we reject winners? Which gate?
    - **Cluster audit**: top/bottom 10 `cluster_scores` by realized pnl of positions whose deployer is in the cluster.
    - **Drawdown**: daily pnl series, max DD, current streak.
-3. Write `docs/reviews/YYYY-MM-DD.md` with tables + 3 bullet conclusions max. State sample sizes; if n < 30 for a bucket say "insufficient".
+3. Write `docs/reviews/YYYY-MM-DD.md` with tables + 3 bullet conclusions max. State sample sizes; if n < 30 for a bucket say "insufficient". Every observation carries a confidence tag: **A** (documented / arithmetic), **B** (repeated in data, n≥30), **C** (single observation or n<30). Only A/B may become a HYPOTHESIS.
 4. End with **one** candidate hypothesis in the exact format `propose-change` expects:
    ```
    HYPOTHESIS: <param path> <old> → <new> | metric=<name> | rationale=<one sentence>
