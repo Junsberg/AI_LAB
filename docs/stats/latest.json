@@ -1,19 +1,19 @@
 {
- "generated_at": "2026-09-24T17:37:31.777538+00:00",
+ "generated_at": "2026-09-24T18:38:52.435726+00:00",
  "counts": [
   {
-   "tokens": 1445,
-   "tokens_24h": 1445,
-   "deployers": 1028,
-   "deployers_traced": 616,
-   "deployers_unknown_src": 108,
-   "edges": 1231,
-   "clusters": 922,
-   "multi_token_clusters": 197,
+   "tokens": 1489,
+   "tokens_24h": 1489,
+   "deployers": 1067,
+   "deployers_traced": 678,
+   "deployers_unknown_src": 124,
+   "edges": 1334,
+   "clusters": 948,
+   "multi_token_clusters": 199,
    "outcomes": 0,
    "rugged": 0,
    "tenx": 0,
-   "with_risk": 1445,
+   "with_risk": 1489,
    "signals": 0,
    "positions": 0,
    "hypotheses": 0
@@ -21,13 +21,13 @@
  ],
  "risk_distribution": [
   {
-   "top10_p50": 9.7,
+   "top10_p50": 9.5,
    "top10_p90": 52.0,
    "insiders_avg": 0.0,
-   "lp_locked": 945,
+   "lp_locked": 958,
    "freeze_on": 1,
    "mint_on": 0,
-   "n": 1422
+   "n": 1466
   }
  ],
  "tokens_per_hour_24h": [
@@ -93,7 +93,11 @@
   },
   {
    "h": "2026-09-24 17:00",
-   "n": 32
+   "n": 56
+  },
+  {
+   "h": "2026-09-24 18:00",
+   "n": 20
   }
  ],
  "top_deployers": [
@@ -233,6 +237,24 @@
    "deployers": 1
   },
   {
+   "cluster_id": "13eb927462508110",
+   "tokens_total": 10,
+   "tokens_evaluated": 0,
+   "tokens_rugged": 0,
+   "tokens_10x": 0,
+   "score": 0.5,
+   "deployers": 5
+  },
+  {
+   "cluster_id": "558b2218ac56c173",
+   "tokens_total": 10,
+   "tokens_evaluated": 0,
+   "tokens_rugged": 0,
+   "tokens_10x": 0,
+   "score": 0.5,
+   "deployers": 10
+  },
+  {
    "cluster_id": "45078babdbacdaca",
    "tokens_total": 9,
    "tokens_evaluated": 0,
@@ -240,24 +262,6 @@
    "tokens_10x": 0,
    "score": 0.5,
    "deployers": 9
-  },
-  {
-   "cluster_id": "1ea1b6fd5f096c15",
-   "tokens_total": 9,
-   "tokens_evaluated": 0,
-   "tokens_rugged": 0,
-   "tokens_10x": 0,
-   "score": 0.5,
-   "deployers": 4
-  },
-  {
-   "cluster_id": "a0502f79245c9b59",
-   "tokens_total": 9,
-   "tokens_evaluated": 0,
-   "tokens_rugged": 0,
-   "tokens_10x": 0,
-   "score": 0.5,
-   "deployers": 1
   }
  ],
  "outcomes_summary": [],
@@ -266,7 +270,7 @@
   {
    "src": "rugcheck",
    "verified": "-",
-   "n": 805
+   "n": 847
   },
   {
    "src": "pre-fix",
@@ -276,7 +280,7 @@
   {
    "src": "rpc",
    "verified": "-",
-   "n": 146
+   "n": 148
   },
   {
    "src": "pre-fix",
@@ -292,19 +296,19 @@
  "funding_sources": [
   {
    "src": "wallet",
-   "n": 589
+   "n": 646
   },
   {
    "src": "untraced",
-   "n": 222
+   "n": 184
   },
   {
    "src": "unknown",
-   "n": 108
+   "n": 124
   },
   {
    "src": "hub",
-   "n": 84
+   "n": 88
   },
   {
    "src": "cex",
