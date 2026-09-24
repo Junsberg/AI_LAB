@@ -1,19 +1,19 @@
 {
- "generated_at": "2026-09-24T13:46:29.189739+00:00",
+ "generated_at": "2026-09-24T14:37:18.717603+00:00",
  "counts": [
   {
-   "tokens": 1268,
-   "tokens_24h": 1268,
-   "deployers": 882,
-   "deployers_traced": 495,
-   "deployers_unknown_src": 75,
-   "edges": 978,
-   "clusters": 798,
-   "multi_token_clusters": 177,
+   "tokens": 1301,
+   "tokens_24h": 1301,
+   "deployers": 908,
+   "deployers_traced": 516,
+   "deployers_unknown_src": 79,
+   "edges": 1022,
+   "clusters": 828,
+   "multi_token_clusters": 181,
    "outcomes": 0,
    "rugged": 0,
    "tenx": 0,
-   "with_risk": 1268,
+   "with_risk": 1301,
    "signals": 0,
    "positions": 0,
    "hypotheses": 0
@@ -21,13 +21,13 @@
  ],
  "risk_distribution": [
   {
-   "top10_p50": 10.1,
-   "top10_p90": 52.0,
+   "top10_p50": 10.2,
+   "top10_p90": 52.1,
    "insiders_avg": 0.0,
-   "lp_locked": 879,
+   "lp_locked": 891,
    "freeze_on": 1,
    "mint_on": 0,
-   "n": 1245
+   "n": 1278
   }
  ],
  "tokens_per_hour_24h": [
@@ -77,7 +77,11 @@
   },
   {
    "h": "2026-09-24 13:00",
-   "n": 36
+   "n": 54
+  },
+  {
+   "h": "2026-09-24 14:00",
+   "n": 15
   }
  ],
  "top_deployers": [
@@ -103,18 +107,18 @@
    "last_t": "09-24 12:49"
   },
   {
-   "deployer": "CGcbvoobbnPzAN1mduBYapAUak6FUe3PHLACkEZWv42P",
-   "n": 14,
-   "syms": "CV,CV,CV,CV,CV,CV,CV,CV,CV,CV,CV,CV,CV,CV",
-   "first_t": "09-24 05:05",
-   "last_t": "09-24 07:32"
-  },
-  {
    "deployer": "CrVW9jpbbKssWULzncQtf31rSxvzJwPe56zg2o65sjA7",
    "n": 14,
    "syms": "MONEY,MONEY,MONEY,MONEY,MONEY,MONEY,MONEY,MONEY,MONEY,MONEY,MONEY,MONEY,MONEY,MONEY",
    "first_t": "09-24 07:05",
    "last_t": "09-24 07:14"
+  },
+  {
+   "deployer": "CGcbvoobbnPzAN1mduBYapAUak6FUe3PHLACkEZWv42P",
+   "n": 14,
+   "syms": "CV,CV,CV,CV,CV,CV,CV,CV,CV,CV,CV,CV,CV,CV",
+   "first_t": "09-24 05:05",
+   "last_t": "09-24 07:32"
   },
   {
    "deployer": "8DTxjDbFnykLJ89Er1sJ4h1i1HTHtvxnEkf6VcNiv2Zs",
@@ -190,7 +194,7 @@
    "deployers": 1
   },
   {
-   "cluster_id": "37898eeee8a756cd",
+   "cluster_id": "4af1a825ab9ffdac",
    "tokens_total": 14,
    "tokens_evaluated": 0,
    "tokens_rugged": 0,
@@ -199,7 +203,7 @@
    "deployers": 1
   },
   {
-   "cluster_id": "4af1a825ab9ffdac",
+   "cluster_id": "37898eeee8a756cd",
    "tokens_total": 14,
    "tokens_evaluated": 0,
    "tokens_rugged": 0,
@@ -217,15 +221,6 @@
    "deployers": 1
   },
   {
-   "cluster_id": "45078babdbacdaca",
-   "tokens_total": 9,
-   "tokens_evaluated": 0,
-   "tokens_rugged": 0,
-   "tokens_10x": 0,
-   "score": 0.5,
-   "deployers": 9
-  },
-  {
    "cluster_id": "a0502f79245c9b59",
    "tokens_total": 9,
    "tokens_evaluated": 0,
@@ -233,6 +228,15 @@
    "tokens_10x": 0,
    "score": 0.5,
    "deployers": 1
+  },
+  {
+   "cluster_id": "45078babdbacdaca",
+   "tokens_total": 9,
+   "tokens_evaluated": 0,
+   "tokens_rugged": 0,
+   "tokens_10x": 0,
+   "score": 0.5,
+   "deployers": 9
   },
   {
    "cluster_id": "f7f81c24233ddc3c",
@@ -250,7 +254,7 @@
   {
    "src": "rugcheck",
    "verified": "-",
-   "n": 647
+   "n": 676
   },
   {
    "src": "pre-fix",
@@ -260,7 +264,7 @@
   {
    "src": "rpc",
    "verified": "-",
-   "n": 127
+   "n": 131
   },
   {
    "src": "pre-fix",
@@ -276,19 +280,19 @@
  "funding_sources": [
   {
    "src": "wallet",
-   "n": 472
+   "n": 493
   },
   {
    "src": "untraced",
-   "n": 243
+   "n": 242
   },
   {
    "src": "unknown",
-   "n": 75
+   "n": 79
   },
   {
    "src": "hub",
-   "n": 71
+   "n": 73
   },
   {
    "src": "cex",
