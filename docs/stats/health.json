@@ -1,19 +1,19 @@
 {
- "generated_at": "2026-09-25T00:37:24.602568+00:00",
+ "generated_at": "2026-09-25T01:37:22.524794+00:00",
  "status": "ok",
  "metrics": {
-  "tokens_70m": 47,
-  "tokens_24h": 1496,
+  "tokens_70m": 48,
+  "tokens_24h": 1543,
   "risk_missing": 0,
-  "risk_eligible": 1681,
+  "risk_eligible": 1722,
   "top10_over90": 70,
-  "top10_n": 1679,
-  "deployers": 1249,
-  "traced": 890,
-  "untraceable": 342,
+  "top10_n": 1726,
+  "deployers": 1282,
+  "traced": 931,
+  "untraceable": 348,
   "trace_backlog": 5,
-  "outcome_backlog": 107,
-  "outcomes": 53,
+  "outcome_backlog": 134,
+  "outcomes": 71,
   "outcomes_no_data": 0,
   "backfill_pending": 0,
   "deployers_corrected": 81,
@@ -30,31 +30,31 @@
    "name": "collect_alive",
    "level": "critical",
    "ok": true,
-   "detail": "tokens last 70m = 47"
+   "detail": "tokens last 70m = 48"
   },
   {
    "name": "collect_flood",
    "level": "warn",
    "ok": true,
-   "detail": "tokens last 70m = 47 (>150 suggests bonding-stage leak)"
+   "detail": "tokens last 70m = 48 (>150 suggests bonding-stage leak)"
   },
   {
    "name": "risk_coverage",
    "level": "warn",
    "ok": true,
-   "detail": "risk missing 0/1681 (0%)"
+   "detail": "risk missing 0/1722 (0%)"
   },
   {
    "name": "holder_concentration_sane",
    "level": "warn",
    "ok": true,
-   "detail": "top10>90%: 70/1679 (4%) → pool filter gap"
+   "detail": "top10>90%: 70/1726 (4%) → pool filter gap"
   },
   {
    "name": "trace_quality",
    "level": "warn",
    "ok": true,
-   "detail": "unknown+hub 342/1249 (27%)"
+   "detail": "unknown+hub 348/1282 (27%)"
   },
   {
    "name": "trace_backlog",
@@ -66,13 +66,13 @@
    "name": "outcome_backlog",
    "level": "warn",
    "ok": true,
-   "detail": "tokens >25h without outcome: 107"
+   "detail": "tokens >25h without outcome: 134"
   },
   {
    "name": "outcome_data_quality",
    "level": "warn",
    "ok": true,
-   "detail": "no_data outcomes 0/53 (0%)"
+   "detail": "no_data outcomes 0/71 (0%)"
   },
   {
    "name": "universe_clean",
