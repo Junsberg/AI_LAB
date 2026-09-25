@@ -30,7 +30,7 @@ RETRY_MIN_S, RETRY_DEFAULT_S, RETRY_MAX_S = 5.0, 60.0, 180.0
 # Rows evaluated before this instant were classified by rules v1 (wick peaks, raw first
 # open) and are re-evaluated once. Bump when classify() changes in a way that alters
 # stored values; there is no schema column for a rules version on purpose (no migration).
-RULES_CHANGED_AT = "2026-09-25T17:30:00+00:00"
+RULES_CHANGED_AT = "2026-09-25T17:09:00+00:00"
 
 
 class BudgetExhausted(Exception):
