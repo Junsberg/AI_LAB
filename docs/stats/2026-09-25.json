@@ -1,19 +1,19 @@
 {
- "generated_at": "2026-09-25T08:10:04.136194+00:00",
+ "generated_at": "2026-09-25T08:37:18.123050+00:00",
  "counts": [
   {
-   "tokens": 2120,
-   "tokens_24h": 1215,
-   "deployers": 1530,
-   "deployers_traced": 1118,
-   "deployers_unknown_src": 218,
-   "edges": 2145,
-   "clusters": 1279,
+   "tokens": 2147,
+   "tokens_24h": 1205,
+   "deployers": 1549,
+   "deployers_traced": 1125,
+   "deployers_unknown_src": 220,
+   "edges": 2158,
+   "clusters": 1287,
    "multi_token_clusters": 253,
-   "outcomes": 202,
+   "outcomes": 207,
    "rugged": 30,
    "tenx": 7,
-   "with_risk": 2120,
+   "with_risk": 2147,
    "signals": 0,
    "positions": 0,
    "hypotheses": 0
@@ -21,19 +21,19 @@
  ],
  "risk_distribution": [
   {
-   "top10_p50": 8.8,
-   "top10_p90": 55.8,
+   "top10_p50": 8.9,
+   "top10_p90": 56.5,
    "insiders_avg": 0.0,
-   "lp_locked": 1172,
+   "lp_locked": 1184,
    "freeze_on": 4,
    "mint_on": 0,
-   "n": 2098
+   "n": 2125
   }
  ],
  "tokens_per_hour_24h": [
   {
    "h": "2026-09-24 08:00",
-   "n": 57
+   "n": 20
   },
   {
    "h": "2026-09-24 09:00",
@@ -125,7 +125,11 @@
   },
   {
    "h": "2026-09-25 07:00",
-   "n": 43
+   "n": 46
+  },
+  {
+   "h": "2026-09-25 08:00",
+   "n": 24
   }
  ],
  "top_deployers": [
@@ -151,18 +155,18 @@
    "last_t": "09-24 07:26"
   },
   {
-   "deployer": "5whEE6vB9T7NJrB9bHLu67kiSet1DMvc2VQ9kmrdwb8e",
-   "n": 14,
-   "syms": "SI,SI,PESOS,MOONCATS,SIDELINED,TOKENS,Elephant,SDOG,VISE,IshiGo,Meme,PROM,fush,RETIRE",
-   "first_t": "09-24 05:06",
-   "last_t": "09-24 12:49"
-  },
-  {
    "deployer": "CGcbvoobbnPzAN1mduBYapAUak6FUe3PHLACkEZWv42P",
    "n": 14,
    "syms": "CV,CV,CV,CV,CV,CV,CV,CV,CV,CV,CV,CV,CV,CV",
    "first_t": "09-24 05:05",
    "last_t": "09-24 07:32"
+  },
+  {
+   "deployer": "5whEE6vB9T7NJrB9bHLu67kiSet1DMvc2VQ9kmrdwb8e",
+   "n": 14,
+   "syms": "SI,SI,PESOS,MOONCATS,SIDELINED,TOKENS,Elephant,SDOG,VISE,IshiGo,Meme,PROM,fush,RETIRE",
+   "first_t": "09-24 05:06",
+   "last_t": "09-24 12:49"
   },
   {
    "deployer": "CrVW9jpbbKssWULzncQtf31rSxvzJwPe56zg2o65sjA7",
@@ -172,18 +176,18 @@
    "last_t": "09-24 07:14"
   },
   {
-   "deployer": "8DTxjDbFnykLJ89Er1sJ4h1i1HTHtvxnEkf6VcNiv2Zs",
-   "n": 13,
-   "syms": "MOGGED,MOGGED,Jackson,Jackson,CUMINU,CUMINU,INFUSION,HI,Elephant,SDOG,SDOG,Nutty,₍ᐢ•ﻌ•ᐢ₎",
-   "first_t": "09-24 07:05",
-   "last_t": "09-24 09:24"
-  },
-  {
    "deployer": "E4mA9UbaQW7qHKbvMKCDMS4FdL5tBW7zcjXrwjrDB3ac",
    "n": 13,
    "syms": "BOWFLEX,BOWFLEX,GG,COMPANY,Litterbox,TRUMPCAT,TTP,POH,Monkey,company,Jester,NUUC,Gavel",
    "first_t": "09-25 01:16",
    "last_t": "09-25 07:19"
+  },
+  {
+   "deployer": "8DTxjDbFnykLJ89Er1sJ4h1i1HTHtvxnEkf6VcNiv2Zs",
+   "n": 13,
+   "syms": "MOGGED,MOGGED,Jackson,Jackson,CUMINU,CUMINU,INFUSION,HI,Elephant,SDOG,SDOG,Nutty,₍ᐢ•ﻌ•ᐢ₎",
+   "first_t": "09-24 07:05",
+   "last_t": "09-24 09:24"
   },
   {
    "deployer": "Be3MwhYqH9Y7NMVZqUJBL7fmEshHgQnU5prttJbGRCpW",
@@ -295,8 +299,8 @@
  "outcomes_summary": [
   {
    "rug_reason": "none",
-   "n": 172,
-   "avg_peak": 3.07,
+   "n": 177,
+   "avg_peak": 3.02,
    "max_peak": 88.83
   },
   {
@@ -309,28 +313,28 @@
  "outcome_by_cluster_size": [
   {
    "bucket": "2-3",
-   "n": 56,
-   "rug_rate": 0.179,
-   "avg_peak": 4.08
+   "n": 57,
+   "rug_rate": 0.175,
+   "avg_peak": 4.02
   },
   {
    "bucket": "4+",
-   "n": 39,
-   "rug_rate": 0.154,
-   "avg_peak": 4.4
+   "n": 40,
+   "rug_rate": 0.15,
+   "avg_peak": 4.38
   },
   {
    "bucket": "single",
-   "n": 107,
-   "rug_rate": 0.131,
-   "avg_peak": 3.37
+   "n": 110,
+   "rug_rate": 0.127,
+   "avg_peak": 3.3
   }
  ],
  "deployer_provenance": [
   {
    "src": "rugcheck",
    "verified": "-",
-   "n": 1417
+   "n": 1443
   },
   {
    "src": "pre-fix",
@@ -340,7 +344,7 @@
   {
    "src": "rpc",
    "verified": "-",
-   "n": 209
+   "n": 210
   },
   {
    "src": "pre-fix",
@@ -356,43 +360,43 @@
  "unknown_funding_first_tx_kinds": [
   {
    "kind": "111111:transfer",
-   "n": 73
+   "n": 82
   },
   {
    "kind": "Comput:-",
-   "n": 63
+   "n": 65
   },
   {
    "kind": "111111:createAccount",
-   "n": 46
+   "n": 49
   },
   {
    "kind": "Tokenk:syncNative",
-   "n": 36
-  },
-  {
-   "kind": "AToken:createIdempotent",
-   "n": 34
+   "n": 38
   },
   {
    "kind": "Tokenk:closeAccount",
-   "n": 33
+   "n": 35
+  },
+  {
+   "kind": "AToken:createIdempotent",
+   "n": 35
   },
   {
    "kind": "Tokenk:initializeAccount3",
-   "n": 30
+   "n": 32
   },
   {
    "kind": "Tokenz:initializeMetadataPointer",
-   "n": 21
+   "n": 22
   },
   {
    "kind": "Tokenk:getAccountDataSize",
-   "n": 18
+   "n": 19
   },
   {
    "kind": "Tokenk:initializeImmutableOwner",
-   "n": 18
+   "n": 19
   },
   {
    "kind": "6EF8rr:-",
@@ -438,15 +442,15 @@
  "funding_sources": [
   {
    "src": "wallet",
-   "n": 1064
+   "n": 1071
   },
   {
    "src": "unknown",
-   "n": 218
+   "n": 220
   },
   {
    "src": "hub",
-   "n": 182
+   "n": 184
   },
   {
    "src": "cex",
@@ -454,7 +458,7 @@
   },
   {
    "src": "untraced",
-   "n": 14
+   "n": 22
   }
  ]
 }
