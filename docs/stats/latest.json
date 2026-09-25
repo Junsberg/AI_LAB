@@ -1,19 +1,19 @@
 {
- "generated_at": "2026-09-25T14:08:56.091016+00:00",
+ "generated_at": "2026-09-25T14:37:20.005129+00:00",
  "counts": [
   {
-   "tokens": 2314,
-   "tokens_24h": 1023,
-   "deployers": 1664,
-   "deployers_traced": 1215,
-   "deployers_unknown_src": 238,
-   "edges": 2330,
-   "clusters": 1386,
-   "multi_token_clusters": 267,
-   "outcomes": 883,
-   "rugged": 125,
-   "tenx": 52,
-   "with_risk": 2314,
+   "tokens": 2342,
+   "tokens_24h": 1031,
+   "deployers": 1687,
+   "deployers_traced": 1228,
+   "deployers_unknown_src": 242,
+   "edges": 2356,
+   "clusters": 1401,
+   "multi_token_clusters": 270,
+   "outcomes": 973,
+   "rugged": 142,
+   "tenx": 72,
+   "with_risk": 2342,
    "signals": 0,
    "positions": 0,
    "hypotheses": 0
@@ -21,19 +21,19 @@
  ],
  "risk_distribution": [
   {
-   "top10_p50": 9.2,
-   "top10_p90": 59.2,
+   "top10_p50": 9.3,
+   "top10_p90": 61.9,
    "insiders_avg": 0.0,
-   "lp_locked": 1244,
+   "lp_locked": 1251,
    "freeze_on": 4,
    "mint_on": 0,
-   "n": 2292
+   "n": 2320
   }
  ],
  "tokens_per_hour_24h": [
   {
    "h": "2026-09-24 14:00",
-   "n": 29
+   "n": 9
   },
   {
    "h": "2026-09-24 15:00",
@@ -126,6 +126,10 @@
   {
    "h": "2026-09-25 13:00",
    "n": 35
+  },
+  {
+   "h": "2026-09-25 14:00",
+   "n": 28
   }
  ],
  "top_deployers": [
@@ -213,10 +217,10 @@
   {
    "cluster_id": "dc7d37262500a031",
    "tokens_total": 22,
-   "tokens_evaluated": 4,
+   "tokens_evaluated": 5,
    "tokens_rugged": 2,
    "tokens_10x": 0,
-   "score": 0.5,
+   "score": 0.5625,
    "deployers": 21
   },
   {
@@ -231,11 +235,11 @@
   {
    "cluster_id": "970418e92bc828a7",
    "tokens_total": 18,
-   "tokens_evaluated": 4,
+   "tokens_evaluated": 6,
    "tokens_rugged": 0,
-   "tokens_10x": 4,
-   "score": 0.9,
-   "deployers": 12
+   "tokens_10x": 5,
+   "score": 0.9211,
+   "deployers": 13
   },
   {
    "cluster_id": "a6fae7370d834419",
@@ -249,37 +253,37 @@
   {
    "cluster_id": "ce57e76a4316ef7d",
    "tokens_total": 16,
-   "tokens_evaluated": 3,
-   "tokens_rugged": 0,
-   "tokens_10x": 0,
-   "score": 0.75,
+   "tokens_evaluated": 4,
+   "tokens_rugged": 1,
+   "tokens_10x": 1,
+   "score": 0.7222,
    "deployers": 3
   },
   {
    "cluster_id": "f4ca196fea77480a",
    "tokens_total": 16,
-   "tokens_evaluated": 4,
+   "tokens_evaluated": 10,
    "tokens_rugged": 0,
    "tokens_10x": 0,
-   "score": 0.7857,
+   "score": 0.8846,
    "deployers": 4
   },
   {
    "cluster_id": "e138b28750810679",
    "tokens_total": 16,
-   "tokens_evaluated": 1,
+   "tokens_evaluated": 2,
    "tokens_rugged": 1,
-   "tokens_10x": 1,
-   "score": 0.5833,
+   "tokens_10x": 2,
+   "score": 0.7222,
    "deployers": 1
   },
   {
    "cluster_id": "58a0b780fd60127d",
    "tokens_total": 15,
-   "tokens_evaluated": 12,
+   "tokens_evaluated": 15,
    "tokens_rugged": 0,
    "tokens_10x": 0,
-   "score": 0.9,
+   "score": 0.9167,
    "deployers": 1
   },
   {
@@ -295,42 +299,42 @@
  "outcomes_summary": [
   {
    "rug_reason": "none",
-   "n": 759,
-   "avg_peak": 4.16,
-   "max_peak": 208.25
+   "n": 831,
+   "avg_peak": 5.39,
+   "max_peak": 403.5
   },
   {
    "rug_reason": "price_collapse",
-   "n": 125,
-   "avg_peak": 115707.89,
-   "max_peak": 14455713.42
+   "n": 142,
+   "avg_peak": 39882439.98,
+   "max_peak": 5648825200.05
   }
  ],
  "outcome_by_cluster_size": [
   {
    "bucket": "2-3",
-   "n": 192,
-   "rug_rate": 0.193,
-   "avg_peak": 6.92
+   "n": 202,
+   "rug_rate": 0.188,
+   "avg_peak": 91.4
   },
   {
    "bucket": "4+",
-   "n": 298,
-   "rug_rate": 0.164,
-   "avg_peak": 48536.65
+   "n": 337,
+   "rug_rate": 0.148,
+   "avg_peak": 42920.58
   },
   {
    "bucket": "single",
-   "n": 394,
-   "rug_rate": 0.099,
-   "avg_peak": 3.53
+   "n": 434,
+   "rug_rate": 0.124,
+   "avg_peak": 13015733.31
   }
  ],
  "deployer_provenance": [
   {
    "src": "rugcheck",
    "verified": "-",
-   "n": 1597
+   "n": 1621
   },
   {
    "src": "pre-fix",
@@ -340,7 +344,7 @@
   {
    "src": "rpc",
    "verified": "-",
-   "n": 223
+   "n": 227
   },
   {
    "src": "pre-fix",
@@ -356,51 +360,51 @@
  "unknown_funding_first_tx_kinds": [
   {
    "kind": "111111:transfer",
-   "n": 145
+   "n": 162
   },
   {
    "kind": "Comput:-",
-   "n": 89
+   "n": 93
   },
   {
    "kind": "111111:createAccount",
-   "n": 68
+   "n": 73
   },
   {
    "kind": "Tokenk:syncNative",
-   "n": 59
-  },
-  {
-   "kind": "AToken:createIdempotent",
-   "n": 53
+   "n": 62
   },
   {
    "kind": "Tokenk:closeAccount",
-   "n": 52
+   "n": 56
+  },
+  {
+   "kind": "AToken:createIdempotent",
+   "n": 55
   },
   {
    "kind": "Tokenk:initializeAccount3",
-   "n": 48
+   "n": 51
   },
   {
    "kind": "Tokenz:initializeMetadataPointer",
-   "n": 29
+   "n": 31
   },
   {
    "kind": "Tokenk:getAccountDataSize",
-   "n": 24
+   "n": 25
   },
   {
    "kind": "Tokenk:initializeImmutableOwner",
-   "n": 24
+   "n": 25
   },
   {
    "kind": "6EF8rr:-",
-   "n": 17
+   "n": 20
   },
   {
    "kind": "111111:createAccountWithSeed",
-   "n": 16
+   "n": 17
   },
   {
    "kind": "dbcij3:-",
@@ -408,11 +412,11 @@
   },
   {
    "kind": "Tokenz:initializeMint2",
-   "n": 5
+   "n": 6
   },
   {
-   "kind": "79Xs3x:-",
-   "n": 4
+   "kind": "Tokenk:initializeAccount",
+   "n": 5
   }
  ],
  "service_wallet_candidates": [
@@ -438,15 +442,15 @@
  "funding_sources": [
   {
    "src": "wallet",
-   "n": 1154
+   "n": 1167
   },
   {
    "src": "unknown",
-   "n": 238
+   "n": 242
   },
   {
    "src": "hub",
-   "n": 197
+   "n": 199
   },
   {
    "src": "cex",
@@ -454,7 +458,7 @@
   },
   {
    "src": "untraced",
-   "n": 16
+   "n": 20
   }
  ]
 }

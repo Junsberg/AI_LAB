@@ -1,19 +1,19 @@
 {
- "generated_at": "2026-09-25T14:09:02.855498+00:00",
- "status": "warn",
+ "generated_at": "2026-09-25T14:37:26.768233+00:00",
+ "status": "ok",
  "metrics": {
-  "tokens_70m": 35,
-  "tokens_24h": 1023,
+  "tokens_70m": 51,
+  "tokens_24h": 1031,
   "risk_missing": 0,
-  "risk_eligible": 2293,
-  "top10_over90": 104,
-  "top10_n": 2292,
-  "deployers": 1664,
-  "traced": 1215,
-  "untraceable": 435,
+  "risk_eligible": 2313,
+  "top10_over90": 108,
+  "top10_n": 2320,
+  "deployers": 1687,
+  "traced": 1228,
+  "untraceable": 441,
   "trace_backlog": 6,
-  "outcome_backlog": 353,
-  "outcomes": 884,
+  "outcome_backlog": 294,
+  "outcomes": 974,
   "outcomes_no_data": 0,
   "backfill_pending": 0,
   "deployers_corrected": 81,
@@ -30,31 +30,31 @@
    "name": "collect_alive",
    "level": "critical",
    "ok": true,
-   "detail": "tokens last 70m = 35"
+   "detail": "tokens last 70m = 51"
   },
   {
    "name": "collect_flood",
    "level": "warn",
    "ok": true,
-   "detail": "tokens last 70m = 35 (>150 suggests bonding-stage leak)"
+   "detail": "tokens last 70m = 51 (>150 suggests bonding-stage leak)"
   },
   {
    "name": "risk_coverage",
    "level": "warn",
    "ok": true,
-   "detail": "risk missing 0/2293 (0%)"
+   "detail": "risk missing 0/2313 (0%)"
   },
   {
    "name": "holder_concentration_sane",
    "level": "warn",
    "ok": true,
-   "detail": "top10>90%: 104/2292 (5%) → pool filter gap"
+   "detail": "top10>90%: 108/2320 (5%) → pool filter gap"
   },
   {
    "name": "trace_quality",
    "level": "warn",
    "ok": true,
-   "detail": "unknown+hub 435/1664 (26%)"
+   "detail": "unknown+hub 441/1687 (26%)"
   },
   {
    "name": "trace_backlog",
@@ -65,14 +65,14 @@
   {
    "name": "outcome_backlog",
    "level": "warn",
-   "ok": false,
-   "detail": "tokens >25h without outcome: 353"
+   "ok": true,
+   "detail": "tokens >25h without outcome: 294"
   },
   {
    "name": "outcome_data_quality",
    "level": "warn",
    "ok": true,
-   "detail": "no_data outcomes 0/884 (0%)"
+   "detail": "no_data outcomes 0/974 (0%)"
   },
   {
    "name": "universe_clean",
