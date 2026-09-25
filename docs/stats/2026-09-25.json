@@ -1,19 +1,19 @@
 {
- "generated_at": "2026-09-25T17:37:14.715109+00:00",
+ "generated_at": "2026-09-25T18:37:19.778583+00:00",
  "counts": [
   {
-   "tokens": 2470,
-   "tokens_24h": 1023,
-   "deployers": 1785,
-   "deployers_traced": 1296,
-   "deployers_unknown_src": 253,
-   "edges": 2486,
-   "clusters": 1480,
-   "multi_token_clusters": 278,
-   "outcomes": 1445,
-   "rugged": 265,
-   "tenx": 166,
-   "with_risk": 2470,
+   "tokens": 2526,
+   "tokens_24h": 1028,
+   "deployers": 1826,
+   "deployers_traced": 1327,
+   "deployers_unknown_src": 256,
+   "edges": 2546,
+   "clusters": 1511,
+   "multi_token_clusters": 284,
+   "outcomes": 1483,
+   "rugged": 269,
+   "tenx": 165,
+   "with_risk": 2526,
    "signals": 0,
    "positions": 0,
    "hypotheses": 0
@@ -24,20 +24,16 @@
    "top10_p50": 9.2,
    "top10_p90": 60.6,
    "insiders_avg": 0.0,
-   "lp_locked": 1296,
+   "lp_locked": 1314,
    "freeze_on": 4,
    "mint_on": 0,
-   "n": 2448
+   "n": 2503
   }
  ],
  "tokens_per_hour_24h": [
   {
-   "h": "2026-09-24 17:00",
-   "n": 22
-  },
-  {
    "h": "2026-09-24 18:00",
-   "n": 42
+   "n": 13
   },
   {
    "h": "2026-09-24 19:00",
@@ -129,7 +125,11 @@
   },
   {
    "h": "2026-09-25 17:00",
-   "n": 32
+   "n": 69
+  },
+  {
+   "h": "2026-09-25 18:00",
+   "n": 19
   }
  ],
  "top_deployers": [
@@ -197,11 +197,11 @@
    "last_t": "09-25 12:02"
   },
   {
-   "deployer": "D4fvEyoqRDcrHDsU1Nb4uAARYW6jX7LQfG8Yf9vxLFAF",
+   "deployer": "BvDc6R79TyZXGg7murNY79yYJRFDQtbQmid4tHcnBoji",
    "n": 13,
-   "syms": "Wumpus,AN,DRAGON,CHIPS,OSCAR,MC,GPU,KIM,COLLECT,TIMMY,goonette,Shillpad,PCAT",
-   "first_t": "09-24 23:28",
-   "last_t": "09-25 09:34"
+   "syms": "玉兔,玉兔,中秋玉兔,中秋玉兔,中秋玉兔,中秋玉兔,玉兔,币安玉兔,中秋玉兔,玉兔,玉兔,中秋玉兔,中国人能飞",
+   "first_t": "09-24 06:48",
+   "last_t": "09-25 17:54"
   }
  ],
  "top_clusters": [
@@ -218,18 +218,18 @@
    "cluster_id": "abdae8e929660601",
    "tokens_total": 24,
    "tokens_evaluated": 8,
-   "tokens_rugged": 4,
+   "tokens_rugged": 3,
    "tokens_10x": 0,
-   "score": 0.5,
+   "score": 0.5909,
    "deployers": 23
   },
   {
    "cluster_id": "970418e92bc828a7",
    "tokens_total": 24,
-   "tokens_evaluated": 6,
+   "tokens_evaluated": 8,
    "tokens_rugged": 0,
-   "tokens_10x": 5,
-   "score": 0.9211,
+   "tokens_10x": 6,
+   "score": 0.9348,
    "deployers": 14
   },
   {
@@ -244,29 +244,20 @@
   {
    "cluster_id": "9490610d782959fc",
    "tokens_total": 17,
-   "tokens_evaluated": 11,
-   "tokens_rugged": 6,
+   "tokens_evaluated": 12,
+   "tokens_rugged": 7,
    "tokens_10x": 1,
-   "score": 0.5313,
+   "score": 0.5,
    "deployers": 17
   },
   {
-   "cluster_id": "f4ca196fea77480a",
-   "tokens_total": 16,
-   "tokens_evaluated": 16,
+   "cluster_id": "62f6aa675d7951eb",
+   "tokens_total": 17,
+   "tokens_evaluated": 6,
    "tokens_rugged": 0,
-   "tokens_10x": 0,
-   "score": 0.9211,
-   "deployers": 4
-  },
-  {
-   "cluster_id": "e138b28750810679",
-   "tokens_total": 16,
-   "tokens_evaluated": 7,
-   "tokens_rugged": 1,
-   "tokens_10x": 4,
-   "score": 0.8611,
-   "deployers": 1
+   "tokens_10x": 3,
+   "score": 0.9,
+   "deployers": 14
   },
   {
    "cluster_id": "ce57e76a4316ef7d",
@@ -278,6 +269,24 @@
    "deployers": 3
   },
   {
+   "cluster_id": "e138b28750810679",
+   "tokens_total": 16,
+   "tokens_evaluated": 7,
+   "tokens_rugged": 1,
+   "tokens_10x": 4,
+   "score": 0.8611,
+   "deployers": 1
+  },
+  {
+   "cluster_id": "f4ca196fea77480a",
+   "tokens_total": 16,
+   "tokens_evaluated": 16,
+   "tokens_rugged": 0,
+   "tokens_10x": 0,
+   "score": 0.9211,
+   "deployers": 4
+  },
+  {
    "cluster_id": "58a0b780fd60127d",
    "tokens_total": 15,
    "tokens_evaluated": 15,
@@ -285,58 +294,49 @@
    "tokens_10x": 0,
    "score": 0.9167,
    "deployers": 1
-  },
-  {
-   "cluster_id": "fb2b8345d8899df5",
-   "tokens_total": 15,
-   "tokens_evaluated": 5,
-   "tokens_rugged": 0,
-   "tokens_10x": 3,
-   "score": 0.8929,
-   "deployers": 3
   }
  ],
  "outcomes_summary": [
   {
    "rug_reason": "none",
-   "n": 1180,
-   "p50_peak": 1.35,
-   "p90_peak": 9.79,
-   "max_peak": 403.5
+   "n": 1214,
+   "p50_peak": 1.22,
+   "p90_peak": 9.72,
+   "max_peak": 555.17
   },
   {
    "rug_reason": "price_collapse",
-   "n": 265,
-   "p50_peak": 2.31,
-   "p90_peak": 53.58,
+   "n": 269,
+   "p50_peak": 2.14,
+   "p90_peak": 45.44,
    "max_peak": 13372882881.77
   }
  ],
  "outcome_by_cluster_size": [
   {
    "bucket": "2-3",
-   "n": 280,
-   "rug_rate": 0.179,
-   "p50_peak": 1.48
+   "n": 284,
+   "rug_rate": 0.173,
+   "p50_peak": 1.28
   },
   {
    "bucket": "4+",
-   "n": 478,
-   "rug_rate": 0.144,
-   "p50_peak": 1.56
+   "n": 490,
+   "rug_rate": 0.143,
+   "p50_peak": 1.47
   },
   {
    "bucket": "single",
-   "n": 687,
-   "rug_rate": 0.213,
-   "p50_peak": 1.37
+   "n": 709,
+   "rug_rate": 0.212,
+   "p50_peak": 1.22
   }
  ],
  "deployer_provenance": [
   {
    "src": "rugcheck",
    "verified": "-",
-   "n": 1725
+   "n": 1762
   },
   {
    "src": "pre-fix",
@@ -346,7 +346,7 @@
   {
    "src": "rpc",
    "verified": "-",
-   "n": 251
+   "n": 270
   },
   {
    "src": "pre-fix",
@@ -362,11 +362,11 @@
  "unknown_funding_first_tx_kinds": [
   {
    "kind": "111111:transfer",
-   "n": 190
+   "n": 194
   },
   {
    "kind": "Comput:-",
-   "n": 111
+   "n": 115
   },
   {
    "kind": "111111:createAccount",
@@ -374,19 +374,19 @@
   },
   {
    "kind": "Tokenk:syncNative",
-   "n": 76
+   "n": 80
   },
   {
    "kind": "AToken:createIdempotent",
-   "n": 69
+   "n": 73
   },
   {
    "kind": "Tokenk:closeAccount",
-   "n": 67
+   "n": 69
   },
   {
    "kind": "Tokenk:initializeAccount3",
-   "n": 60
+   "n": 62
   },
   {
    "kind": "Tokenz:initializeMetadataPointer",
@@ -406,11 +406,11 @@
   },
   {
    "kind": "111111:createAccountWithSeed",
-   "n": 24
+   "n": 26
   },
   {
    "kind": "dbcij3:-",
-   "n": 19
+   "n": 21
   },
   {
    "kind": "Tokenz:initializeMint2",
@@ -444,15 +444,15 @@
  "funding_sources": [
   {
    "src": "wallet",
-   "n": 1232
+   "n": 1263
   },
   {
    "src": "unknown",
-   "n": 253
+   "n": 256
   },
   {
    "src": "hub",
-   "n": 219
+   "n": 224
   },
   {
    "src": "cex",
@@ -460,7 +460,7 @@
   },
   {
    "src": "untraced",
-   "n": 19
+   "n": 21
   }
  ]
 }
