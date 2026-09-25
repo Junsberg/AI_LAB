@@ -27,6 +27,10 @@ GT_SLEEP = 2.2  # ~27 req/min against the ~30/min public limit
 MULTI_BATCH = 30  # GeckoTerminal pools/multi cap
 RUN_BUDGET_S = 20 * 60  # workflow timeout is 25 min
 RETRY_MIN_S, RETRY_DEFAULT_S, RETRY_MAX_S = 5.0, 60.0, 180.0
+# Rows evaluated before this instant were classified by rules v1 (wick peaks, raw first
+# open) and are re-evaluated once. Bump when classify() changes in a way that alters
+# stored values; there is no schema column for a rules version on purpose (no migration).
+RULES_CHANGED_AT = "2026-09-25T17:30:00+00:00"
 
 
 class BudgetExhausted(Exception):
@@ -119,7 +123,8 @@ def _upsert(mint: str, liq_peak: float | None, o) -> None:
                on conflict (mint) do update set
                  peak_mcap_usd=excluded.peak_mcap_usd, peak_at=excluded.peak_at,
                  peak_multiple=excluded.peak_multiple, rugged=excluded.rugged,
-                 rug_at=coalesce(token_outcomes.rug_at, excluded.rug_at),
+                 rug_at=case when excluded.rugged
+                             then coalesce(token_outcomes.rug_at, excluded.rug_at) end,
                  rug_reason=excluded.rug_reason, evaluated_at=now()""",
             (
                 mint,
@@ -134,19 +139,25 @@ def _upsert(mint: str, liq_peak: float | None, o) -> None:
         c.commit()
 
 
-async def run(limit: int = 400, budget_s: float = RUN_BUDGET_S) -> int:
+def pending_rows(limit: int) -> list[dict]:
+    """Tokens due for (re-)evaluation: never evaluated first, then oldest."""
     with conn() as c:
-        rows = c.execute(
+        return c.execute(
             """select t.mint, t.pool_address, t.created_at, o.evaluated_at, o.peak_mcap_usd as liq_peak
                from tokens t left join token_outcomes o on o.mint = t.mint
                where t.pool_address is not null
                  and t.created_at < now() - interval '24 hours'
                  and (o.mint is null
+                      or o.evaluated_at < %s::timestamptz
                       or (o.evaluated_at < t.created_at + interval '72 hours'
                           and t.created_at < now() - interval '72 hours'))
-               order by t.created_at limit %s""",
-            (limit,),
+               order by (o.mint is null) desc, t.created_at limit %s""",
+            (RULES_CHANGED_AT, limit),
         ).fetchall()
+
+
+async def run(limit: int = 400, budget_s: float = RUN_BUDGET_S) -> int:
+    rows = pending_rows(limit)
     if not rows:
         return 0
     n = 0

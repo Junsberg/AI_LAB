@@ -41,6 +41,7 @@ def run() -> dict:
                  where t.created_at < now()-interval '25 hours' and o.mint is null) outcome_backlog,
               (select count(*) from token_outcomes) outcomes,
               (select count(*) from token_outcomes where rug_reason='no_data') outcomes_no_data,
+              (select count(*) from token_outcomes where peak_multiple > 100) outcomes_over100x,
               (select count(*) from tokens where meta->>'deployer_source' is null and meta->>'deployer_verified' is null) backfill_pending,
               (select count(*) from tokens where meta->>'deployer_verified'='corrected') deployers_corrected,
               (select count(*) from tokens where meta->>'stage' = 'graduated'
@@ -74,6 +75,8 @@ def run() -> dict:
     chk("outcome_backlog", "warn", m["outcome_backlog"] > 300, f"tokens >25h without outcome: {m['outcome_backlog']}")
     nd = m["outcomes_no_data"] / m["outcomes"] if m["outcomes"] else 0
     chk("outcome_data_quality", "warn", m["outcomes"] >= 20 and nd > 0.3, f"no_data outcomes {m['outcomes_no_data']}/{m['outcomes']} ({nd:.0%})")
+    o100 = m["outcomes_over100x"] / m["outcomes"] if m["outcomes"] else 0
+    chk("peak_multiple_sane", "warn", m["outcomes"] >= 50 and o100 > 0.02, f"outcomes >100x: {m['outcomes_over100x']}/{m['outcomes']} ({o100:.1%}) → candle glitch leaking into peaks")
     chk("universe_clean", "warn", m["out_of_universe"] > 0, f"out-of-universe tokens: {m['out_of_universe']}")
     # value-level invariants: these are impossible if the data is right
     chk("funding_precedes_launch", "warn", m["funded_after_launch"] > 0, f"deployers funded after their first launch: {m['funded_after_launch']} (auto-retraced by enrich)")

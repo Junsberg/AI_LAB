@@ -19,7 +19,8 @@ def test_no_data():
 def test_healthy_runner_not_rugged():
     candles = [c(1, 1.0, 1.2, 0.9, 1.1), c(2, 1.1, 12.0, 1.0, 9.0), c(3, 9.0, 10.0, 7.0, 8.0)]
     o = classify(candles, 50_000, 60_000)
-    assert o.peak_multiple == 12.0 and not o.rugged and o.rug_reason == "none"
+    # base = first-candle body high (1.1), peak = body high (9.0), never the 12.0 wick
+    assert o.peak_multiple == round(9.0 / 1.1, 4) and not o.rugged and o.rug_reason == "none"
 
 
 def test_lp_pull():
@@ -35,9 +36,34 @@ def test_price_collapse_without_liquidity_data():
 
 
 def test_deep_drawdown_but_not_collapse_is_not_rug():
-    candles = [c(1, 1.0, 10.0, 0.9, 8.0), c(2, 8.0, 8.0, 1.5, 2.0)]  # -80% from peak
+    candles = [c(1, 1.0, 1.0, 0.9, 1.0), c(2, 1.0, 10.0, 1.0, 10.0), c(3, 10.0, 10.0, 1.5, 2.0)]  # -80% from peak
     o = classify(candles, 20_000, 30_000)
     assert not o.rugged and o.drawdown_from_peak == 0.8
+
+
+def test_wick_glitch_does_not_make_peak_or_collapse():
+    # one candle with a 1e6x wick but a normal body: v1 called this a 1e6x "price_collapse"
+    candles = [c(1, 1.0, 1.1, 0.9, 1.0), c(2, 1.0, 1_000_000.0, 0.9, 1.2), c(3, 1.2, 1.3, 1.0, 1.1)]
+    o = classify(candles, 20_000, 30_000)
+    assert o.peak_multiple == 1.2 and not o.rugged and o.rug_reason == "none"
+
+
+def test_first_open_glitch_uses_close_as_base():
+    candles = [c(1, 1e-12, 1.0, 1e-12, 1.0), c(2, 1.0, 3.0, 0.9, 2.5)]
+    o = classify(candles, 20_000, 30_000)
+    assert o.peak_multiple == 2.5
+
+
+def test_zero_volume_candles_are_ignored():
+    candles = [c(1, 1e-9, 1e-9, 1e-9, 1e-9, v=0.0), c(2, 1.0, 1.5, 0.9, 1.2), c(3, 1.2, 2.0, 1.0, 1.8)]
+    assert classify(candles, None, None).peak_multiple == 1.5
+    assert classify([c(1, 1.0, 1.0, 1.0, 1.0, v=0.0)], None, None).rug_reason == "no_data"
+
+
+def test_absurd_multiple_is_bad_data():
+    candles = [c(1, 1.0, 1.0, 1.0, 1.0), c(2, 1.0, 5000.0, 1.0, 5000.0)]
+    o = classify(candles, None, None)
+    assert o.rug_reason == "no_data" and o.peak_multiple is None
 
 
 def test_drained_pool_zero_liquidity_is_lp_pull():

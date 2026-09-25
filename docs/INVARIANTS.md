@@ -32,7 +32,8 @@
 | no_self_edges | src = dst 엣지 | 불가능 | critical | A | 없음 | 없음 |
 | cluster_size_sane | 최대 클러스터 > 40 지갑 | 런치 팜은 보통 5~20 지갑. 40+는 거래소·서비스 지갑이 접착제 역할 | warn | B | hub 자금원은 결합 제외(코드) | 대형 팜 존재 가능 → 자금원 이력 확인 후 판단 |
 | trace_quality | unknown+hub / 배포자 > 40% | 추적 실패율이 높으면 계보 시그널 자체가 약해짐 | warn | C | 없음 | 초기엔 hub 비율이 높을 수 있음 |
-| outcome_data_quality | no_data 결과 > 30% (n≥20) | GeckoTerminal OHLCV 미제공 풀이 많으면 러그 판정 불가 | warn | C | 없음 | 소형 풀 다수 시 |
+| outcome_data_quality | no_data 결과 > 30% (n≥20) | GeckoTerminal OHLCV 미제공 풀이 많으면 러그 판정 불가 | warn | C | 없음 | 소형 풀 다수 시. 규칙 v2부터 1000배 초과(데이터 불량)도 no_data로 집계 |
+| peak_multiple_sane | 고점 배수 >100배가 결과의 2% 초과 (n≥50) | 캔들 글리치(wick·첫 open≈0)가 배수에 새면 10x 집계와 클러스터 점수가 오염. 09-25 실제로 최대 56억 배, 10x 11% 발생 | warn | A | 없음 → rules.classify 재점검 후 RULES_CHANGED_AT 갱신으로 전량 재평가 | 실제 100배 토큰이 몰린 강세장(드묾, 2% 여유) |
 
 ## 아직 코드에 없지만 추가 예정
 - 결과 평가 값 검증: peak_multiple ≥ 1 (고점이 시작가보다 낮을 수 없음), drawdown ∈ [0,1], 러그 판정 토큰의 현재 유동성 ≤ 고점 유동성

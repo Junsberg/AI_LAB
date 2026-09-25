@@ -119,3 +119,22 @@ def test_insert_paths_roundtrip():
     with conn() as c:
         c.execute("delete from wallet_edges; delete from cluster_scores; delete from wallets; delete from tokens;")
         c.commit()
+
+
+def test_outcomes_selection_and_upsert_roundtrip():
+    from memebot.db import conn
+    from memebot.outcomes import evaluate as ev
+    from memebot.outcomes.rules import Outcome
+
+    with conn() as c:
+        c.execute("insert into tokens(mint, deployer, launch_platform, created_at, pool_address) "
+                  "values ('MINT_OUT', 'DEP_OUT', 'pumpfun', now() - interval '30 hours', 'POOL_OUT') "
+                  "on conflict (mint) do nothing")
+        c.commit()
+    assert any(r["mint"] == "MINT_OUT" for r in ev.pending_rows(50))
+    ev._upsert("MINT_OUT", 1234.5, Outcome(3.0, 1_700_000_000, True, "price_collapse", 0.96))
+    ev._upsert("MINT_OUT", 1234.5, Outcome(3.0, 1_700_000_000, False, "none", 0.1))  # recovered → rug_at cleared
+    with conn() as c:
+        row = c.execute("select rugged, rug_at, rug_reason from token_outcomes where mint='MINT_OUT'").fetchone()
+    assert row["rugged"] is False and row["rug_at"] is None and row["rug_reason"] == "none"
+    assert not any(r["mint"] == "MINT_OUT" for r in ev.pending_rows(50))  # fresh evaluation is not re-selected

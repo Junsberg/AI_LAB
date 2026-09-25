@@ -58,12 +58,16 @@ QUERIES: dict[str, str] = {
         where cs.tokens_total>1 group by 1,2,3,4,5,6 order by cs.tokens_total desc limit 10
     """,
     "outcomes_summary": """
-        select rug_reason, count(*) n, round(avg(peak_multiple),2) avg_peak, round(max(peak_multiple),2) max_peak
+        select rug_reason, count(*) n,
+               round(percentile_cont(0.5) within group (order by peak_multiple)::numeric,2) p50_peak,
+               round(percentile_cont(0.9) within group (order by peak_multiple)::numeric,2) p90_peak,
+               round(max(peak_multiple),2) max_peak
         from token_outcomes group by 1 order by n desc
     """,
     "outcome_by_cluster_size": """
         select case when cs.tokens_total=1 then 'single' when cs.tokens_total<=3 then '2-3' else '4+' end bucket,
-               count(*) n, round(avg((o.rugged)::int),3) rug_rate, round(avg(o.peak_multiple),2) avg_peak
+               count(*) n, round(avg((o.rugged)::int),3) rug_rate,
+               round(percentile_cont(0.5) within group (order by o.peak_multiple)::numeric,2) p50_peak
         from token_outcomes o join tokens t on t.mint=o.mint join wallets w on w.address=t.deployer
         join cluster_scores cs on cs.cluster_id=w.cluster_id group by 1 order by 1
     """,

@@ -5,6 +5,15 @@ Definitions (v1). These drive cluster scores, so they are conservative:
   price_collapse price now <= 5% of peak within the first 24h and never recovered
   none          otherwise (includes "slow bleed" — not a rug by this definition)
 Deployer-dump and authority-abuse need trade/authority data; added in v2.
+
+Price handling (rules v2, 2026-09-25): DEX candles carry glitches — a first-candle
+open near zero and single-trade wicks thousands of times above the body — which
+produced peak multiples in the billions and mass "price_collapse" verdicts. So:
+  * only candles with volume > 0 and positive open/close count
+  * base  = max(open, close) of the first valid candle (end-of-first-hour price is
+            also the earliest our signals could realistically have bought)
+  * peak  = max over candles of max(open, close) — bodies, never wicks
+  * peak_multiple > MAX_SANE_MULTIPLE is treated as bad data (no_data), not a 1000x
 """
 from __future__ import annotations
 
@@ -19,6 +28,13 @@ class Candle:
     low: float
     close: float
     volume_usd: float
+
+
+MAX_SANE_MULTIPLE = 1000.0  # >1000x from graduation inside a week is a data error, not a runner
+
+
+def _body_high(c: Candle) -> float:
+    return max(c.open, c.close)
 
 
 @dataclass(frozen=True)
@@ -36,15 +52,16 @@ def classify(
     liquidity_peak_usd: float | None,
     price_now: float | None = None,
 ) -> Outcome:
+    candles = [c for c in candles if c.volume_usd > 0 and c.open > 0 and c.close > 0]
     if not candles:
         return Outcome(None, None, False, "no_data", None)
-    base = candles[0].open or candles[0].close
-    if base <= 0:
-        return Outcome(None, None, False, "no_data", None)
-    peak_c = max(candles, key=lambda c: c.high)
-    peak = peak_c.high
+    base = max(candles[0].open, candles[0].close)
+    peak_c = max(candles, key=_body_high)
+    peak = _body_high(peak_c)
     last = price_now if price_now is not None else candles[-1].close
     peak_multiple = peak / base
+    if peak_multiple > MAX_SANE_MULTIPLE:
+        return Outcome(None, None, False, "no_data", None)
     dd = 1 - (last / peak if peak else 0)
 
     reason = "none"
