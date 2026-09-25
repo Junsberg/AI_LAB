@@ -1,19 +1,19 @@
 {
- "generated_at": "2026-09-25T08:37:18.123050+00:00",
+ "generated_at": "2026-09-25T09:37:16.027742+00:00",
  "counts": [
   {
-   "tokens": 2147,
-   "tokens_24h": 1205,
-   "deployers": 1549,
-   "deployers_traced": 1125,
-   "deployers_unknown_src": 220,
-   "edges": 2158,
-   "clusters": 1287,
-   "multi_token_clusters": 253,
-   "outcomes": 207,
-   "rugged": 30,
+   "tokens": 2198,
+   "tokens_24h": 1206,
+   "deployers": 1576,
+   "deployers_traced": 1153,
+   "deployers_unknown_src": 226,
+   "edges": 2210,
+   "clusters": 1315,
+   "multi_token_clusters": 260,
+   "outcomes": 226,
+   "rugged": 32,
    "tenx": 7,
-   "with_risk": 2147,
+   "with_risk": 2198,
    "signals": 0,
    "positions": 0,
    "hypotheses": 0
@@ -21,23 +21,19 @@
  ],
  "risk_distribution": [
   {
-   "top10_p50": 8.9,
-   "top10_p90": 56.5,
+   "top10_p50": 9.0,
+   "top10_p90": 56.9,
    "insiders_avg": 0.0,
-   "lp_locked": 1184,
+   "lp_locked": 1198,
    "freeze_on": 4,
    "mint_on": 0,
-   "n": 2125
+   "n": 2176
   }
  ],
  "tokens_per_hour_24h": [
   {
-   "h": "2026-09-24 08:00",
-   "n": 20
-  },
-  {
    "h": "2026-09-24 09:00",
-   "n": 55
+   "n": 25
   },
   {
    "h": "2026-09-24 10:00",
@@ -129,7 +125,11 @@
   },
   {
    "h": "2026-09-25 08:00",
-   "n": 24
+   "n": 62
+  },
+  {
+   "h": "2026-09-25 09:00",
+   "n": 13
   }
  ],
  "top_deployers": [
@@ -148,6 +148,13 @@
    "last_t": "09-25 03:07"
   },
   {
+   "deployer": "Be3MwhYqH9Y7NMVZqUJBL7fmEshHgQnU5prttJbGRCpW",
+   "n": 15,
+   "syms": "Hybrid cat,Hybrid cat,Hybrid cat,Kitty,Kitty,Kitty,Kitty,Kitty,🍒Cherry,Thief Bear,🐻Bear,🐻Bear,🐻Bear,🐻Bear,🐻Bear",
+   "first_t": "09-24 06:22",
+   "last_t": "09-25 09:02"
+  },
+  {
    "deployer": "BAGSB9TpGrZxQbEsrEznv5jXXdwyP6AXerN8aVRiAmcv",
    "n": 15,
    "syms": "VWA,QUANTA,GTA IV,GEMINI,OPENAI,MM,DRAGONBALL,SPONGEBOB,POKER,GOOGLE,BITFOOTS,₽,ROCKET,₽,NS",
@@ -162,13 +169,6 @@
    "last_t": "09-24 07:32"
   },
   {
-   "deployer": "5whEE6vB9T7NJrB9bHLu67kiSet1DMvc2VQ9kmrdwb8e",
-   "n": 14,
-   "syms": "SI,SI,PESOS,MOONCATS,SIDELINED,TOKENS,Elephant,SDOG,VISE,IshiGo,Meme,PROM,fush,RETIRE",
-   "first_t": "09-24 05:06",
-   "last_t": "09-24 12:49"
-  },
-  {
    "deployer": "CrVW9jpbbKssWULzncQtf31rSxvzJwPe56zg2o65sjA7",
    "n": 14,
    "syms": "MONEY,MONEY,MONEY,MONEY,MONEY,MONEY,MONEY,MONEY,MONEY,MONEY,MONEY,MONEY,MONEY,MONEY",
@@ -176,11 +176,11 @@
    "last_t": "09-24 07:14"
   },
   {
-   "deployer": "E4mA9UbaQW7qHKbvMKCDMS4FdL5tBW7zcjXrwjrDB3ac",
-   "n": 13,
-   "syms": "BOWFLEX,BOWFLEX,GG,COMPANY,Litterbox,TRUMPCAT,TTP,POH,Monkey,company,Jester,NUUC,Gavel",
-   "first_t": "09-25 01:16",
-   "last_t": "09-25 07:19"
+   "deployer": "5whEE6vB9T7NJrB9bHLu67kiSet1DMvc2VQ9kmrdwb8e",
+   "n": 14,
+   "syms": "SI,SI,PESOS,MOONCATS,SIDELINED,TOKENS,Elephant,SDOG,VISE,IshiGo,Meme,PROM,fush,RETIRE",
+   "first_t": "09-24 05:06",
+   "last_t": "09-24 12:49"
   },
   {
    "deployer": "8DTxjDbFnykLJ89Er1sJ4h1i1HTHtvxnEkf6VcNiv2Zs",
@@ -190,24 +190,24 @@
    "last_t": "09-24 09:24"
   },
   {
-   "deployer": "Be3MwhYqH9Y7NMVZqUJBL7fmEshHgQnU5prttJbGRCpW",
-   "n": 12,
-   "syms": "Hybrid cat,Hybrid cat,Hybrid cat,Kitty,Kitty,Kitty,Kitty,Kitty,🍒Cherry,Thief Bear,🐻Bear,🐻Bear",
-   "first_t": "09-24 06:22",
-   "last_t": "09-25 07:47"
+   "deployer": "E4mA9UbaQW7qHKbvMKCDMS4FdL5tBW7zcjXrwjrDB3ac",
+   "n": 13,
+   "syms": "BOWFLEX,BOWFLEX,GG,COMPANY,Litterbox,TRUMPCAT,TTP,POH,Monkey,company,Jester,NUUC,Gavel",
+   "first_t": "09-25 01:16",
+   "last_t": "09-25 07:19"
   },
   {
-   "deployer": "6ATnpbwa43DtscAWjiR3uh5bEfpc4mhFpF42F5a5f68T",
-   "n": 10,
-   "syms": "kms,kms,kms,kms,kms,kms,kms,kms,kms,kms",
-   "first_t": "09-23 22:17",
-   "last_t": "09-24 00:35"
+   "deployer": "6SKpacnxDtENkj9WrgyPayY43twJ2mZu9LwHm7atw94c",
+   "n": 12,
+   "syms": "济公,济公,济公,济公,Agrippa,玩币归赵,玩币归赵,玩币归赵,玩币归赵,玩币归赵,玩币归赵,玩币归赵",
+   "first_t": "09-24 08:29",
+   "last_t": "09-25 09:23"
   }
  ],
  "top_clusters": [
   {
    "cluster_id": "331297bc4e47d236",
-   "tokens_total": 27,
+   "tokens_total": 28,
    "tokens_evaluated": 0,
    "tokens_rugged": 0,
    "tokens_10x": 0,
@@ -215,22 +215,22 @@
    "deployers": 3
   },
   {
-   "cluster_id": "95af409d0d3b0e2b",
-   "tokens_total": 19,
-   "tokens_evaluated": 0,
-   "tokens_rugged": 0,
-   "tokens_10x": 0,
-   "score": 0.5,
-   "deployers": 2
-  },
-  {
-   "cluster_id": "ccdce9a40ef2e7eb",
-   "tokens_total": 18,
+   "cluster_id": "53e4e3080d4b4384",
+   "tokens_total": 21,
    "tokens_evaluated": 4,
    "tokens_rugged": 2,
    "tokens_10x": 0,
    "score": 0.5,
-   "deployers": 17
+   "deployers": 20
+  },
+  {
+   "cluster_id": "95af409d0d3b0e2b",
+   "tokens_total": 19,
+   "tokens_evaluated": 1,
+   "tokens_rugged": 0,
+   "tokens_10x": 0,
+   "score": 0.625,
+   "deployers": 2
   },
   {
    "cluster_id": "970418e92bc828a7",
@@ -278,15 +278,6 @@
    "deployers": 1
   },
   {
-   "cluster_id": "4af1a825ab9ffdac",
-   "tokens_total": 14,
-   "tokens_evaluated": 0,
-   "tokens_rugged": 0,
-   "tokens_10x": 0,
-   "score": 0.5,
-   "deployers": 1
-  },
-  {
    "cluster_id": "37898eeee8a756cd",
    "tokens_total": 14,
    "tokens_evaluated": 0,
@@ -294,47 +285,56 @@
    "tokens_10x": 0,
    "score": 0.5,
    "deployers": 1
+  },
+  {
+   "cluster_id": "4af1a825ab9ffdac",
+   "tokens_total": 14,
+   "tokens_evaluated": 1,
+   "tokens_rugged": 0,
+   "tokens_10x": 0,
+   "score": 0.625,
+   "deployers": 1
   }
  ],
  "outcomes_summary": [
   {
    "rug_reason": "none",
-   "n": 177,
-   "avg_peak": 3.02,
+   "n": 194,
+   "avg_peak": 2.88,
    "max_peak": 88.83
   },
   {
    "rug_reason": "price_collapse",
-   "n": 30,
-   "avg_peak": 7.76,
+   "n": 32,
+   "avg_peak": 7.43,
    "max_peak": 140.8
   }
  ],
  "outcome_by_cluster_size": [
   {
    "bucket": "2-3",
-   "n": 57,
-   "rug_rate": 0.175,
-   "avg_peak": 4.02
+   "n": 58,
+   "rug_rate": 0.172,
+   "avg_peak": 3.97
   },
   {
    "bucket": "4+",
-   "n": 40,
-   "rug_rate": 0.15,
-   "avg_peak": 4.38
+   "n": 43,
+   "rug_rate": 0.14,
+   "avg_peak": 4.15
   },
   {
    "bucket": "single",
-   "n": 110,
-   "rug_rate": 0.127,
-   "avg_peak": 3.3
+   "n": 125,
+   "rug_rate": 0.128,
+   "avg_peak": 3.11
   }
  ],
  "deployer_provenance": [
   {
    "src": "rugcheck",
    "verified": "-",
-   "n": 1443
+   "n": 1489
   },
   {
    "src": "pre-fix",
@@ -344,7 +344,7 @@
   {
    "src": "rpc",
    "verified": "-",
-   "n": 210
+   "n": 215
   },
   {
    "src": "pre-fix",
@@ -360,63 +360,63 @@
  "unknown_funding_first_tx_kinds": [
   {
    "kind": "111111:transfer",
-   "n": 82
+   "n": 93
   },
   {
    "kind": "Comput:-",
-   "n": 65
+   "n": 75
   },
   {
    "kind": "111111:createAccount",
-   "n": 49
+   "n": 59
   },
   {
    "kind": "Tokenk:syncNative",
-   "n": 38
-  },
-  {
-   "kind": "Tokenk:closeAccount",
-   "n": 35
+   "n": 42
   },
   {
    "kind": "AToken:createIdempotent",
-   "n": 35
+   "n": 41
+  },
+  {
+   "kind": "Tokenk:closeAccount",
+   "n": 40
   },
   {
    "kind": "Tokenk:initializeAccount3",
-   "n": 32
+   "n": 36
   },
   {
    "kind": "Tokenz:initializeMetadataPointer",
-   "n": 22
+   "n": 27
   },
   {
    "kind": "Tokenk:getAccountDataSize",
-   "n": 19
+   "n": 22
   },
   {
    "kind": "Tokenk:initializeImmutableOwner",
-   "n": 19
+   "n": 22
   },
   {
    "kind": "6EF8rr:-",
-   "n": 12
+   "n": 17
   },
   {
    "kind": "111111:createAccountWithSeed",
-   "n": 10
+   "n": 11
   },
   {
    "kind": "dbcij3:-",
    "n": 9
   },
   {
-   "kind": "79Xs3x:-",
-   "n": 4
+   "kind": "Tokenz:initializeMint2",
+   "n": 5
   },
   {
-   "kind": "Tokenz:initializeMint2",
-   "n": 3
+   "kind": "Tokenk:initializeAccount",
+   "n": 4
   }
  ],
  "service_wallet_candidates": [
@@ -434,31 +434,31 @@
   },
   {
    "deployer": "D4fvEyoqRDcrHDsU1Nb4uAARYW6jX7LQfG8Yf9vxLFAF",
-   "n_tokens": 10,
-   "n_symbols": 10,
-   "avg_creator_pct": 4.0
+   "n_tokens": 12,
+   "n_symbols": 12,
+   "avg_creator_pct": 6.41
   }
  ],
  "funding_sources": [
   {
    "src": "wallet",
-   "n": 1071
+   "n": 1097
   },
   {
    "src": "unknown",
-   "n": 220
+   "n": 226
   },
   {
    "src": "hub",
-   "n": 184
+   "n": 188
   },
   {
    "src": "cex",
-   "n": 52
+   "n": 54
   },
   {
    "src": "untraced",
-   "n": 22
+   "n": 11
   }
  ]
 }
