@@ -46,7 +46,7 @@ hard_stop → deployer/KOL 매도 감지 → 홀더 급감 → 볼륨 사망 →
 |---|---|---|
 | collect | 10분 | 신규 졸업 풀 → 배포자 → 리스크 스냅샷 |
 | enrich | 매시 17분 | 불변식 교정 → 고아 정리 → 배포자 검증 백필 → 자금 추적(80) → 클러스터 → 점수 |
-| outcomes | 매시 05·35분 | 24h/72h 결과 평가(150) |
+| outcomes | 매시 05·35분 | 24h/72h 결과 평가(최대 400, 20분 예산, 429 대기·재시도) |
 | stats | 매시 37분 | `docs/stats/latest.json` + `health.json` 커밋, critical 시 이슈 |
 
 ## 감시

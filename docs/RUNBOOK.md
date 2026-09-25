@@ -20,7 +20,7 @@
 ## 3. 무료 한도
 | 서비스 | 한도 | 증상 | 조치 |
 |---|---|---|---|
-| GeckoTerminal | ~30 req/min | 429, outcomes 적체 | `GT_SLEEP` 상향, 배치 축소 |
+| GeckoTerminal | 문서상 ~30 req/min, GH 러너에선 ~10/min | 429, outcomes 적체 | 평가기는 Retry-After 대기·재시도(시간 예산 20분). 적체 지속 시 `RUN_BUDGET_S`·`limit` 상향, `GT_SLEEP` 하향 금지 |
 | Helius Free | 월 크레딧 | RpcError -32429 / 401 | 트레이서 한도(40/h) 하향, 대시보드에서 잔량 확인 |
 | rugcheck | 비공개 | 429 | 배치 60→30 |
 | Supabase Free | 500MB, 커넥션 | 삽입 실패 | 오래된 raw 데이터 정리(`trades` 우선) |
