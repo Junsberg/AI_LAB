@@ -1,19 +1,19 @@
 {
- "generated_at": "2026-09-25T16:37:15.767520+00:00",
+ "generated_at": "2026-09-25T17:11:11.768459+00:00",
  "counts": [
   {
-   "tokens": 2425,
-   "tokens_24h": 1027,
-   "deployers": 1749,
+   "tokens": 2443,
+   "tokens_24h": 1008,
+   "deployers": 1765,
    "deployers_traced": 1277,
    "deployers_unknown_src": 249,
    "edges": 2448,
    "clusters": 1453,
    "multi_token_clusters": 276,
-   "outcomes": 1392,
-   "rugged": 249,
-   "tenx": 158,
-   "with_risk": 2425,
+   "outcomes": 1424,
+   "rugged": 262,
+   "tenx": 166,
+   "with_risk": 2443,
    "signals": 0,
    "positions": 0,
    "hypotheses": 0
@@ -21,23 +21,19 @@
  ],
  "risk_distribution": [
   {
-   "top10_p50": 9.3,
-   "top10_p90": 59.4,
+   "top10_p50": 9.2,
+   "top10_p90": 59.2,
    "insiders_avg": 0.0,
-   "lp_locked": 1280,
+   "lp_locked": 1286,
    "freeze_on": 4,
    "mint_on": 0,
-   "n": 2403
+   "n": 2421
   }
  ],
  "tokens_per_hour_24h": [
   {
-   "h": "2026-09-24 16:00",
-   "n": 15
-  },
-  {
    "h": "2026-09-24 17:00",
-   "n": 56
+   "n": 34
   },
   {
    "h": "2026-09-24 18:00",
@@ -129,6 +125,10 @@
   },
   {
    "h": "2026-09-25 16:00",
+   "n": 18
+  },
+  {
+   "h": "2026-09-25 17:00",
    "n": 5
   }
  ],
@@ -299,42 +299,44 @@
  "outcomes_summary": [
   {
    "rug_reason": "none",
-   "n": 1143,
-   "avg_peak": 8.32,
+   "n": 1162,
+   "p50_peak": 1.42,
+   "p90_peak": 9.79,
    "max_peak": 403.5
   },
   {
    "rug_reason": "price_collapse",
-   "n": 249,
-   "avg_peak": 31628846.5,
-   "max_peak": 5648825200.05
+   "n": 262,
+   "p50_peak": 2.62,
+   "p90_peak": 57.19,
+   "max_peak": 13372882881.77
   }
  ],
  "outcome_by_cluster_size": [
   {
    "bucket": "2-3",
-   "n": 271,
-   "rug_rate": 0.177,
-   "avg_peak": 722925.62
+   "n": 277,
+   "rug_rate": 0.181,
+   "p50_peak": 1.61
   },
   {
    "bucket": "4+",
-   "n": 470,
+   "n": 475,
    "rug_rate": 0.145,
-   "avg_peak": 30779.81
+   "p50_peak": 1.63
   },
   {
    "bucket": "single",
-   "n": 651,
-   "rug_rate": 0.204,
-   "avg_peak": 11774520.62
+   "n": 672,
+   "rug_rate": 0.213,
+   "p50_peak": 1.45
   }
  ],
  "deployer_provenance": [
   {
    "src": "rugcheck",
    "verified": "-",
-   "n": 1694
+   "n": 1711
   },
   {
    "src": "pre-fix",
@@ -344,7 +346,7 @@
   {
    "src": "rpc",
    "verified": "-",
-   "n": 237
+   "n": 238
   },
   {
    "src": "pre-fix",
@@ -458,7 +460,7 @@
   },
   {
    "src": "untraced",
-   "n": 11
+   "n": 27
   }
  ]
 }

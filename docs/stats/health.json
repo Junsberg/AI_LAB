@@ -1,20 +1,21 @@
 {
- "generated_at": "2026-09-25T16:37:23.436166+00:00",
- "status": "ok",
+ "generated_at": "2026-09-25T17:11:17.316903+00:00",
+ "status": "warn",
  "metrics": {
-  "tokens_70m": 32,
-  "tokens_24h": 1027,
+  "tokens_70m": 23,
+  "tokens_24h": 1008,
   "risk_missing": 0,
-  "risk_eligible": 2420,
-  "top10_over90": 109,
-  "top10_n": 2403,
-  "deployers": 1749,
+  "risk_eligible": 2429,
+  "top10_over90": 110,
+  "top10_n": 2421,
+  "deployers": 1765,
   "traced": 1277,
   "untraceable": 463,
   "trace_backlog": 6,
   "outcome_backlog": 0,
-  "outcomes": 1393,
+  "outcomes": 1424,
   "outcomes_no_data": 0,
+  "outcomes_over100x": 36,
   "backfill_pending": 0,
   "deployers_corrected": 81,
   "out_of_universe": 0,
@@ -30,31 +31,31 @@
    "name": "collect_alive",
    "level": "critical",
    "ok": true,
-   "detail": "tokens last 70m = 32"
+   "detail": "tokens last 70m = 23"
   },
   {
    "name": "collect_flood",
    "level": "warn",
    "ok": true,
-   "detail": "tokens last 70m = 32 (>150 suggests bonding-stage leak)"
+   "detail": "tokens last 70m = 23 (>150 suggests bonding-stage leak)"
   },
   {
    "name": "risk_coverage",
    "level": "warn",
    "ok": true,
-   "detail": "risk missing 0/2420 (0%)"
+   "detail": "risk missing 0/2429 (0%)"
   },
   {
    "name": "holder_concentration_sane",
    "level": "warn",
    "ok": true,
-   "detail": "top10>90%: 109/2403 (5%) → pool filter gap"
+   "detail": "top10>90%: 110/2421 (5%) → pool filter gap"
   },
   {
    "name": "trace_quality",
    "level": "warn",
    "ok": true,
-   "detail": "unknown+hub 463/1749 (26%)"
+   "detail": "unknown+hub 463/1765 (26%)"
   },
   {
    "name": "trace_backlog",
@@ -72,7 +73,13 @@
    "name": "outcome_data_quality",
    "level": "warn",
    "ok": true,
-   "detail": "no_data outcomes 0/1393 (0%)"
+   "detail": "no_data outcomes 0/1424 (0%)"
+  },
+  {
+   "name": "peak_multiple_sane",
+   "level": "warn",
+   "ok": false,
+   "detail": "outcomes >100x: 36/1424 (2.5%) → candle glitch leaking into peaks"
   },
   {
    "name": "universe_clean",
