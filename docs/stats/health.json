@@ -1,19 +1,19 @@
 {
- "generated_at": "2026-09-25T03:37:26.032544+00:00",
+ "generated_at": "2026-09-25T04:37:22.609494+00:00",
  "status": "ok",
  "metrics": {
-  "tokens_70m": 67,
-  "tokens_24h": 1674,
+  "tokens_70m": 49,
+  "tokens_24h": 1723,
   "risk_missing": 0,
-  "risk_eligible": 1841,
-  "top10_over90": 79,
-  "top10_n": 1857,
-  "deployers": 1362,
-  "traced": 984,
-  "untraceable": 361,
+  "risk_eligible": 1896,
+  "top10_over90": 80,
+  "top10_n": 1906,
+  "deployers": 1393,
+  "traced": 1013,
+  "untraceable": 368,
   "trace_backlog": 5,
-  "outcome_backlog": 98,
-  "outcomes": 107,
+  "outcome_backlog": 80,
+  "outcomes": 125,
   "outcomes_no_data": 0,
   "backfill_pending": 0,
   "deployers_corrected": 81,
@@ -23,38 +23,38 @@
   "edge_huge": 1,
   "bad_timestamps": 0,
   "self_edges": 0,
-  "max_cluster_wallets": 19
+  "max_cluster_wallets": 20
  },
  "checks": [
   {
    "name": "collect_alive",
    "level": "critical",
    "ok": true,
-   "detail": "tokens last 70m = 67"
+   "detail": "tokens last 70m = 49"
   },
   {
    "name": "collect_flood",
    "level": "warn",
    "ok": true,
-   "detail": "tokens last 70m = 67 (>150 suggests bonding-stage leak)"
+   "detail": "tokens last 70m = 49 (>150 suggests bonding-stage leak)"
   },
   {
    "name": "risk_coverage",
    "level": "warn",
    "ok": true,
-   "detail": "risk missing 0/1841 (0%)"
+   "detail": "risk missing 0/1896 (0%)"
   },
   {
    "name": "holder_concentration_sane",
    "level": "warn",
    "ok": true,
-   "detail": "top10>90%: 79/1857 (4%) → pool filter gap"
+   "detail": "top10>90%: 80/1906 (4%) → pool filter gap"
   },
   {
    "name": "trace_quality",
    "level": "warn",
    "ok": true,
-   "detail": "unknown+hub 361/1362 (27%)"
+   "detail": "unknown+hub 368/1393 (26%)"
   },
   {
    "name": "trace_backlog",
@@ -66,13 +66,13 @@
    "name": "outcome_backlog",
    "level": "warn",
    "ok": true,
-   "detail": "tokens >25h without outcome: 98"
+   "detail": "tokens >25h without outcome: 80"
   },
   {
    "name": "outcome_data_quality",
    "level": "warn",
    "ok": true,
-   "detail": "no_data outcomes 0/107 (0%)"
+   "detail": "no_data outcomes 0/125 (0%)"
   },
   {
    "name": "universe_clean",
@@ -114,7 +114,7 @@
    "name": "cluster_size_sane",
    "level": "warn",
    "ok": true,
-   "detail": "largest cluster = 19 wallets (exchange acting as glue?)"
+   "detail": "largest cluster = 20 wallets (exchange acting as glue?)"
   }
  ]
 }
