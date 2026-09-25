@@ -1,19 +1,19 @@
 {
- "generated_at": "2026-09-25T22:37:27.671631+00:00",
+ "generated_at": "2026-09-25T22:47:33.794193+00:00",
  "counts": [
   {
-   "tokens": 2706,
-   "tokens_24h": 1087,
-   "deployers": 1958,
+   "tokens": 2713,
+   "tokens_24h": 1092,
+   "deployers": 1962,
    "deployers_traced": 1431,
    "deployers_unknown_src": 267,
    "edges": 2749,
    "clusters": 1622,
    "multi_token_clusters": 300,
    "outcomes": 1619,
-   "rugged": 268,
-   "tenx": 125,
-   "with_risk": 2706,
+   "rugged": 267,
+   "tenx": 118,
+   "with_risk": 2713,
    "signals": 0,
    "positions": 0,
    "hypotheses": 0
@@ -24,16 +24,16 @@
    "top10_p50": 9.1,
    "top10_p90": 63.3,
    "insiders_avg": 0.0,
-   "lp_locked": 1370,
+   "lp_locked": 1372,
    "freeze_on": 4,
    "mint_on": 0,
-   "n": 2684
+   "n": 2691
   }
  ],
  "tokens_per_hour_24h": [
   {
    "h": "2026-09-24 22:00",
-   "n": 11
+   "n": 9
   },
   {
    "h": "2026-09-24 23:00",
@@ -129,23 +129,23 @@
   },
   {
    "h": "2026-09-25 22:00",
-   "n": 15
+   "n": 22
   }
  ],
  "top_deployers": [
+  {
+   "deployer": "Be3MwhYqH9Y7NMVZqUJBL7fmEshHgQnU5prttJbGRCpW",
+   "n": 18,
+   "syms": "Hybrid cat,Hybrid cat,Hybrid cat,Kitty,Kitty,Kitty,Kitty,Kitty,🍒Cherry,Thief Bear,🐻Bear,🐻Bear,🐻Bear,🐻Bear,🐻Bear,Bitty,Betty,Betty",
+   "first_t": "09-24 06:22",
+   "last_t": "09-25 22:36"
+  },
   {
    "deployer": "E3jbmhG8VSfxJ8Ab2vgwjnDLY2Azk4sYCNvP4S9CD3yC",
    "n": 18,
    "syms": "kittylick,CHAROC,GNB,GNB,GNB,GNB,GNB,GNB,GNB,GNB,GNB,GNB,GNB,OTTER,OTTER,OTTER,OTTER,OTTER",
    "first_t": "09-24 05:05",
    "last_t": "09-24 07:21"
-  },
-  {
-   "deployer": "Be3MwhYqH9Y7NMVZqUJBL7fmEshHgQnU5prttJbGRCpW",
-   "n": 17,
-   "syms": "Hybrid cat,Hybrid cat,Hybrid cat,Kitty,Kitty,Kitty,Kitty,Kitty,🍒Cherry,Thief Bear,🐻Bear,🐻Bear,🐻Bear,🐻Bear,🐻Bear,Bitty,Betty",
-   "first_t": "09-24 06:22",
-   "last_t": "09-25 19:34"
   },
   {
    "deployer": "CdMsg91p586MHo3RcKvNwFNzoPijF2BbMcUH8yUoSPj",
@@ -299,16 +299,16 @@
  "outcomes_summary": [
   {
    "rug_reason": "none",
-   "n": 1349,
+   "n": 1350,
    "p50_peak": 1.0,
-   "p90_peak": 4.6,
+   "p90_peak": 4.03,
    "max_peak": 633.43
   },
   {
    "rug_reason": "price_collapse",
-   "n": 268,
+   "n": 267,
    "p50_peak": 1.0,
-   "p90_peak": 8.22,
+   "p90_peak": 7.68,
    "max_peak": 13372882881.77
   },
   {
@@ -335,7 +335,7 @@
   {
    "bucket": "single",
    "n": 803,
-   "rug_rate": 0.198,
+   "rug_rate": 0.197,
    "p50_peak": 1.0
   }
  ],
@@ -343,7 +343,7 @@
   {
    "src": "rugcheck",
    "verified": "-",
-   "n": 1894
+   "n": 1901
   },
   {
    "src": "pre-fix",
@@ -467,7 +467,7 @@
   },
   {
    "src": "untraced",
-   "n": 11
+   "n": 15
   }
  ]
 }
