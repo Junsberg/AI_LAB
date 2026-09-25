@@ -1,19 +1,19 @@
 {
- "generated_at": "2026-09-25T09:37:23.135623+00:00",
+ "generated_at": "2026-09-25T10:37:24.918047+00:00",
  "status": "warn",
  "metrics": {
-  "tokens_70m": 53,
-  "tokens_24h": 1206,
+  "tokens_70m": 32,
+  "tokens_24h": 1177,
   "risk_missing": 0,
-  "risk_eligible": 2183,
+  "risk_eligible": 2215,
   "top10_over90": 97,
-  "top10_n": 2176,
-  "deployers": 1576,
-  "traced": 1153,
-  "untraceable": 414,
+  "top10_n": 2209,
+  "deployers": 1602,
+  "traced": 1170,
+  "untraceable": 418,
   "trace_backlog": 5,
-  "outcome_backlog": 716,
-  "outcomes": 226,
+  "outcome_backlog": 739,
+  "outcomes": 253,
   "outcomes_no_data": 0,
   "backfill_pending": 0,
   "deployers_corrected": 81,
@@ -30,31 +30,31 @@
    "name": "collect_alive",
    "level": "critical",
    "ok": true,
-   "detail": "tokens last 70m = 53"
+   "detail": "tokens last 70m = 32"
   },
   {
    "name": "collect_flood",
    "level": "warn",
    "ok": true,
-   "detail": "tokens last 70m = 53 (>150 suggests bonding-stage leak)"
+   "detail": "tokens last 70m = 32 (>150 suggests bonding-stage leak)"
   },
   {
    "name": "risk_coverage",
    "level": "warn",
    "ok": true,
-   "detail": "risk missing 0/2183 (0%)"
+   "detail": "risk missing 0/2215 (0%)"
   },
   {
    "name": "holder_concentration_sane",
    "level": "warn",
    "ok": true,
-   "detail": "top10>90%: 97/2176 (4%) → pool filter gap"
+   "detail": "top10>90%: 97/2209 (4%) → pool filter gap"
   },
   {
    "name": "trace_quality",
    "level": "warn",
    "ok": true,
-   "detail": "unknown+hub 414/1576 (26%)"
+   "detail": "unknown+hub 418/1602 (26%)"
   },
   {
    "name": "trace_backlog",
@@ -66,13 +66,13 @@
    "name": "outcome_backlog",
    "level": "warn",
    "ok": false,
-   "detail": "tokens >25h without outcome: 716"
+   "detail": "tokens >25h without outcome: 739"
   },
   {
    "name": "outcome_data_quality",
    "level": "warn",
    "ok": true,
-   "detail": "no_data outcomes 0/226 (0%)"
+   "detail": "no_data outcomes 0/253 (0%)"
   },
   {
    "name": "universe_clean",
