@@ -1,19 +1,19 @@
 {
- "generated_at": "2026-09-25T17:11:11.768459+00:00",
+ "generated_at": "2026-09-25T17:37:14.715109+00:00",
  "counts": [
   {
-   "tokens": 2443,
-   "tokens_24h": 1008,
-   "deployers": 1765,
-   "deployers_traced": 1277,
-   "deployers_unknown_src": 249,
-   "edges": 2448,
-   "clusters": 1453,
-   "multi_token_clusters": 276,
-   "outcomes": 1424,
-   "rugged": 262,
+   "tokens": 2470,
+   "tokens_24h": 1023,
+   "deployers": 1785,
+   "deployers_traced": 1296,
+   "deployers_unknown_src": 253,
+   "edges": 2486,
+   "clusters": 1480,
+   "multi_token_clusters": 278,
+   "outcomes": 1445,
+   "rugged": 265,
    "tenx": 166,
-   "with_risk": 2443,
+   "with_risk": 2470,
    "signals": 0,
    "positions": 0,
    "hypotheses": 0
@@ -22,18 +22,18 @@
  "risk_distribution": [
   {
    "top10_p50": 9.2,
-   "top10_p90": 59.2,
+   "top10_p90": 60.6,
    "insiders_avg": 0.0,
-   "lp_locked": 1286,
+   "lp_locked": 1296,
    "freeze_on": 4,
    "mint_on": 0,
-   "n": 2421
+   "n": 2448
   }
  ],
  "tokens_per_hour_24h": [
   {
    "h": "2026-09-24 17:00",
-   "n": 34
+   "n": 22
   },
   {
    "h": "2026-09-24 18:00",
@@ -129,7 +129,7 @@
   },
   {
    "h": "2026-09-25 17:00",
-   "n": 5
+   "n": 32
   }
  ],
  "top_deployers": [
@@ -215,6 +215,15 @@
    "deployers": 3
   },
   {
+   "cluster_id": "abdae8e929660601",
+   "tokens_total": 24,
+   "tokens_evaluated": 8,
+   "tokens_rugged": 4,
+   "tokens_10x": 0,
+   "score": 0.5,
+   "deployers": 23
+  },
+  {
    "cluster_id": "970418e92bc828a7",
    "tokens_total": 24,
    "tokens_evaluated": 6,
@@ -222,15 +231,6 @@
    "tokens_10x": 5,
    "score": 0.9211,
    "deployers": 14
-  },
-  {
-   "cluster_id": "bd46ac85c1fec0cb",
-   "tokens_total": 23,
-   "tokens_evaluated": 7,
-   "tokens_rugged": 3,
-   "tokens_10x": 0,
-   "score": 0.55,
-   "deployers": 22
   },
   {
    "cluster_id": "95af409d0d3b0e2b",
@@ -299,44 +299,44 @@
  "outcomes_summary": [
   {
    "rug_reason": "none",
-   "n": 1162,
-   "p50_peak": 1.42,
+   "n": 1180,
+   "p50_peak": 1.35,
    "p90_peak": 9.79,
    "max_peak": 403.5
   },
   {
    "rug_reason": "price_collapse",
-   "n": 262,
-   "p50_peak": 2.62,
-   "p90_peak": 57.19,
+   "n": 265,
+   "p50_peak": 2.31,
+   "p90_peak": 53.58,
    "max_peak": 13372882881.77
   }
  ],
  "outcome_by_cluster_size": [
   {
    "bucket": "2-3",
-   "n": 277,
-   "rug_rate": 0.181,
-   "p50_peak": 1.61
+   "n": 280,
+   "rug_rate": 0.179,
+   "p50_peak": 1.48
   },
   {
    "bucket": "4+",
-   "n": 475,
-   "rug_rate": 0.145,
-   "p50_peak": 1.63
+   "n": 478,
+   "rug_rate": 0.144,
+   "p50_peak": 1.56
   },
   {
    "bucket": "single",
-   "n": 672,
+   "n": 687,
    "rug_rate": 0.213,
-   "p50_peak": 1.45
+   "p50_peak": 1.37
   }
  ],
  "deployer_provenance": [
   {
    "src": "rugcheck",
    "verified": "-",
-   "n": 1711
+   "n": 1725
   },
   {
    "src": "pre-fix",
@@ -346,7 +346,7 @@
   {
    "src": "rpc",
    "verified": "-",
-   "n": 238
+   "n": 251
   },
   {
    "src": "pre-fix",
@@ -362,63 +362,63 @@
  "unknown_funding_first_tx_kinds": [
   {
    "kind": "111111:transfer",
-   "n": 179
+   "n": 190
   },
   {
    "kind": "Comput:-",
-   "n": 105
+   "n": 111
   },
   {
    "kind": "111111:createAccount",
-   "n": 77
+   "n": 81
   },
   {
    "kind": "Tokenk:syncNative",
-   "n": 72
+   "n": 76
   },
   {
    "kind": "AToken:createIdempotent",
-   "n": 65
+   "n": 69
   },
   {
    "kind": "Tokenk:closeAccount",
-   "n": 63
+   "n": 67
   },
   {
    "kind": "Tokenk:initializeAccount3",
-   "n": 57
+   "n": 60
   },
   {
    "kind": "Tokenz:initializeMetadataPointer",
-   "n": 33
+   "n": 35
   },
   {
    "kind": "Tokenk:getAccountDataSize",
-   "n": 26
+   "n": 27
   },
   {
    "kind": "Tokenk:initializeImmutableOwner",
-   "n": 26
+   "n": 27
   },
   {
    "kind": "6EF8rr:-",
-   "n": 23
+   "n": 26
   },
   {
    "kind": "111111:createAccountWithSeed",
-   "n": 22
+   "n": 24
   },
   {
    "kind": "dbcij3:-",
-   "n": 18
+   "n": 19
   },
   {
    "kind": "Tokenz:initializeMint2",
-   "n": 7
+   "n": 8
   },
   {
    "kind": "Tokenk:initializeAccount",
-   "n": 6
+   "n": 7
   }
  ],
  "service_wallet_candidates": [
@@ -444,23 +444,23 @@
  "funding_sources": [
   {
    "src": "wallet",
-   "n": 1214
+   "n": 1232
   },
   {
    "src": "unknown",
-   "n": 249
+   "n": 253
   },
   {
    "src": "hub",
-   "n": 214
+   "n": 219
   },
   {
    "src": "cex",
-   "n": 61
+   "n": 62
   },
   {
    "src": "untraced",
-   "n": 27
+   "n": 19
   }
  ]
 }
