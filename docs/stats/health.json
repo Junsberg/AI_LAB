@@ -1,14 +1,14 @@
 {
- "generated_at": "2026-09-26T01:37:22.624414+00:00",
+ "generated_at": "2026-09-26T01:57:13.039003+00:00",
  "status": "ok",
  "metrics": {
-  "tokens_70m": 51,
-  "tokens_24h": 1073,
+  "tokens_70m": 48,
+  "tokens_24h": 1065,
   "risk_missing": 0,
-  "risk_eligible": 2803,
-  "top10_over90": 141,
-  "top10_n": 2806,
-  "deployers": 2051,
+  "risk_eligible": 2819,
+  "top10_over90": 144,
+  "top10_n": 2820,
+  "deployers": 2063,
   "traced": 1496,
   "untraceable": 549,
   "trace_backlog": 7,
@@ -31,31 +31,31 @@
    "name": "collect_alive",
    "level": "critical",
    "ok": true,
-   "detail": "tokens last 70m = 51"
+   "detail": "tokens last 70m = 48"
   },
   {
    "name": "collect_flood",
    "level": "warn",
    "ok": true,
-   "detail": "tokens last 70m = 51 (>150 suggests bonding-stage leak)"
+   "detail": "tokens last 70m = 48 (>150 suggests bonding-stage leak)"
   },
   {
    "name": "risk_coverage",
    "level": "warn",
    "ok": true,
-   "detail": "risk missing 0/2803 (0%)"
+   "detail": "risk missing 0/2819 (0%)"
   },
   {
    "name": "holder_concentration_sane",
    "level": "warn",
    "ok": true,
-   "detail": "top10>90%: 141/2806 (5%) → pool filter gap"
+   "detail": "top10>90%: 144/2820 (5%) → pool filter gap"
   },
   {
    "name": "trace_quality",
    "level": "warn",
    "ok": true,
-   "detail": "unknown+hub 549/2051 (27%)"
+   "detail": "unknown+hub 549/2063 (27%)"
   },
   {
    "name": "trace_backlog",
