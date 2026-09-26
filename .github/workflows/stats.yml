@@ -17,6 +17,7 @@ concurrency:
 permissions:
   contents: write
   issues: write
+  actions: read
 
 jobs:
   stats:
@@ -49,6 +50,28 @@ jobs:
             gh label create health --color B60205 --force >/dev/null 2>&1 || true
             gh issue create --title "memebot health: CRITICAL" --label health --body "$body"
           fi
+      - name: actions summary (last 24h, so reviews need no API access)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          since=$(date -u -d '24 hours ago' +%FT%TZ)
+          gh run list --limit 400 --created ">=$since" \
+            --json name,event,conclusion,status,createdAt,url,headBranch \
+            | python -c "
+          import json,sys,collections
+          runs=json.load(sys.stdin)
+          by=collections.defaultdict(lambda: collections.Counter())
+          fails=[]
+          for r in runs:
+              c=r['conclusion'] or r['status']
+              by[r['name']][f\"{r['event']}:{c}\"]+=1
+              if c not in ('success','in_progress','queued','pending','skipped'):
+                  fails.append({k:r[k] for k in ('name','event','conclusion','createdAt','url','headBranch')})
+          out={'generated_at':'$(date -u +%FT%TZ)','window_h':24,'runs':len(runs),
+               'by_workflow':{k:dict(v) for k,v in by.items()},'failures':fails}
+          json.dump(out,open('docs/stats/actions.json','w'),indent=1)
+          print(json.dumps({k:sum(v.values()) for k,v in by.items()}), 'failures', len(fails))
+          "
       - name: commit stats
         run: |
           git config user.name "memebot-stats"
