@@ -1,19 +1,19 @@
 {
- "generated_at": "2026-09-26T17:22:51.842251+00:00",
+ "generated_at": "2026-09-26T17:37:19.923552+00:00",
  "counts": [
   {
-   "tokens": 3606,
-   "tokens_24h": 1145,
-   "deployers": 2642,
+   "tokens": 3619,
+   "tokens_24h": 1142,
+   "deployers": 2650,
    "deployers_traced": 1928,
    "deployers_unknown_src": 332,
    "edges": 3739,
    "clusters": 2170,
    "multi_token_clusters": 371,
-   "outcomes": 2439,
-   "rugged": 408,
-   "tenx": 118,
-   "with_risk": 3606,
+   "outcomes": 2447,
+   "rugged": 411,
+   "tenx": 119,
+   "with_risk": 3619,
    "signals": 0,
    "positions": 0,
    "hypotheses": 0
@@ -22,18 +22,18 @@
  "risk_distribution": [
   {
    "top10_p50": 9.6,
-   "top10_p90": 61.5,
+   "top10_p90": 61.7,
    "insiders_avg": 0.0,
-   "lp_locked": 1733,
+   "lp_locked": 1737,
    "freeze_on": 4,
    "mint_on": 0,
-   "n": 3583
+   "n": 3596
   }
  ],
  "tokens_per_hour_24h": [
   {
    "h": "2026-09-25 17:00",
-   "n": 46
+   "n": 30
   },
   {
    "h": "2026-09-25 18:00",
@@ -129,7 +129,7 @@
   },
   {
    "h": "2026-09-26 17:00",
-   "n": 17
+   "n": 30
   }
  ],
  "top_deployers": [
@@ -169,13 +169,6 @@
    "last_t": "09-24 07:26"
   },
   {
-   "deployer": "5whEE6vB9T7NJrB9bHLu67kiSet1DMvc2VQ9kmrdwb8e",
-   "n": 14,
-   "syms": "SI,SI,PESOS,MOONCATS,SIDELINED,TOKENS,Elephant,SDOG,VISE,IshiGo,Meme,PROM,fush,RETIRE",
-   "first_t": "09-24 05:06",
-   "last_t": "09-24 12:49"
-  },
-  {
    "deployer": "7w87862Aiq9rGnH4onF17yaKzmqxw79TUGEhDwJCUbSf",
    "n": 14,
    "syms": "claude,claude,claude,claude,claude,claude5.5,claude5.5,Claude,CLAUDE,CLAUDE,Claude,Claude,Claude,Claude",
@@ -183,11 +176,11 @@
    "last_t": "09-26 09:49"
   },
   {
-   "deployer": "BvDc6R79TyZXGg7murNY79yYJRFDQtbQmid4tHcnBoji",
+   "deployer": "5whEE6vB9T7NJrB9bHLu67kiSet1DMvc2VQ9kmrdwb8e",
    "n": 14,
-   "syms": "玉兔,玉兔,中秋玉兔,中秋玉兔,中秋玉兔,中秋玉兔,玉兔,币安玉兔,中秋玉兔,玉兔,玉兔,中秋玉兔,中国人能飞,LGBT",
-   "first_t": "09-24 06:48",
-   "last_t": "09-25 23:18"
+   "syms": "SI,SI,PESOS,MOONCATS,SIDELINED,TOKENS,Elephant,SDOG,VISE,IshiGo,Meme,PROM,fush,RETIRE",
+   "first_t": "09-24 05:06",
+   "last_t": "09-24 12:49"
   },
   {
    "deployer": "CGcbvoobbnPzAN1mduBYapAUak6FUe3PHLACkEZWv42P",
@@ -195,6 +188,13 @@
    "syms": "CV,CV,CV,CV,CV,CV,CV,CV,CV,CV,CV,CV,CV,CV",
    "first_t": "09-24 05:05",
    "last_t": "09-24 07:32"
+  },
+  {
+   "deployer": "BvDc6R79TyZXGg7murNY79yYJRFDQtbQmid4tHcnBoji",
+   "n": 14,
+   "syms": "玉兔,玉兔,中秋玉兔,中秋玉兔,中秋玉兔,中秋玉兔,玉兔,币安玉兔,中秋玉兔,玉兔,玉兔,中秋玉兔,中国人能飞,LGBT",
+   "first_t": "09-24 06:48",
+   "last_t": "09-25 23:18"
   },
   {
    "deployer": "CrVW9jpbbKssWULzncQtf31rSxvzJwPe56zg2o65sjA7",
@@ -299,14 +299,14 @@
  "outcomes_summary": [
   {
    "rug_reason": "none",
-   "n": 2024,
+   "n": 2029,
    "p50_peak": 1.0,
-   "p90_peak": 1.99,
+   "p90_peak": 2.0,
    "max_peak": 633.43
   },
   {
    "rug_reason": "price_collapse",
-   "n": 406,
+   "n": 409,
    "p50_peak": 1.0,
    "p90_peak": 1.0,
    "max_peak": 417.02
@@ -329,20 +329,20 @@
  "outcome_by_cluster_size": [
   {
    "bucket": "2-3",
-   "n": 393,
-   "rug_rate": 0.148,
+   "n": 394,
+   "rug_rate": 0.147,
    "p50_peak": 1.0
   },
   {
    "bucket": "4+",
-   "n": 866,
+   "n": 868,
    "rug_rate": 0.104,
    "p50_peak": 1.0
   },
   {
    "bucket": "single",
-   "n": 1180,
-   "rug_rate": 0.22,
+   "n": 1185,
+   "rug_rate": 0.222,
    "p50_peak": 1.0
   }
  ],
@@ -350,12 +350,12 @@
   {
    "src": "rugcheck",
    "verified": "-",
-   "n": 2701
+   "n": 2711
   },
   {
    "src": "rpc",
    "verified": "-",
-   "n": 411
+   "n": 414
   },
   {
    "src": "pre-fix",
@@ -450,7 +450,7 @@
   },
   {
    "src": "hub",
-   "n": 358
+   "n": 359
   },
   {
    "src": "unknown",
@@ -462,7 +462,7 @@
   },
   {
    "src": "untraced",
-   "n": 26
+   "n": 33
   }
  ]
 }
