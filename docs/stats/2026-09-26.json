@@ -1,19 +1,19 @@
 {
- "generated_at": "2026-09-26T10:37:20.105667+00:00",
+ "generated_at": "2026-09-26T11:37:19.097822+00:00",
  "counts": [
   {
-   "tokens": 3305,
-   "tokens_24h": 1065,
-   "deployers": 2402,
-   "deployers_traced": 1752,
-   "deployers_unknown_src": 301,
-   "edges": 3378,
-   "clusters": 1960,
-   "multi_token_clusters": 350,
-   "outcomes": 2230,
-   "rugged": 379,
-   "tenx": 98,
-   "with_risk": 3305,
+   "tokens": 3345,
+   "tokens_24h": 1076,
+   "deployers": 2435,
+   "deployers_traced": 1779,
+   "deployers_unknown_src": 305,
+   "edges": 3434,
+   "clusters": 1991,
+   "multi_token_clusters": 352,
+   "outcomes": 2267,
+   "rugged": 383,
+   "tenx": 99,
+   "with_risk": 3345,
    "signals": 0,
    "positions": 0,
    "hypotheses": 0
@@ -22,22 +22,18 @@
  "risk_distribution": [
   {
    "top10_p50": 9.7,
-   "top10_p90": 62.7,
+   "top10_p90": 62.3,
    "insiders_avg": 0.0,
-   "lp_locked": 1599,
+   "lp_locked": 1619,
    "freeze_on": 4,
    "mint_on": 0,
-   "n": 3282
+   "n": 3322
   }
  ],
  "tokens_per_hour_24h": [
   {
-   "h": "2026-09-25 10:00",
-   "n": 12
-  },
-  {
    "h": "2026-09-25 11:00",
-   "n": 19
+   "n": 2
   },
   {
    "h": "2026-09-25 12:00",
@@ -129,7 +125,11 @@
   },
   {
    "h": "2026-09-26 10:00",
-   "n": 33
+   "n": 58
+  },
+  {
+   "h": "2026-09-26 11:00",
+   "n": 15
   }
  ],
  "top_deployers": [
@@ -206,6 +206,15 @@
  ],
  "top_clusters": [
   {
+   "cluster_id": "c632e5a5d1288895",
+   "tokens_total": 34,
+   "tokens_evaluated": 22,
+   "tokens_rugged": 11,
+   "tokens_10x": 0,
+   "score": 0.5,
+   "deployers": 33
+  },
+  {
    "cluster_id": "9d72326e98717ebd",
    "tokens_total": 34,
    "tokens_evaluated": 22,
@@ -213,24 +222,6 @@
    "tokens_10x": 8,
    "score": 0.9634,
    "deployers": 23
-  },
-  {
-   "cluster_id": "49bb7399c388495b",
-   "tokens_total": 33,
-   "tokens_evaluated": 21,
-   "tokens_rugged": 11,
-   "tokens_10x": 0,
-   "score": 0.4792,
-   "deployers": 32
-  },
-  {
-   "cluster_id": "970418e92bc828a7",
-   "tokens_total": 28,
-   "tokens_evaluated": 18,
-   "tokens_rugged": 0,
-   "tokens_10x": 4,
-   "score": 0.9483,
-   "deployers": 16
   },
   {
    "cluster_id": "331297bc4e47d236",
@@ -242,6 +233,24 @@
    "deployers": 3
   },
   {
+   "cluster_id": "970418e92bc828a7",
+   "tokens_total": 28,
+   "tokens_evaluated": 18,
+   "tokens_rugged": 0,
+   "tokens_10x": 4,
+   "score": 0.9483,
+   "deployers": 16
+  },
+  {
+   "cluster_id": "2ed21ad32dd2b9b3",
+   "tokens_total": 27,
+   "tokens_evaluated": 14,
+   "tokens_rugged": 0,
+   "tokens_10x": 6,
+   "score": 0.9483,
+   "deployers": 16
+  },
+  {
    "cluster_id": "ffea2c6c2cc550b3",
    "tokens_total": 27,
    "tokens_evaluated": 0,
@@ -251,26 +260,8 @@
    "deployers": 6
   },
   {
-   "cluster_id": "2ed21ad32dd2b9b3",
-   "tokens_total": 26,
-   "tokens_evaluated": 14,
-   "tokens_rugged": 0,
-   "tokens_10x": 6,
-   "score": 0.9483,
-   "deployers": 16
-  },
-  {
-   "cluster_id": "e138b28750810679",
-   "tokens_total": 23,
-   "tokens_evaluated": 15,
-   "tokens_rugged": 1,
-   "tokens_10x": 1,
-   "score": 0.875,
-   "deployers": 1
-  },
-  {
    "cluster_id": "7bd23c96a96168b4",
-   "tokens_total": 23,
+   "tokens_total": 25,
    "tokens_evaluated": 12,
    "tokens_rugged": 1,
    "tokens_10x": 0,
@@ -278,7 +269,16 @@
    "deployers": 5
   },
   {
-   "cluster_id": "ca18166d5a36c15b",
+   "cluster_id": "e138b28750810679",
+   "tokens_total": 23,
+   "tokens_evaluated": 16,
+   "tokens_rugged": 1,
+   "tokens_10x": 1,
+   "score": 0.881,
+   "deployers": 1
+  },
+  {
+   "cluster_id": "77243a7d117ed66c",
    "tokens_total": 22,
    "tokens_evaluated": 15,
    "tokens_rugged": 5,
@@ -299,21 +299,21 @@
  "outcomes_summary": [
   {
    "rug_reason": "none",
-   "n": 1846,
+   "n": 1878,
    "p50_peak": 1.0,
-   "p90_peak": 1.87,
+   "p90_peak": 1.83,
    "max_peak": 633.43
   },
   {
    "rug_reason": "price_collapse",
-   "n": 377,
+   "n": 381,
    "p50_peak": 1.0,
    "p90_peak": 1.0,
    "max_peak": 417.02
   },
   {
    "rug_reason": "no_data",
-   "n": 5,
+   "n": 6,
    "p50_peak": null,
    "p90_peak": null,
    "max_peak": null
@@ -329,20 +329,20 @@
  "outcome_by_cluster_size": [
   {
    "bucket": "2-3",
-   "n": 380,
-   "rug_rate": 0.15,
+   "n": 384,
+   "rug_rate": 0.151,
    "p50_peak": 1.0
   },
   {
    "bucket": "4+",
-   "n": 779,
-   "rug_rate": 0.105,
+   "n": 795,
+   "rug_rate": 0.103,
    "p50_peak": 1.0
   },
   {
    "bucket": "single",
-   "n": 1071,
-   "rug_rate": 0.224,
+   "n": 1088,
+   "rug_rate": 0.223,
    "p50_peak": 1.0
   }
  ],
@@ -350,7 +350,7 @@
   {
    "src": "rugcheck",
    "verified": "-",
-   "n": 2418
+   "n": 2458
   },
   {
    "src": "pre-fix",
@@ -376,43 +376,43 @@
  "unknown_funding_first_tx_kinds": [
   {
    "kind": "111111:transfer",
-   "n": 304
+   "n": 308
   },
   {
    "kind": "Comput:-",
-   "n": 176
+   "n": 184
   },
   {
    "kind": "111111:createAccount",
-   "n": 141
+   "n": 149
   },
   {
    "kind": "Tokenk:syncNative",
-   "n": 117
+   "n": 121
   },
   {
    "kind": "AToken:createIdempotent",
-   "n": 106
+   "n": 110
   },
   {
    "kind": "Tokenk:closeAccount",
-   "n": 104
+   "n": 108
   },
   {
    "kind": "Tokenk:initializeAccount3",
-   "n": 96
+   "n": 100
   },
   {
    "kind": "Tokenz:initializeMetadataPointer",
-   "n": 59
+   "n": 63
   },
   {
    "kind": "Tokenk:initializeImmutableOwner",
-   "n": 47
+   "n": 51
   },
   {
    "kind": "Tokenk:getAccountDataSize",
-   "n": 47
+   "n": 51
   },
   {
    "kind": "6EF8rr:-",
@@ -446,23 +446,23 @@
  "funding_sources": [
   {
    "src": "wallet",
-   "n": 1673
+   "n": 1696
   },
   {
    "src": "hub",
-   "n": 321
+   "n": 327
   },
   {
    "src": "unknown",
-   "n": 301
+   "n": 305
   },
   {
    "src": "cex",
-   "n": 77
+   "n": 81
   },
   {
    "src": "untraced",
-   "n": 30
+   "n": 26
   }
  ]
 }
