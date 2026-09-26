@@ -1,19 +1,19 @@
 {
- "generated_at": "2026-09-26T21:37:17.700627+00:00",
+ "generated_at": "2026-09-26T22:37:16.640193+00:00",
  "counts": [
   {
-   "tokens": 3779,
-   "tokens_24h": 1102,
-   "deployers": 2766,
-   "deployers_traced": 2026,
-   "deployers_unknown_src": 341,
-   "edges": 3915,
-   "clusters": 2253,
-   "multi_token_clusters": 386,
-   "outcomes": 2661,
-   "rugged": 455,
-   "tenx": 137,
-   "with_risk": 3779,
+   "tokens": 3820,
+   "tokens_24h": 1107,
+   "deployers": 2793,
+   "deployers_traced": 2050,
+   "deployers_unknown_src": 342,
+   "edges": 3962,
+   "clusters": 2273,
+   "multi_token_clusters": 390,
+   "outcomes": 2706,
+   "rugged": 460,
+   "tenx": 139,
+   "with_risk": 3820,
    "signals": 0,
    "positions": 0,
    "hypotheses": 0
@@ -22,22 +22,18 @@
  "risk_distribution": [
   {
    "top10_p50": 9.6,
-   "top10_p90": 61.4,
+   "top10_p90": 61.7,
    "insiders_avg": 0.0,
-   "lp_locked": 1788,
+   "lp_locked": 1800,
    "freeze_on": 4,
    "mint_on": 0,
-   "n": 3756
+   "n": 3797
   }
  ],
  "tokens_per_hour_24h": [
   {
-   "h": "2026-09-25 21:00",
-   "n": 14
-  },
-  {
    "h": "2026-09-25 22:00",
-   "n": 29
+   "n": 7
   },
   {
    "h": "2026-09-25 23:00",
@@ -129,7 +125,11 @@
   },
   {
    "h": "2026-09-26 21:00",
-   "n": 14
+   "n": 38
+  },
+  {
+   "h": "2026-09-26 22:00",
+   "n": 17
   }
  ],
  "top_deployers": [
@@ -142,10 +142,10 @@
   },
   {
    "deployer": "9baMg22GMZzsp68rvmrUAVP6ZdrrmJnTcndwy4QudsMT",
-   "n": 22,
-   "syms": "Pokémon,RABBIT,RABBIT,游本昌老师,花好月圆夜,🎉中秋快乐,Bugs Bunny,Bob's Bear,平平和福双,平平和福双,平平和福双,平平和福双,平平和福双,Crude oil,🍒车厘子,福双,刘欢2026,刘欢2026,刘欢2026,刘欢2026,刘欢,刘欢",
+   "n": 23,
+   "syms": "Pokémon,RABBIT,RABBIT,游本昌老师,花好月圆夜,🎉中秋快乐,Bugs Bunny,Bob's Bear,平平和福双,平平和福双,平平和福双,平平和福双,平平和福双,Crude oil,🍒车厘子,福双,刘欢2026,刘欢2026,刘欢2026,刘欢2026,刘欢,刘欢,China-U.S.",
    "first_t": "09-24 07:05",
-   "last_t": "09-26 20:49"
+   "last_t": "09-26 22:26"
   },
   {
    "deployer": "E3jbmhG8VSfxJ8Ab2vgwjnDLY2Azk4sYCNvP4S9CD3yC",
@@ -207,7 +207,7 @@
  "top_clusters": [
   {
    "cluster_id": "b3986be5cc849681",
-   "tokens_total": 45,
+   "tokens_total": 47,
    "tokens_evaluated": 34,
    "tokens_rugged": 0,
    "tokens_10x": 10,
@@ -235,19 +235,19 @@
   {
    "cluster_id": "2ed21ad32dd2b9b3",
    "tokens_total": 30,
-   "tokens_evaluated": 15,
+   "tokens_evaluated": 16,
    "tokens_rugged": 0,
    "tokens_10x": 7,
-   "score": 0.9531,
+   "score": 0.9545,
    "deployers": 18
   },
   {
    "cluster_id": "e36e8bfcc9b9fa79",
    "tokens_total": 29,
-   "tokens_evaluated": 10,
+   "tokens_evaluated": 11,
    "tokens_rugged": 0,
    "tokens_10x": 0,
-   "score": 0.8846,
+   "score": 0.8929,
    "deployers": 8
   },
   {
@@ -280,10 +280,10 @@
   {
    "cluster_id": "624e0bf86ef0dfdc",
    "tokens_total": 23,
-   "tokens_evaluated": 12,
+   "tokens_evaluated": 13,
    "tokens_rugged": 0,
    "tokens_10x": 4,
-   "score": 0.9348,
+   "score": 0.9375,
    "deployers": 10
   },
   {
@@ -299,14 +299,14 @@
  "outcomes_summary": [
   {
    "rug_reason": "none",
-   "n": 2200,
+   "n": 2239,
    "p50_peak": 1.0,
-   "p90_peak": 2.18,
+   "p90_peak": 2.24,
    "max_peak": 856.67
   },
   {
    "rug_reason": "price_collapse",
-   "n": 453,
+   "n": 458,
    "p50_peak": 1.0,
    "p90_peak": 1.0,
    "max_peak": 417.02
@@ -329,19 +329,19 @@
  "outcome_by_cluster_size": [
   {
    "bucket": "2-3",
-   "n": 413,
-   "rug_rate": 0.153,
+   "n": 420,
+   "rug_rate": 0.15,
    "p50_peak": 1.0
   },
   {
    "bucket": "4+",
-   "n": 958,
-   "rug_rate": 0.102,
+   "n": 972,
+   "rug_rate": 0.101,
    "p50_peak": 1.0
   },
   {
    "bucket": "single",
-   "n": 1291,
+   "n": 1315,
    "rug_rate": 0.228,
    "p50_peak": 1.0
   }
@@ -350,12 +350,12 @@
   {
    "src": "rugcheck",
    "verified": "-",
-   "n": 2853
+   "n": 2885
   },
   {
    "src": "rpc",
    "verified": "-",
-   "n": 432
+   "n": 441
   },
   {
    "src": "pre-fix",
@@ -376,43 +376,43 @@
  "unknown_funding_first_tx_kinds": [
   {
    "kind": "111111:transfer",
-   "n": 392
+   "n": 393
   },
   {
    "kind": "Comput:-",
-   "n": 221
+   "n": 223
   },
   {
    "kind": "111111:createAccount",
-   "n": 198
+   "n": 200
   },
   {
    "kind": "Tokenk:syncNative",
-   "n": 146
+   "n": 147
   },
   {
    "kind": "Tokenk:closeAccount",
-   "n": 133
+   "n": 134
   },
   {
    "kind": "AToken:createIdempotent",
-   "n": 130
+   "n": 131
   },
   {
    "kind": "Tokenk:initializeAccount3",
-   "n": 125
+   "n": 126
   },
   {
    "kind": "Tokenz:initializeMetadataPointer",
-   "n": 82
+   "n": 83
   },
   {
    "kind": "Tokenk:initializeImmutableOwner",
-   "n": 68
+   "n": 69
   },
   {
    "kind": "Tokenk:getAccountDataSize",
-   "n": 68
+   "n": 69
   },
   {
    "kind": "6EF8rr:-",
@@ -435,34 +435,27 @@
    "n": 10
   }
  ],
- "service_wallet_candidates": [
-  {
-   "deployer": "4MGGSeXcccCSyEXsKqH66TGN2qyS4sdeN9pvdBjLyMeX",
-   "n_tokens": 10,
-   "n_symbols": 10,
-   "avg_creator_pct": 3.94
-  }
- ],
+ "service_wallet_candidates": [],
  "funding_sources": [
   {
    "src": "wallet",
-   "n": 1940
+   "n": 1963
   },
   {
    "src": "hub",
-   "n": 372
+   "n": 373
   },
   {
    "src": "unknown",
-   "n": 341
+   "n": 342
   },
   {
    "src": "cex",
-   "n": 84
+   "n": 85
   },
   {
    "src": "untraced",
-   "n": 29
+   "n": 30
   }
  ]
 }
