@@ -1,19 +1,19 @@
 {
- "generated_at": "2026-09-26T04:37:14.988065+00:00",
+ "generated_at": "2026-09-26T05:14:46.586498+00:00",
  "counts": [
   {
-   "tokens": 2954,
-   "tokens_24h": 1018,
-   "deployers": 2150,
-   "deployers_traced": 1561,
+   "tokens": 2997,
+   "tokens_24h": 1028,
+   "deployers": 2184,
+   "deployers_traced": 1562,
    "deployers_unknown_src": 288,
    "edges": 2990,
    "clusters": 1774,
    "multi_token_clusters": 316,
-   "outcomes": 1911,
-   "rugged": 313,
+   "outcomes": 1968,
+   "rugged": 321,
    "tenx": 85,
-   "with_risk": 2954,
+   "with_risk": 2997,
    "signals": 0,
    "positions": 0,
    "hypotheses": 0
@@ -22,22 +22,18 @@
  "risk_distribution": [
   {
    "top10_p50": 9.4,
-   "top10_p90": 62.8,
+   "top10_p90": 62.6,
    "insiders_avg": 0.0,
-   "lp_locked": 1464,
+   "lp_locked": 1484,
    "freeze_on": 4,
    "mint_on": 0,
-   "n": 2932
+   "n": 2974
   }
  ],
  "tokens_per_hour_24h": [
   {
-   "h": "2026-09-25 04:00",
-   "n": 31
-  },
-  {
    "h": "2026-09-25 05:00",
-   "n": 55
+   "n": 53
   },
   {
    "h": "2026-09-25 06:00",
@@ -129,7 +125,11 @@
   },
   {
    "h": "2026-09-26 04:00",
-   "n": 18
+   "n": 52
+  },
+  {
+   "h": "2026-09-26 05:00",
+   "n": 9
   }
  ],
  "top_deployers": [
@@ -275,7 +275,7 @@
    "tokens_rugged": 0,
    "tokens_10x": 4,
    "score": 0.9318,
-   "deployers": 14
+   "deployers": 15
   },
   {
    "cluster_id": "192cc1909d6ae98f",
@@ -299,14 +299,14 @@
  "outcomes_summary": [
   {
    "rug_reason": "none",
-   "n": 1593,
+   "n": 1642,
    "p50_peak": 1.0,
    "p90_peak": 1.67,
    "max_peak": 633.43
   },
   {
    "rug_reason": "price_collapse",
-   "n": 311,
+   "n": 319,
    "p50_peak": 1.0,
    "p90_peak": 1.0,
    "max_peak": 417.02
@@ -329,20 +329,20 @@
  "outcome_by_cluster_size": [
   {
    "bucket": "2-3",
-   "n": 337,
-   "rug_rate": 0.148,
+   "n": 346,
+   "rug_rate": 0.145,
    "p50_peak": 1.0
   },
   {
    "bucket": "4+",
-   "n": 647,
-   "rug_rate": 0.108,
+   "n": 672,
+   "rug_rate": 0.104,
    "p50_peak": 1.0
   },
   {
    "bucket": "single",
-   "n": 927,
-   "rug_rate": 0.208,
+   "n": 950,
+   "rug_rate": 0.212,
    "p50_peak": 1.0
   }
  ],
@@ -350,7 +350,7 @@
   {
    "src": "rugcheck",
    "verified": "-",
-   "n": 2110
+   "n": 2152
   },
   {
    "src": "pre-fix",
@@ -360,7 +360,7 @@
   {
    "src": "rpc",
    "verified": "-",
-   "n": 350
+   "n": 351
   },
   {
    "src": "pre-fix",
@@ -439,7 +439,7 @@
  "funding_sources": [
   {
    "src": "wallet",
-   "n": 1488
+   "n": 1489
   },
   {
    "src": "unknown",
@@ -455,7 +455,7 @@
   },
   {
    "src": "untraced",
-   "n": 22
+   "n": 55
   }
  ]
 }
