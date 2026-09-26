@@ -1,19 +1,19 @@
 {
- "generated_at": "2026-09-26T13:22:10.629119+00:00",
+ "generated_at": "2026-09-26T13:37:15.976439+00:00",
  "counts": [
   {
-   "tokens": 3401,
-   "tokens_24h": 1116,
-   "deployers": 2477,
+   "tokens": 3406,
+   "tokens_24h": 1112,
+   "deployers": 2481,
    "deployers_traced": 1816,
    "deployers_unknown_src": 307,
    "edges": 3508,
    "clusters": 2030,
    "multi_token_clusters": 355,
-   "outcomes": 2279,
-   "rugged": 384,
-   "tenx": 99,
-   "with_risk": 3401,
+   "outcomes": 2293,
+   "rugged": 387,
+   "tenx": 101,
+   "with_risk": 3406,
    "signals": 0,
    "positions": 0,
    "hypotheses": 0
@@ -22,18 +22,18 @@
  "risk_distribution": [
   {
    "top10_p50": 9.7,
-   "top10_p90": 62.7,
+   "top10_p90": 62.9,
    "insiders_avg": 0.0,
-   "lp_locked": 1648,
+   "lp_locked": 1652,
    "freeze_on": 4,
    "mint_on": 0,
-   "n": 3378
+   "n": 3383
   }
  ],
  "tokens_per_hour_24h": [
   {
    "h": "2026-09-25 13:00",
-   "n": 29
+   "n": 20
   },
   {
    "h": "2026-09-25 14:00",
@@ -129,7 +129,7 @@
   },
   {
    "h": "2026-09-26 13:00",
-   "n": 14
+   "n": 19
   }
  ],
  "top_deployers": [
@@ -299,14 +299,14 @@
  "outcomes_summary": [
   {
    "rug_reason": "none",
-   "n": 1889,
+   "n": 1900,
    "p50_peak": 1.0,
-   "p90_peak": 1.82,
+   "p90_peak": 1.87,
    "max_peak": 633.43
   },
   {
    "rug_reason": "price_collapse",
-   "n": 382,
+   "n": 385,
    "p50_peak": 1.0,
    "p90_peak": 1.0,
    "max_peak": 417.02
@@ -335,13 +335,13 @@
   },
   {
    "bucket": "4+",
-   "n": 798,
-   "rug_rate": 0.103,
+   "n": 801,
+   "rug_rate": 0.104,
    "p50_peak": 1.0
   },
   {
    "bucket": "single",
-   "n": 1094,
+   "n": 1105,
    "rug_rate": 0.223,
    "p50_peak": 1.0
   }
@@ -350,7 +350,7 @@
   {
    "src": "rugcheck",
    "verified": "-",
-   "n": 2512
+   "n": 2517
   },
   {
    "src": "rpc",
@@ -462,7 +462,7 @@
   },
   {
    "src": "untraced",
-   "n": 22
+   "n": 26
   }
  ]
 }

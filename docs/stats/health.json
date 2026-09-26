@@ -1,19 +1,19 @@
 {
- "generated_at": "2026-09-26T13:22:19.004181+00:00",
+ "generated_at": "2026-09-26T13:37:21.557401+00:00",
  "status": "warn",
  "metrics": {
-  "tokens_70m": 35,
-  "tokens_24h": 1116,
+  "tokens_70m": 33,
+  "tokens_24h": 1112,
   "risk_missing": 0,
-  "risk_eligible": 3379,
-  "top10_over90": 165,
-  "top10_n": 3378,
-  "deployers": 2477,
+  "risk_eligible": 3387,
+  "top10_over90": 166,
+  "top10_n": 3383,
+  "deployers": 2481,
   "traced": 1816,
   "untraceable": 641,
   "trace_backlog": 16,
   "outcome_backlog": 0,
-  "outcomes": 2279,
+  "outcomes": 2293,
   "outcomes_no_data": 6,
   "outcomes_over100x": 20,
   "backfill_pending": 0,
@@ -31,31 +31,31 @@
    "name": "collect_alive",
    "level": "critical",
    "ok": true,
-   "detail": "tokens last 70m = 35"
+   "detail": "tokens last 70m = 33"
   },
   {
    "name": "collect_flood",
    "level": "warn",
    "ok": true,
-   "detail": "tokens last 70m = 35 (>150 suggests bonding-stage leak)"
+   "detail": "tokens last 70m = 33 (>150 suggests bonding-stage leak)"
   },
   {
    "name": "risk_coverage",
    "level": "warn",
    "ok": true,
-   "detail": "risk missing 0/3379 (0%)"
+   "detail": "risk missing 0/3387 (0%)"
   },
   {
    "name": "holder_concentration_sane",
    "level": "warn",
    "ok": true,
-   "detail": "top10>90%: 165/3378 (5%) → pool filter gap"
+   "detail": "top10>90%: 166/3383 (5%) → pool filter gap"
   },
   {
    "name": "trace_quality",
    "level": "warn",
    "ok": true,
-   "detail": "unknown+hub 641/2477 (26%)"
+   "detail": "unknown+hub 641/2481 (26%)"
   },
   {
    "name": "trace_backlog",
@@ -73,13 +73,13 @@
    "name": "outcome_data_quality",
    "level": "warn",
    "ok": true,
-   "detail": "no_data outcomes 6/2279 (0%)"
+   "detail": "no_data outcomes 6/2293 (0%)"
   },
   {
    "name": "peak_multiple_sane",
    "level": "warn",
    "ok": true,
-   "detail": "outcomes >100x: 20/2279 (0.9%) → candle glitch leaking into peaks"
+   "detail": "outcomes >100x: 20/2293 (0.9%) → candle glitch leaking into peaks"
   },
   {
    "name": "universe_clean",
