@@ -29,3 +29,7 @@ thresholds:
   min_liquidity_sol: 15
   max_top10_holder_pct: 35
   max_bundle_pct: 20
+  # lineage_v0 (paper): enter on deployer-cluster quality alone. Fixed 09-27 BEFORE
+  # any replay was seen; change only through a propose-change hypothesis.
+  lineage_min_score: 0.9
+  lineage_min_evaluated: 10

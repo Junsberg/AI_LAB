@@ -147,3 +147,42 @@ def test_outcomes_selection_and_upsert_roundtrip(monkeypatch):
         row = c.execute("select rugged, rug_at, rug_reason from token_outcomes where mint='MINT_OUT'").fetchone()
     assert row["rugged"] is False and row["rug_at"] is None and row["rug_reason"] == "none"
     assert not any(r["mint"] == "MINT_OUT" for r in ev.pending_rows(50))  # fresh evaluation is not re-selected
+
+
+def test_paper_replay_selects_point_in_time_cluster(monkeypatch):
+    import asyncio
+    import json
+    from datetime import datetime, timedelta, timezone
+
+    from memebot.config import load_params
+    from memebot.db import conn
+    from memebot.review import paper_replay as pr
+
+    t0 = datetime.now(timezone.utc) - timedelta(days=3)
+    risk = json.dumps({"risk": {"top10_pct": 10.0}})
+    with conn() as c:
+        c.execute("delete from token_outcomes where mint like 'RP%%'")
+        c.execute("delete from tokens where mint like 'RP%%'")
+        c.execute("insert into wallets(address, cluster_id, tags) values ('RPDEP', 'RPCLUSTER', '{deployer}') "
+                  "on conflict (address) do update set cluster_id = 'RPCLUSTER'")
+        for i in range(12):  # 12 clean history tokens two days before the candidate
+            c.execute("insert into tokens(mint, deployer, launch_platform, created_at, pool_address, meta) "
+                      "values (%s, 'RPDEP', 'pumpfun', %s, %s, %s::jsonb)",
+                      (f"RPH{i}", t0 - timedelta(days=2), f"RPPOOLH{i}", risk))
+            c.execute("insert into token_outcomes(mint, peak_multiple, rugged, rug_reason, evaluated_at) "
+                      "values (%s, 2.0, false, 'none', now())", (f"RPH{i}",))
+        c.execute("insert into tokens(mint, deployer, launch_platform, created_at, pool_address, meta) "
+                  "values ('RPCAND', 'RPDEP', 'pumpfun', %s, 'RPPOOLC', %s::jsonb)", (t0, risk))
+        c.commit()
+
+    async def no_fetch(*a, **k):
+        raise pr.BudgetExhausted  # stop before any network call
+
+    monkeypatch.setattr(pr, "_get", no_fetch)
+    rep = asyncio.run(pr.run(load_params(), budget_s=1))
+    assert rep["entries_selected"] >= 1  # RPCAND: 12 evaluated, 0 rugged → score 13.5/15 = 0.9
+    with conn() as c:
+        c.execute("delete from token_outcomes where mint like 'RP%%'")
+        c.execute("delete from tokens where mint like 'RP%%'")
+        c.execute("delete from wallets where address = 'RPDEP'")
+        c.commit()

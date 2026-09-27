@@ -64,6 +64,8 @@ class Thresholds(BaseModel):
     min_liquidity_sol: float = 15.0
     max_top10_holder_pct: float = 35.0
     max_bundle_pct: float = 20.0
+    lineage_min_score: float = 0.9  # lineage_v0 paper entry: cluster score at entry time
+    lineage_min_evaluated: int = 10  # ... over at least this many evaluated tokens
 
 
 class Params(BaseModel):
