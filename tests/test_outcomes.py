@@ -199,23 +199,55 @@ def test_merge_candles_splits_at_cutoff_and_falls_back():
     assert ev.merge_candles([], coarse, 900) == coarse  # 5m missing → hourly as before
 
 
-def test_first_day_request_is_anchored_to_launch():
-    from datetime import datetime, timezone
-
+def _capture(payload_rows):
     seen = {}
 
     async def h(req: httpx.Request) -> httpx.Response:
         seen["path"], seen["params"] = req.url.path, dict(req.url.params)
-        return httpx.Response(200, json={"data": {"attributes": {"ohlcv_list": [[5, 1, 1, 1, 1, 1], [2, 1, 1, 1, 1, 1]]}}})
+        return httpx.Response(200, json={"data": {"attributes": {"ohlcv_list": payload_rows}}})
 
+    return seen, h
+
+
+def test_5m_young_token_is_one_call_covering_whole_life():
+    from datetime import datetime, timezone
+
+    seen, h = _capture([[5, 1, 1, 1, 1, 1], [2, 1, 1, 1, 1, 1]])
+
+    async def go():
+        async with httpx.AsyncClient(transport=httpx.MockTransport(h)) as cl:
+            return await ev._ohlcv_5m(cl, "POOL", datetime(2026, 9, 20, tzinfo=timezone.utc), 72.5, time.monotonic() + 100)
+
+    out, whole = asyncio.run(go())
+    assert whole and [x.ts for x in out] == [2, 5]
+    assert seen["path"].endswith("/pools/POOL/ohlcv/minute")
+    assert seen["params"] == {"aggregate": "5", "limit": str(int(72.5 * 12) + 12)}  # 882 ≤ 1000
+
+
+def test_5m_old_token_is_anchored_to_launch_day():
+    from datetime import datetime, timezone
+
+    seen, h = _capture([])
     created = datetime(2026, 9, 20, tzinfo=timezone.utc)
 
     async def go():
         async with httpx.AsyncClient(transport=httpx.MockTransport(h)) as cl:
-            return await ev._ohlcv_first_day(cl, "POOL", created, time.monotonic() + 100)
+            return await ev._ohlcv_5m(cl, "POOL", created, 120.0, time.monotonic() + 100)
 
-    out = asyncio.run(go())
-    assert [x.ts for x in out] == [2, 5]
-    assert seen["path"].endswith("/pools/POOL/ohlcv/minute")
+    out, whole = asyncio.run(go())
+    assert not whole and out == []
     assert seen["params"] == {
         "aggregate": "5", "before_timestamp": str(int(created.timestamp()) + 86400), "limit": "288"}
+
+
+def test_to_hourly_matches_hourly_candle_semantics():
+    fine = [c(3600, 1.0, 1.5, 0.9, 1.2, 10), c(3900, 1.2, 3.0, 1.1, 2.0, 20), c(7200, 2.0, 2.1, 1.9, 2.05, 5)]
+    assert ev.to_hourly(fine) == [c(3600, 1.0, 3.0, 0.9, 2.0, 30), c(7200, 2.0, 2.1, 1.9, 2.05, 5)]
+
+
+def test_merge_without_coarse_builds_hourly_after_cutoff():
+    cutoff = 86400
+    fine = [c(0, 1, 1, 1, 1), c(300, 1, 1, 1, 2), c(cutoff, 5, 5, 5, 6), c(cutoff + 300, 6, 6, 6, 9)]
+    merged = ev.merge_candles(fine, None, cutoff)
+    assert [x.ts for x in merged] == [0, 300, cutoff]
+    assert (merged[-1].open, merged[-1].close) == (5, 9)  # hourly body, not the 5m peak body
