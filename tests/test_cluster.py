@@ -38,3 +38,41 @@ def test_sql_score_formula_matches_python():
 
     for ev, rg, tx in [(0, 0, 0), (12, 11, 0), (5, 0, 3), (30, 10, 1), (1, 1, 0)]:
         assert sql_formula(ev, rg, tx) == round(score_cluster(ClusterStats(ev, rg, tx)), 4)
+
+
+# --- stable ids across rebuilds (limitation ④) ---------------------------------------
+import hashlib  # noqa: E402
+
+from memebot.lineage.cluster import assign_ids  # noqa: E402
+
+
+def test_id_survives_new_member():
+    e = [Edge("B", "C", "funded", 1.0)]
+    first = build_clusters(e)
+    # "A" sorts before every member: a content/min-address id would change here
+    second = build_clusters(e + [Edge("A", "B", "funded", 1.0)], prior=first)
+    assert second["A"] == second["B"] == first["B"]
+
+
+def test_merge_keeps_larger_part_id_and_split_keeps_bigger_piece():
+    prior = {"a": "big", "b": "big", "c": "big", "x": "small"}
+    merged = assign_ids([["a", "b", "c", "x"]], prior)
+    assert set(merged.values()) == {"big"}
+    split = assign_ids([["a", "b"], ["c"]], prior)
+    assert split["a"] == "big" and split["c"] != "big"
+
+
+def test_fresh_group_id_matches_singleton_formula():
+    # SQL gives singleton deployers left(sha256(address),16): a later group containing
+    # that wallet as its smallest member, or inheriting it, keeps the same id
+    out = assign_ids([["D1", "D2"]], {})
+    assert out["D1"] == hashlib.sha256(b"D1").hexdigest()[:16]
+    assert assign_ids([["D0", "D1"]], {"D1": out["D1"]})["D0"] == out["D1"]
+
+
+def test_assign_ids_deterministic_and_unique():
+    prior = {"a": "p", "b": "p", "c": "p", "d": "p"}
+    g = [["a", "b"], ["c", "d"]]  # tie: exactly one group may keep "p"
+    out = assign_ids(g, prior)
+    assert out == assign_ids(g, prior)
+    assert len({out["a"], out["c"]}) == 2 and "p" in {out["a"], out["c"]}

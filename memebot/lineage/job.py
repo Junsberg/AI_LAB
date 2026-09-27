@@ -175,13 +175,17 @@ def rebuild_clusters() -> int:
                 "select address from wallets where funding_source_type = 'hub'"
             ).fetchall()
         }
+        prior = {
+            r["address"]: r["cluster_id"]
+            for r in c.execute("select address, cluster_id from wallets where cluster_id is not null").fetchall()
+        }
     glue_blocked = KNOWN_CEX.keys() | hubs
     edges = [
         Edge(r["src"], r["dst"], r["kind"], float(r["amount_sol"] or 0))
         for r in rows
         if r["src"] not in glue_blocked and r["dst"] not in KNOWN_CEX
     ]
-    mapping = build_clusters(edges)
+    mapping = build_clusters(edges, prior=prior)
     with conn() as c:
         # One statement each: the runner is far from the DB, and a per-row loop held row
         # locks on `wallets` for minutes and starved collect (statement timeouts).
@@ -198,8 +202,8 @@ def rebuild_clusters() -> int:
             """update wallets set cluster_id = left(encode(sha256(address::bytea),'hex'),16)
                where cluster_id is null and 'deployer' = any(tags)"""
         )
-        # cluster ids are content hashes: a membership change mints a new id, so drop
-        # score rows no wallet references any more
+        # ids are inherited from the previous run (assign_ids); merges and splits still
+        # retire some, so drop score rows no wallet references any more
         c.execute("delete from cluster_scores where cluster_id not in (select distinct cluster_id from wallets where cluster_id is not null)")
         c.commit()
     return len(mapping)

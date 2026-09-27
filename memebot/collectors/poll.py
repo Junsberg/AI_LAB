@@ -12,7 +12,7 @@ from __future__ import annotations
 import asyncio
 import json
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import datetime, timezone
 
 import httpx
 import psycopg
@@ -163,7 +163,11 @@ async def run_once(max_new: int = 60) -> int:
 
 
 def _insert_token(p: NewPool, deployer: str, platform: str, slot, source: str, kind: str, risk) -> None:
-    meta = {"deployer_source": source, "dex": p.dex, "stage": "graduated", "deployer_kind": kind}
+    meta = {
+        "deployer_source": source, "dex": p.dex, "stage": "graduated", "deployer_kind": kind,
+        # earliest moment our pipeline knew the token: the paper runner's entry clock
+        "seen_at": datetime.now(timezone.utc).isoformat(),
+    }
     if p.reserve_usd:
         meta["reserve_usd_at_seen"] = p.reserve_usd
     if risk:
