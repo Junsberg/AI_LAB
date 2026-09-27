@@ -186,3 +186,79 @@ def test_paper_replay_selects_point_in_time_cluster(monkeypatch):
         c.execute("delete from tokens where mint like 'RP%%'")
         c.execute("delete from wallets where address = 'RPDEP'")
         c.commit()
+
+
+def test_paper_runner_enters_manages_and_closes(monkeypatch):
+    import asyncio
+    import json
+    from datetime import datetime, timezone
+
+    import httpx
+
+    from memebot.config import load_params
+    from memebot.db import conn, migrate
+    from memebot.execution import paper_runner as pr
+
+    migrate()
+    now = datetime.now(timezone.utc)
+    with conn() as c:
+        for t in ("fills", "positions", "signals"):
+            c.execute(f"delete from {t}")
+        c.execute("delete from tokens where mint = 'PRMINT'")
+        c.execute("insert into wallets(address, cluster_id, tags) values ('PRDEP', 'PRC', '{deployer}') "
+                  "on conflict (address) do update set cluster_id = 'PRC'")
+        c.execute("insert into cluster_scores(cluster_id, tokens_total, tokens_evaluated, tokens_rugged, tokens_10x, "
+                  "score, updated_at) values ('PRC', 12, 12, 0, 0, 0.95, now()) on conflict (cluster_id) do update "
+                  "set score = 0.95, tokens_evaluated = 12")
+        c.execute("insert into tokens(mint, deployer, launch_platform, created_at, pool_address, meta) "
+                  "values ('PRMINT', 'PRDEP', 'pumpfun', now(), 'PRPOOL', %s::jsonb)",
+                  (json.dumps({"seen_at": now.isoformat(), "risk": {"top10_pct": 10.0}}),))
+        c.commit()
+
+    async def fake_pools(client, pools, deadline):
+        return {p: {"reserve_in_usd": "20000", "quote_token_price_usd": "200", "base_token_price_usd": "1"}
+                for p in pools}
+
+    start = int(now.timestamp()) // 300 * 300
+    candles = [[start, 1.0, 1.0, 1.0, 1.0, 10], [start + 300, 1.0, 1.0, 0.3, 0.3, 10]]  # hard stop
+
+    async def fake_get(client, url, params, deadline):
+        return httpx.Response(200, json={"data": {"attributes": {"ohlcv_list": candles}}},
+                              request=httpx.Request("GET", url))
+
+    async def no_sleep(s):
+        pass
+
+    monkeypatch.setattr(pr, "_pools", fake_pools)
+    monkeypatch.setattr(pr, "_get", fake_get)
+    monkeypatch.setattr(pr.asyncio, "sleep", no_sleep)
+    monkeypatch.setattr(pr, "RECHECK_AFTER", pr.timedelta(0))
+    stats = asyncio.run(pr.run(load_params()))
+    assert stats["decided"] == {"enter": 1} and stats["positions"] == {"closed": 1}
+    with conn() as c:
+        pos = c.execute("select * from positions where mint = 'PRMINT'").fetchone()
+        fills = c.execute("select reason from fills where position_id = %s", (pos["id"],)).fetchall()
+    assert pos["mode"] == "paper" and pos["exit_reason"] == "hard_stop" and float(pos["pnl_sol"]) < 0
+    assert [f["reason"] for f in fills] == ["hard_stop"]
+    assert asyncio.run(pr.run(load_params()))["decided"] == {}  # decided once per mint
+
+    # open path: half sold at 2x, still running → one take_initial fill, no close, no mark fill
+    candles[:] = [[start, 1.0, 1.0, 1.0, 1.0, 10], [start + 300, 1.0, 2.5, 1.0, 2.5, 10]]
+    with conn() as c:
+        c.execute("update positions set closed_at = null, exit_reason = null, pnl_sol = null where mint = 'PRMINT'")
+        c.execute("delete from fills")
+        c.commit()
+    monkeypatch.setattr(pr, "_candidates", lambda p: [])
+    assert asyncio.run(pr.run(load_params()))["positions"] == {"open": 1}
+    with conn() as c:
+        pos = c.execute("select * from positions where mint = 'PRMINT'").fetchone()
+        fills = c.execute("select reason from fills where position_id = %s", (pos["id"],)).fetchall()
+    assert pos["closed_at"] is None and float(pos["remaining_tokens"]) == 0.5
+    assert [f["reason"] for f in fills] == ["take_initial"]
+    with conn() as c:
+        for t in ("fills", "positions", "signals"):
+            c.execute(f"delete from {t}")
+        c.execute("delete from tokens where mint = 'PRMINT'")
+        c.execute("delete from cluster_scores where cluster_id = 'PRC'")
+        c.execute("delete from wallets where address = 'PRDEP'")
+        c.commit()

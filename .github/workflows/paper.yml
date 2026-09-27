@@ -1,0 +1,35 @@
+name: paper
+
+# lineage_v0 paper runner. Primary trigger: Supabase pg_cron → workflow_dispatch every
+# 10 minutes (like collect); the GitHub schedule below is the backup.
+on:
+  schedule:
+    - cron: "3-59/10 * * * *"
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/paper.yml"
+      - "memebot/execution/**"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: paper
+  cancel-in-progress: false
+
+jobs:
+  paper:
+    runs-on: ubuntu-latest
+    timeout-minutes: 9
+    env:
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - run: pip install -q -e .
+      - run: python -m memebot.execution.paper_runner
