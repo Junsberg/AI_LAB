@@ -1,25 +1,25 @@
 {
- "generated_at": "2026-09-27T02:37:24.192425+00:00",
+ "generated_at": "2026-09-27T03:37:22.791956+00:00",
  "status": "warn",
  "metrics": {
   "tokens_70m": 49,
-  "tokens_24h": 1125,
+  "tokens_24h": 1130,
   "risk_missing": 0,
-  "risk_eligible": 3967,
-  "top10_over90": 196,
-  "top10_n": 3978,
-  "deployers": 2927,
-  "traced": 2151,
-  "untraceable": 747,
+  "risk_eligible": 4024,
+  "top10_over90": 197,
+  "top10_n": 4023,
+  "deployers": 2959,
+  "traced": 2179,
+  "untraceable": 753,
   "trace_backlog": 20,
   "outcome_backlog": 0,
-  "outcomes": 2860,
+  "outcomes": 2902,
   "outcomes_no_data": 7,
   "outcomes_over100x": 33,
   "backfill_pending": 0,
   "deployers_corrected": 81,
   "out_of_universe": 0,
-  "funded_after_launch": 0,
+  "funded_after_launch": 2,
   "structural_deployer_unmarked": 0,
   "edge_huge": 1,
   "bad_timestamps": 0,
@@ -43,19 +43,19 @@
    "name": "risk_coverage",
    "level": "warn",
    "ok": true,
-   "detail": "risk missing 0/3967 (0%)"
+   "detail": "risk missing 0/4024 (0%)"
   },
   {
    "name": "holder_concentration_sane",
    "level": "warn",
    "ok": true,
-   "detail": "top10>90%: 196/3978 (5%) → pool filter gap"
+   "detail": "top10>90%: 197/4023 (5%) → pool filter gap"
   },
   {
    "name": "trace_quality",
    "level": "warn",
    "ok": true,
-   "detail": "unknown+hub 747/2927 (26%)"
+   "detail": "unknown+hub 753/2959 (25%)"
   },
   {
    "name": "trace_backlog",
@@ -73,13 +73,13 @@
    "name": "outcome_data_quality",
    "level": "warn",
    "ok": true,
-   "detail": "no_data outcomes 7/2860 (0%)"
+   "detail": "no_data outcomes 7/2902 (0%)"
   },
   {
    "name": "peak_multiple_sane",
    "level": "warn",
    "ok": true,
-   "detail": "outcomes >100x: 33/2860 (1.2%) → candle glitch leaking into peaks"
+   "detail": "outcomes >100x: 33/2902 (1.1%) → candle glitch leaking into peaks"
   },
   {
    "name": "universe_clean",
@@ -90,8 +90,8 @@
   {
    "name": "funding_precedes_launch",
    "level": "warn",
-   "ok": true,
-   "detail": "deployers funded after their first launch: 0 (auto-retraced by enrich)"
+   "ok": false,
+   "detail": "deployers funded after their first launch: 2 (auto-retraced by enrich)"
   },
   {
    "name": "structural_deployers_marked",

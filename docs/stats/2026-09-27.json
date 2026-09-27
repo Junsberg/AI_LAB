@@ -1,19 +1,19 @@
 {
- "generated_at": "2026-09-27T02:37:17.926091+00:00",
+ "generated_at": "2026-09-27T03:37:14.896180+00:00",
  "counts": [
   {
-   "tokens": 4001,
-   "tokens_24h": 1125,
-   "deployers": 2927,
-   "deployers_traced": 2151,
+   "tokens": 4046,
+   "tokens_24h": 1131,
+   "deployers": 2959,
+   "deployers_traced": 2179,
    "deployers_unknown_src": 357,
-   "edges": 4166,
-   "clusters": 2381,
-   "multi_token_clusters": 401,
-   "outcomes": 2860,
-   "rugged": 487,
+   "edges": 4227,
+   "clusters": 2406,
+   "multi_token_clusters": 408,
+   "outcomes": 2901,
+   "rugged": 495,
    "tenx": 154,
-   "with_risk": 4001,
+   "with_risk": 4046,
    "signals": 0,
    "positions": 0,
    "hypotheses": 0
@@ -22,22 +22,18 @@
  "risk_distribution": [
   {
    "top10_p50": 9.7,
-   "top10_p90": 62.3,
+   "top10_p90": 62.2,
    "insiders_avg": 0.0,
-   "lp_locked": 1879,
+   "lp_locked": 1898,
    "freeze_on": 4,
    "mint_on": 0,
-   "n": 3978
+   "n": 4023
   }
  ],
  "tokens_per_hour_24h": [
   {
-   "h": "2026-09-26 02:00",
-   "n": 14
-  },
-  {
    "h": "2026-09-26 03:00",
-   "n": 46
+   "n": 21
   },
   {
    "h": "2026-09-26 04:00",
@@ -129,7 +125,11 @@
   },
   {
    "h": "2026-09-27 02:00",
-   "n": 27
+   "n": 54
+  },
+  {
+   "h": "2026-09-27 03:00",
+   "n": 18
   }
  ],
  "top_deployers": [
@@ -176,6 +176,13 @@
    "last_t": "09-25 03:07"
   },
   {
+   "deployer": "CGcbvoobbnPzAN1mduBYapAUak6FUe3PHLACkEZWv42P",
+   "n": 14,
+   "syms": "CV,CV,CV,CV,CV,CV,CV,CV,CV,CV,CV,CV,CV,CV",
+   "first_t": "09-24 05:05",
+   "last_t": "09-24 07:32"
+  },
+  {
    "deployer": "CrVW9jpbbKssWULzncQtf31rSxvzJwPe56zg2o65sjA7",
    "n": 14,
    "syms": "MONEY,MONEY,MONEY,MONEY,MONEY,MONEY,MONEY,MONEY,MONEY,MONEY,MONEY,MONEY,MONEY,MONEY",
@@ -195,32 +202,25 @@
    "syms": "玉兔,玉兔,中秋玉兔,中秋玉兔,中秋玉兔,中秋玉兔,玉兔,币安玉兔,中秋玉兔,玉兔,玉兔,中秋玉兔,中国人能飞,LGBT",
    "first_t": "09-24 06:48",
    "last_t": "09-25 23:18"
-  },
-  {
-   "deployer": "CGcbvoobbnPzAN1mduBYapAUak6FUe3PHLACkEZWv42P",
-   "n": 14,
-   "syms": "CV,CV,CV,CV,CV,CV,CV,CV,CV,CV,CV,CV,CV,CV",
-   "first_t": "09-24 05:05",
-   "last_t": "09-24 07:32"
   }
  ],
  "top_clusters": [
   {
    "cluster_id": "677676736d13bb39",
-   "tokens_total": 97,
-   "tokens_evaluated": 63,
+   "tokens_total": 101,
+   "tokens_evaluated": 66,
    "tokens_rugged": 0,
    "tokens_10x": 21,
-   "score": 0.9861,
+   "score": 0.9865,
    "deployers": 49
   },
   {
    "cluster_id": "a3256c5eed9739de",
    "tokens_total": 38,
-   "tokens_evaluated": 27,
-   "tokens_rugged": 15,
+   "tokens_evaluated": 29,
+   "tokens_rugged": 16,
    "tokens_10x": 0,
-   "score": 0.45,
+   "score": 0.4531,
    "deployers": 37
   },
   {
@@ -244,10 +244,10 @@
   {
    "cluster_id": "e36e8bfcc9b9fa79",
    "tokens_total": 29,
-   "tokens_evaluated": 17,
+   "tokens_evaluated": 18,
    "tokens_rugged": 0,
    "tokens_10x": 0,
-   "score": 0.925,
+   "score": 0.9286,
    "deployers": 8
   },
   {
@@ -271,10 +271,10 @@
   {
    "cluster_id": "baca84838ef2f1b1",
    "tokens_total": 24,
-   "tokens_evaluated": 15,
+   "tokens_evaluated": 16,
    "tokens_rugged": 0,
    "tokens_10x": 1,
-   "score": 0.925,
+   "score": 0.9286,
    "deployers": 1
   },
   {
@@ -299,14 +299,14 @@
  "outcomes_summary": [
   {
    "rug_reason": "none",
-   "n": 2366,
+   "n": 2399,
    "p50_peak": 1.0,
-   "p90_peak": 2.47,
+   "p90_peak": 2.46,
    "max_peak": 856.67
   },
   {
    "rug_reason": "price_collapse",
-   "n": 484,
+   "n": 492,
    "p50_peak": 1.0,
    "p90_peak": 1.0,
    "max_peak": 417.02
@@ -329,20 +329,20 @@
  "outcome_by_cluster_size": [
   {
    "bucket": "2-3",
-   "n": 429,
+   "n": 434,
    "rug_rate": 0.147,
    "p50_peak": 1.0
   },
   {
    "bucket": "4+",
-   "n": 1029,
+   "n": 1048,
    "rug_rate": 0.096,
    "p50_peak": 1.0
   },
   {
    "bucket": "single",
-   "n": 1402,
-   "rug_rate": 0.232,
+   "n": 1419,
+   "rug_rate": 0.233,
    "p50_peak": 1.0
   }
  ],
@@ -350,7 +350,7 @@
   {
    "src": "rugcheck",
    "verified": "-",
-   "n": 3044
+   "n": 3089
   },
   {
    "src": "rpc",
@@ -446,11 +446,11 @@
  "funding_sources": [
   {
    "src": "wallet",
-   "n": 2058
+   "n": 2086
   },
   {
    "src": "hub",
-   "n": 390
+   "n": 396
   },
   {
    "src": "unknown",
@@ -462,7 +462,7 @@
   },
   {
    "src": "untraced",
-   "n": 31
+   "n": 29
   }
  ]
 }

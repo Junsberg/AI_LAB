@@ -1,12 +1,12 @@
 {
- "generated_at": "2026-09-27T02:37:24Z",
+ "generated_at": "2026-09-27T03:37:22Z",
  "window_h": 24,
  "runs": 272,
  "by_workflow": {
   "stats": {
    "workflow_dispatch:in_progress": 1,
-   "schedule:success": 6,
    "workflow_dispatch:success": 23,
+   "schedule:success": 6,
    "push:success": 1
   },
   "outcomes": {
