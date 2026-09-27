@@ -1,19 +1,19 @@
 {
- "generated_at": "2026-09-27T07:37:15.841354+00:00",
+ "generated_at": "2026-09-27T08:32:35.427714+00:00",
  "counts": [
   {
-   "tokens": 4283,
-   "tokens_24h": 1152,
-   "deployers": 3120,
-   "deployers_traced": 2292,
-   "deployers_unknown_src": 373,
-   "edges": 4447,
-   "clusters": 2527,
-   "multi_token_clusters": 426,
-   "outcomes": 3107,
-   "rugged": 549,
-   "tenx": 162,
-   "with_risk": 4283,
+   "tokens": 4344,
+   "tokens_24h": 1166,
+   "deployers": 3160,
+   "deployers_traced": 2322,
+   "deployers_unknown_src": 379,
+   "edges": 4505,
+   "clusters": 2557,
+   "multi_token_clusters": 430,
+   "outcomes": 3146,
+   "rugged": 555,
+   "tenx": 167,
+   "with_risk": 4344,
    "signals": 0,
    "positions": 0,
    "hypotheses": 0
@@ -21,23 +21,19 @@
  ],
  "risk_distribution": [
   {
-   "top10_p50": 9.7,
-   "top10_p90": 59.6,
+   "top10_p50": 9.8,
+   "top10_p90": 58.9,
    "insiders_avg": 0.0,
-   "lp_locked": 1982,
+   "lp_locked": 2007,
    "freeze_on": 4,
    "mint_on": 0,
-   "n": 4260
+   "n": 4321
   }
  ],
  "tokens_per_hour_24h": [
   {
-   "h": "2026-09-26 07:00",
-   "n": 15
-  },
-  {
    "h": "2026-09-26 08:00",
-   "n": 59
+   "n": 27
   },
   {
    "h": "2026-09-26 09:00",
@@ -129,7 +125,11 @@
   },
   {
    "h": "2026-09-27 07:00",
-   "n": 32
+   "n": 70
+  },
+  {
+   "h": "2026-09-27 08:00",
+   "n": 23
   }
  ],
  "top_deployers": [
@@ -176,6 +176,13 @@
    "last_t": "09-25 03:07"
   },
   {
+   "deployer": "BvDc6R79TyZXGg7murNY79yYJRFDQtbQmid4tHcnBoji",
+   "n": 14,
+   "syms": "玉兔,玉兔,中秋玉兔,中秋玉兔,中秋玉兔,中秋玉兔,玉兔,币安玉兔,中秋玉兔,玉兔,玉兔,中秋玉兔,中国人能飞,LGBT",
+   "first_t": "09-24 06:48",
+   "last_t": "09-25 23:18"
+  },
+  {
    "deployer": "5whEE6vB9T7NJrB9bHLu67kiSet1DMvc2VQ9kmrdwb8e",
    "n": 14,
    "syms": "SI,SI,PESOS,MOONCATS,SIDELINED,TOKENS,Elephant,SDOG,VISE,IshiGo,Meme,PROM,fush,RETIRE",
@@ -190,13 +197,6 @@
    "last_t": "09-24 07:14"
   },
   {
-   "deployer": "BvDc6R79TyZXGg7murNY79yYJRFDQtbQmid4tHcnBoji",
-   "n": 14,
-   "syms": "玉兔,玉兔,中秋玉兔,中秋玉兔,中秋玉兔,中秋玉兔,玉兔,币安玉兔,中秋玉兔,玉兔,玉兔,中秋玉兔,中国人能飞,LGBT",
-   "first_t": "09-24 06:48",
-   "last_t": "09-25 23:18"
-  },
-  {
    "deployer": "CGcbvoobbnPzAN1mduBYapAUak6FUe3PHLACkEZWv42P",
    "n": 14,
    "syms": "CV,CV,CV,CV,CV,CV,CV,CV,CV,CV,CV,CV,CV,CV",
@@ -208,29 +208,29 @@
   {
    "cluster_id": "63410261d4772a3c",
    "tokens_total": 129,
-   "tokens_evaluated": 89,
+   "tokens_evaluated": 91,
    "tokens_rugged": 0,
    "tokens_10x": 27,
-   "score": 0.9897,
+   "score": 0.9899,
    "deployers": 60
+  },
+  {
+   "cluster_id": "7ed913765a3a4f01",
+   "tokens_total": 42,
+   "tokens_evaluated": 24,
+   "tokens_rugged": 0,
+   "tokens_10x": 8,
+   "score": 0.9651,
+   "deployers": 24
   },
   {
    "cluster_id": "45a29e3760aa8123",
    "tokens_total": 41,
-   "tokens_evaluated": 31,
-   "tokens_rugged": 17,
+   "tokens_evaluated": 32,
+   "tokens_rugged": 18,
    "tokens_10x": 0,
-   "score": 0.4559,
+   "score": 0.4429,
    "deployers": 40
-  },
-  {
-   "cluster_id": "7ed913765a3a4f01",
-   "tokens_total": 40,
-   "tokens_evaluated": 23,
-   "tokens_rugged": 0,
-   "tokens_10x": 8,
-   "score": 0.9643,
-   "deployers": 23
   },
   {
    "cluster_id": "e138b28750810679",
@@ -244,19 +244,19 @@
   {
    "cluster_id": "7bd23c96a96168b4",
    "tokens_total": 31,
-   "tokens_evaluated": 20,
+   "tokens_evaluated": 21,
    "tokens_rugged": 1,
    "tokens_10x": 0,
-   "score": 0.8913,
+   "score": 0.8958,
    "deployers": 5
   },
   {
    "cluster_id": "e36e8bfcc9b9fa79",
    "tokens_total": 29,
-   "tokens_evaluated": 22,
+   "tokens_evaluated": 23,
    "tokens_rugged": 0,
    "tokens_10x": 0,
-   "score": 0.94,
+   "score": 0.9423,
    "deployers": 8
   },
   {
@@ -269,6 +269,15 @@
    "deployers": 3
   },
   {
+   "cluster_id": "4efaa1effa7656f1",
+   "tokens_total": 25,
+   "tokens_evaluated": 21,
+   "tokens_rugged": 8,
+   "tokens_10x": 0,
+   "score": 0.6042,
+   "deployers": 25
+  },
+  {
    "cluster_id": "baca84838ef2f1b1",
    "tokens_total": 25,
    "tokens_evaluated": 16,
@@ -276,15 +285,6 @@
    "tokens_10x": 1,
    "score": 0.9286,
    "deployers": 1
-  },
-  {
-   "cluster_id": "a9bd5839a0045b81",
-   "tokens_total": 24,
-   "tokens_evaluated": 21,
-   "tokens_rugged": 8,
-   "tokens_10x": 0,
-   "score": 0.6042,
-   "deployers": 24
   },
   {
    "cluster_id": "639a2c37efba111c",
@@ -299,14 +299,14 @@
  "outcomes_summary": [
   {
    "rug_reason": "none",
-   "n": 2550,
+   "n": 2583,
    "p50_peak": 1.0,
-   "p90_peak": 2.32,
+   "p90_peak": 2.45,
    "max_peak": 935.73
   },
   {
    "rug_reason": "price_collapse",
-   "n": 546,
+   "n": 552,
    "p50_peak": 1.0,
    "p90_peak": 1.0,
    "max_peak": 417.02
@@ -329,20 +329,20 @@
  "outcome_by_cluster_size": [
   {
    "bucket": "2-3",
-   "n": 458,
-   "rug_rate": 0.157,
+   "n": 462,
+   "rug_rate": 0.156,
    "p50_peak": 1.0
   },
   {
    "bucket": "4+",
-   "n": 1126,
-   "rug_rate": 0.094,
+   "n": 1134,
+   "rug_rate": 0.093,
    "p50_peak": 1.0
   },
   {
    "bucket": "single",
-   "n": 1523,
-   "rug_rate": 0.244,
+   "n": 1550,
+   "rug_rate": 0.243,
    "p50_peak": 1.0
   }
  ],
@@ -350,12 +350,12 @@
   {
    "src": "rugcheck",
    "verified": "-",
-   "n": 3314
+   "n": 3367
   },
   {
    "src": "rpc",
    "verified": "-",
-   "n": 475
+   "n": 483
   },
   {
    "src": "pre-fix",
@@ -376,43 +376,43 @@
  "unknown_funding_first_tx_kinds": [
   {
    "kind": "111111:transfer",
-   "n": 413
+   "n": 417
   },
   {
    "kind": "Comput:-",
-   "n": 272
+   "n": 280
   },
   {
    "kind": "111111:createAccount",
-   "n": 243
+   "n": 251
   },
   {
    "kind": "Tokenk:syncNative",
-   "n": 167
+   "n": 171
   },
   {
    "kind": "Tokenk:closeAccount",
-   "n": 158
+   "n": 162
   },
   {
    "kind": "AToken:createIdempotent",
-   "n": 155
+   "n": 159
   },
   {
    "kind": "Tokenk:initializeAccount3",
-   "n": 146
+   "n": 150
   },
   {
    "kind": "Tokenz:initializeMetadataPointer",
-   "n": 107
+   "n": 111
   },
   {
    "kind": "Tokenk:initializeImmutableOwner",
-   "n": 88
+   "n": 92
   },
   {
    "kind": "Tokenk:getAccountDataSize",
-   "n": 88
+   "n": 92
   },
   {
    "kind": "6EF8rr:-",
@@ -446,23 +446,23 @@
  "funding_sources": [
   {
    "src": "wallet",
-   "n": 2194
+   "n": 2222
   },
   {
    "src": "hub",
-   "n": 426
+   "n": 431
   },
   {
    "src": "unknown",
-   "n": 373
+   "n": 379
   },
   {
    "src": "cex",
-   "n": 96
+   "n": 98
   },
   {
    "src": "untraced",
-   "n": 31
+   "n": 30
   }
  ]
 }
