@@ -122,11 +122,13 @@ def test_insert_paths_roundtrip():
         c.commit()
 
 
-def test_outcomes_selection_and_upsert_roundtrip():
+def test_outcomes_selection_and_upsert_roundtrip(monkeypatch):
     from memebot.db import conn
     from memebot.outcomes import evaluate as ev
     from memebot.outcomes.rules import Outcome
 
+    # RULES_CHANGED_AT is set to the deploy slot and may still be in the future when CI runs
+    monkeypatch.setattr(ev, "RULES_CHANGED_AT", "2000-01-01T00:00:00+00:00")
     with conn() as c:
         c.execute("delete from token_outcomes where mint='MINT_OUT'")  # rerunnable on a persistent DB
         c.execute("insert into tokens(mint, deployer, launch_platform, created_at, pool_address) "

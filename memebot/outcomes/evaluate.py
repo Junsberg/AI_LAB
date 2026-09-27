@@ -1,6 +1,8 @@
 """Outcome evaluator: for tokens older than 24h (re-check at 72h), pull GeckoTerminal
-hourly OHLCV + pool reserve and classify. Free API, ~1.03 calls per token
-(pool attributes come 30 at a time from the `pools/multi` endpoint).
+OHLCV + pool reserve and classify. The first 24h use 5-minute candles (a first-hour
+pump sits inside the first hourly candle, i.e. inside the base price), later hours
+hourly/daily. Free API, ~2.03 calls per token (pool attributes come 30 at a time
+from the `pools/multi` endpoint).
 
 Rate limits: GitHub-hosted runners share egress with other GeckoTerminal users, so
 429s arrive well under the documented 30 req/min. A 429 never drops a token: we
@@ -27,10 +29,12 @@ GT_SLEEP = 2.2  # ~27 req/min against the ~30/min public limit
 MULTI_BATCH = 30  # GeckoTerminal pools/multi cap
 RUN_BUDGET_S = 20 * 60  # workflow timeout is 25 min
 RETRY_MIN_S, RETRY_DEFAULT_S, RETRY_MAX_S = 5.0, 60.0, 180.0
-# Rows evaluated before this instant were classified by rules v1 (wick peaks, raw first
-# open) and are re-evaluated once. Bump when classify() changes in a way that alters
+# Rows evaluated before this instant were classified by older rules (v1 wick peaks /
+# v2 hourly-only first day, which hid first-hour pumps inside the base candle) and are
+# re-evaluated once. Bump when classify() changes in a way that alters
 # stored values; there is no schema column for a rules version on purpose (no migration).
-RULES_CHANGED_AT = "2026-09-25T17:09:00+00:00"
+RULES_CHANGED_AT = "2026-09-27T18:05:00+00:00"  # v3: first 24h from 5-minute candles
+FIRST_DAY_S = 24 * 3600
 
 
 class BudgetExhausted(Exception):
@@ -63,6 +67,13 @@ async def _get(
         wait = min(wait * 1.5, RETRY_MAX_S)
 
 
+def _parse_ohlcv(payload: dict) -> list[Candle]:
+    rows = (payload or {}).get("data", {}).get("attributes", {}).get("ohlcv_list", []) or []
+    rows = [x for x in rows if isinstance(x, list) and len(x) >= 6 and all(v is not None for v in x[:6])]
+    rows.sort(key=lambda x: x[0])
+    return [Candle(int(x[0]), float(x[1]), float(x[2]), float(x[3]), float(x[4]), float(x[5])) for x in rows]
+
+
 async def _ohlcv(client: httpx.AsyncClient, pool: str, age_hours: float, deadline: float) -> list[Candle]:
     # hourly candles cover 7 days; older tokens need daily candles so the launch
     # candle (our base price) is still inside the window
@@ -71,10 +82,33 @@ async def _ohlcv(client: httpx.AsyncClient, pool: str, age_hours: float, deadlin
     if r.status_code == 404:
         return []
     r.raise_for_status()
-    rows = r.json().get("data", {}).get("attributes", {}).get("ohlcv_list", [])
-    rows = [x for x in rows if isinstance(x, list) and len(x) >= 6 and all(v is not None for v in x[:6])]
-    rows.sort(key=lambda x: x[0])
-    return [Candle(int(x[0]), float(x[1]), float(x[2]), float(x[3]), float(x[4]), float(x[5])) for x in rows]
+    return _parse_ohlcv(r.json())
+
+
+async def _ohlcv_first_day(
+    client: httpx.AsyncClient, pool: str, created_at: datetime, deadline: float
+) -> list[Candle]:
+    """5-minute candles for the pool's first FIRST_DAY_S. Anchored with before_timestamp,
+    so the window is the launch day whatever the token's age (limit alone would slide)."""
+    params = {
+        "aggregate": 5,
+        "before_timestamp": int(created_at.timestamp()) + FIRST_DAY_S,
+        "limit": FIRST_DAY_S // 300,
+    }
+    r = await _get(client, f"{GT}/networks/solana/pools/{pool}/ohlcv/minute", params, deadline)
+    if r.status_code == 404:
+        return []
+    r.raise_for_status()
+    return _parse_ohlcv(r.json())
+
+
+def merge_candles(fine: list[Candle], coarse: list[Candle], cutoff_ts: int) -> list[Candle]:
+    """5-minute candles before `cutoff_ts`, hourly/daily after. Without fine data the
+    coarse series is returned as is (pre-v3 behaviour), never an empty list."""
+    fine = [c for c in fine if c.ts < cutoff_ts]
+    if not fine:
+        return coarse
+    return fine + [c for c in coarse if c.ts >= cutoff_ts]
 
 
 def parse_multi(payload: dict) -> dict[str, dict]:
@@ -197,8 +231,12 @@ async def run(limit: int = 400, budget_s: float = RUN_BUDGET_S) -> int:
                         continue  # pool lookup failed above; next run retries it
                     age_h = (datetime.now(timezone.utc) - r["created_at"]).total_seconds() / 3600
                     try:
-                        candles = await _ohlcv(client, r["pool_address"], age_h, deadline)
+                        coarse = await _ohlcv(client, r["pool_address"], age_h, deadline)
                         await asyncio.sleep(GT_SLEEP)
+                        fine = await _ohlcv_first_day(client, r["pool_address"], r["created_at"], deadline)
+                        await asyncio.sleep(GT_SLEEP)
+                        cutoff = int(r["created_at"].timestamp()) + FIRST_DAY_S
+                        candles = merge_candles(fine, coarse, cutoff)
                     except (httpx.HTTPError, TypeError, ValueError) as e:
                         log.warning("outcome.fetch_failed", mint=r["mint"], error=str(e))
                         continue

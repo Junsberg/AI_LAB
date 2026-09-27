@@ -178,3 +178,44 @@ def test_liquidity_peak_uses_collect_time_floor():
     assert ev.liquidity_peak(None, "junk", None) is None
     o = classify([c(1, 1.0, 5.0, 0.9, 4.0), c(2, 4.0, 4.1, 0.1, 0.2)], 0.0, ev.liquidity_peak(None, "12000", 0.0))
     assert o.rug_reason == "lp_pull"
+
+
+# --- rules v3: first 24h from 5-minute candles ---------------------------------------
+
+
+def test_first_hour_pump_visible_with_5m_candles():
+    # hourly: the whole 1→8→3 move sits in the first (base) candle → multiple ~1
+    hourly = [c(3600, 1.0, 8.0, 1.0, 3.0), c(7200, 3.0, 3.2, 2.8, 3.0)]
+    assert classify(hourly, None, None).peak_multiple == 1.0
+    fine = [c(3600, 1.0, 1.2, 1.0, 1.1), c(3900, 1.1, 8.0, 1.1, 8.0), c(4200, 8.0, 8.0, 3.0, 3.0)]
+    merged = ev.merge_candles(fine, hourly, cutoff_ts=3600 + ev.FIRST_DAY_S)
+    assert classify(merged, None, None).peak_multiple == round(8.0 / 1.1, 4)
+
+
+def test_merge_candles_splits_at_cutoff_and_falls_back():
+    fine = [c(0, 1, 1, 1, 1), c(300, 1, 1, 1, 1), c(1000, 9, 9, 9, 9)]
+    coarse = [c(0, 2, 2, 2, 2), c(900, 2, 2, 2, 2), c(3600, 3, 3, 3, 3)]
+    assert [x.ts for x in ev.merge_candles(fine, coarse, 900)] == [0, 300, 900, 3600]
+    assert ev.merge_candles([], coarse, 900) == coarse  # 5m missing → hourly as before
+
+
+def test_first_day_request_is_anchored_to_launch():
+    from datetime import datetime, timezone
+
+    seen = {}
+
+    async def h(req: httpx.Request) -> httpx.Response:
+        seen["path"], seen["params"] = req.url.path, dict(req.url.params)
+        return httpx.Response(200, json={"data": {"attributes": {"ohlcv_list": [[5, 1, 1, 1, 1, 1], [2, 1, 1, 1, 1, 1]]}}})
+
+    created = datetime(2026, 9, 20, tzinfo=timezone.utc)
+
+    async def go():
+        async with httpx.AsyncClient(transport=httpx.MockTransport(h)) as cl:
+            return await ev._ohlcv_first_day(cl, "POOL", created, time.monotonic() + 100)
+
+    out = asyncio.run(go())
+    assert [x.ts for x in out] == [2, 5]
+    assert seen["path"].endswith("/pools/POOL/ohlcv/minute")
+    assert seen["params"] == {
+        "aggregate": "5", "before_timestamp": str(int(created.timestamp()) + 86400), "limit": "288"}
