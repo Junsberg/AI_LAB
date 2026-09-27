@@ -1,19 +1,19 @@
 {
- "generated_at": "2026-09-27T09:37:15.318003+00:00",
+ "generated_at": "2026-09-27T10:05:34.696610+00:00",
  "counts": [
   {
-   "tokens": 4399,
-   "tokens_24h": 1158,
-   "deployers": 3198,
-   "deployers_traced": 2353,
+   "tokens": 4422,
+   "tokens_24h": 1150,
+   "deployers": 3214,
+   "deployers_traced": 2355,
    "deployers_unknown_src": 383,
    "edges": 4561,
    "clusters": 2586,
    "multi_token_clusters": 433,
-   "outcomes": 3220,
-   "rugged": 573,
-   "tenx": 171,
-   "with_risk": 4399,
+   "outcomes": 3237,
+   "rugged": 576,
+   "tenx": 173,
+   "with_risk": 4422,
    "signals": 0,
    "positions": 0,
    "hypotheses": 0
@@ -24,17 +24,13 @@
    "top10_p50": 9.8,
    "top10_p90": 59.1,
    "insiders_avg": 0.0,
-   "lp_locked": 2025,
+   "lp_locked": 2034,
    "freeze_on": 4,
    "mint_on": 0,
-   "n": 4376
+   "n": 4399
   }
  ],
  "tokens_per_hour_24h": [
-  {
-   "h": "2026-09-26 09:00",
-   "n": 31
-  },
   {
    "h": "2026-09-26 10:00",
    "n": 58
@@ -129,7 +125,7 @@
   },
   {
    "h": "2026-09-27 09:00",
-   "n": 22
+   "n": 45
   }
  ],
  "top_deployers": [
@@ -149,10 +145,10 @@
   },
   {
    "deployer": "7w87862Aiq9rGnH4onF17yaKzmqxw79TUGEhDwJCUbSf",
-   "n": 21,
-   "syms": "claude,claude,claude,claude,claude,claude5.5,claude5.5,Claude,CLAUDE,CLAUDE,Claude,Claude,Claude,Claude,Claude,Claude,Claude,Claude,Claude,Claude,Claude",
+   "n": 22,
+   "syms": "claude,claude,claude,claude,claude,claude5.5,claude5.5,Claude,CLAUDE,CLAUDE,Claude,Claude,Claude,Claude,Claude,Claude,Claude,Claude,Claude,Claude,Claude,Claude",
    "first_t": "09-25 01:33",
-   "last_t": "09-27 08:58"
+   "last_t": "09-27 09:35"
   },
   {
    "deployer": "E3jbmhG8VSfxJ8Ab2vgwjnDLY2Azk4sYCNvP4S9CD3yC",
@@ -162,18 +158,18 @@
    "last_t": "09-24 07:21"
   },
   {
-   "deployer": "BAGSB9TpGrZxQbEsrEznv5jXXdwyP6AXerN8aVRiAmcv",
-   "n": 16,
-   "syms": "VWA,QUANTA,GTA IV,GEMINI,OPENAI,MM,DRAGONBALL,SPONGEBOB,POKER,GOOGLE,BITFOOTS,₽,ROCKET,₽,NS,BAGSPAYBOT",
-   "first_t": "09-24 06:30",
-   "last_t": "09-26 20:18"
-  },
-  {
    "deployer": "CdMsg91p586MHo3RcKvNwFNzoPijF2BbMcUH8yUoSPj",
    "n": 16,
    "syms": "FomoFantas,Musepad,AETHOS,PUMP,⌀,COLLECT,looks,CHIPS,PILLS,LAND,COMPANY,~4°,POKESTRTGY,MASTERBALL,KIM,KIM",
    "first_t": "09-24 23:46",
    "last_t": "09-25 03:07"
+  },
+  {
+   "deployer": "BAGSB9TpGrZxQbEsrEznv5jXXdwyP6AXerN8aVRiAmcv",
+   "n": 16,
+   "syms": "VWA,QUANTA,GTA IV,GEMINI,OPENAI,MM,DRAGONBALL,SPONGEBOB,POKER,GOOGLE,BITFOOTS,₽,ROCKET,₽,NS,BAGSPAYBOT",
+   "first_t": "09-24 06:30",
+   "last_t": "09-26 20:18"
   },
   {
    "deployer": "BvDc6R79TyZXGg7murNY79yYJRFDQtbQmid4tHcnBoji",
@@ -212,7 +208,7 @@
    "tokens_rugged": 0,
    "tokens_10x": 27,
    "score": 0.9899,
-   "deployers": 60
+   "deployers": 62
   },
   {
    "cluster_id": "7ed913765a3a4f01",
@@ -299,14 +295,14 @@
  "outcomes_summary": [
   {
    "rug_reason": "none",
-   "n": 2637,
+   "n": 2651,
    "p50_peak": 1.0,
    "p90_peak": 2.46,
    "max_peak": 935.73
   },
   {
    "rug_reason": "price_collapse",
-   "n": 570,
+   "n": 573,
    "p50_peak": 1.0,
    "p90_peak": 1.05,
    "max_peak": 417.02
@@ -329,20 +325,20 @@
  "outcome_by_cluster_size": [
   {
    "bucket": "2-3",
-   "n": 479,
+   "n": 480,
    "rug_rate": 0.152,
    "p50_peak": 1.0
   },
   {
    "bucket": "4+",
-   "n": 1166,
-   "rug_rate": 0.096,
+   "n": 1174,
+   "rug_rate": 0.095,
    "p50_peak": 1.0
   },
   {
    "bucket": "single",
-   "n": 1575,
-   "rug_rate": 0.246,
+   "n": 1583,
+   "rug_rate": 0.247,
    "p50_peak": 1.0
   }
  ],
@@ -350,12 +346,12 @@
   {
    "src": "rugcheck",
    "verified": "-",
-   "n": 3418
+   "n": 3439
   },
   {
    "src": "rpc",
    "verified": "-",
-   "n": 487
+   "n": 489
   },
   {
    "src": "pre-fix",
@@ -443,6 +439,12 @@
    "avg_creator_pct": 2.0
   },
   {
+   "deployer": "3q13J4n4sgzKCQsmabdXfphaFAgUja16jNZqqHp2gbmw",
+   "n_tokens": 10,
+   "n_symbols": 9,
+   "avg_creator_pct": 15.26
+  },
+  {
    "deployer": "3RnqXCyNrzCZZumL4AdBLCrpsgAgUrMPek8hRSmErBWA",
    "n_tokens": 10,
    "n_symbols": 9,
@@ -452,7 +454,7 @@
  "funding_sources": [
   {
    "src": "wallet",
-   "n": 2253
+   "n": 2255
   },
   {
    "src": "hub",
@@ -468,7 +470,7 @@
   },
   {
    "src": "untraced",
-   "n": 31
+   "n": 45
   }
  ]
 }
