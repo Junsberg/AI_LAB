@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-09-27T06:37:24Z",
+ "generated_at": "2026-09-27T07:37:23Z",
  "window_h": 24,
  "runs": 269,
  "by_workflow": {
@@ -9,10 +9,9 @@
    "schedule:success": 6
   },
   "outcomes": {
-   "workflow_dispatch:pending": 1,
-   "schedule:in_progress": 1,
+   "workflow_dispatch:in_progress": 1,
    "workflow_dispatch:success": 47,
-   "schedule:success": 5
+   "schedule:success": 6
   },
   "collect": {
    "workflow_dispatch:success": 144,
