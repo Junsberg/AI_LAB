@@ -1,7 +1,7 @@
 {
- "generated_at": "2026-09-27T20:37:27Z",
+ "generated_at": "2026-09-27T21:37:32Z",
  "window_h": 24,
- "runs": 327,
+ "runs": 333,
  "by_workflow": {
   "stats": {
    "workflow_dispatch:in_progress": 1,
@@ -10,15 +10,14 @@
    "schedule:success": 5
   },
   "outcomes": {
-   "workflow_dispatch:pending": 1,
-   "schedule:in_progress": 1,
+   "workflow_dispatch:in_progress": 1,
    "workflow_dispatch:success": 47,
+   "schedule:success": 6,
    "push:success": 2,
-   "schedule:success": 5,
    "push:cancelled": 2
   },
   "paper": {
-   "workflow_dispatch:success": 10,
+   "workflow_dispatch:success": 16,
    "push:success": 1
   },
   "collect": {
