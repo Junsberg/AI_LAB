@@ -22,7 +22,7 @@
 ## 인프라 (전부 무료)
 | 구성 | 위치 | 비고 |
 |---|---|---|
-| 코드 | GitHub `Junsberg/AI_LAB` (public), 작업 브랜치 `claude/typesafe-jev-pricing-4tueat`, 워크플로는 main 필요 → ff-merge 관행 | |
+| 코드 | GitHub `Junsberg/AI_LAB` (public), 작업 브랜치는 세션마다 지정(09-27 후반: `claude/handoff-design-limits-et7v32`), 워크플로는 main 필요 → ff-merge 관행 | |
 | DB | Supabase 프로젝트 `memebot` (`umjfzpdlzzatrjxumkgv`, 서울) | `saja-live`와 절대 섞지 말 것 |
 | 스케줄 | Supabase pg_cron → GitHub workflow_dispatch (`public.gh_dispatch`, Vault `GH_PAT`) | GitHub 자체 cron은 불안정, 백업용 |
 | 잡 | collect 10분 / enrich 매시 17분 / outcomes 매시 05·35분(20분 예산) / stats 매시 37분 / ci(main 외 푸시, 실제 Postgres) | `.github/workflows/` |
@@ -42,13 +42,14 @@ GeckoTerminal new_pools → 배포자(rugcheck creator 1순위, RPC 폴백은 �
 - 텔레그램 계정 없음 → 콜은 온체인 볼륨 스파이크 역추정
 - 로컬 PC(Windows 10)는 실거래 단계에서만 필요. 그때 새 세션에서 연결
 
-## 진행 상태 (2026-09-27 15:00 UTC)
+## 진행 상태 (2026-09-27 17:40 UTC)
 - 1~2주차 완료. 3일치 데이터: 토큰 ~4,500(24h 유입 ~1,150), 결과 평가 ~3,300, 배포자 추적 73%.
 - 09-25~27 수정(전부 main, CI 통과): outcomes 429 처리·20분 예산·pools/multi 배치(회당 9→100건) / 결과 규칙 v2(캔들 글리치 제거: 몸통 기준·거래량 0 제외·1000배 초과 no_data, 전량 재평가 완료) / 건강검진 `peak_multiple_sane` 추가 / `cluster_size_sane` 허브형만 경고 / 독립 리뷰 4건(배치 내 1개 실패 격리, 예산 확인, actions 집계 1000건, SQL 테스트 재실행성).
 - **데이터가 말하는 것** (리뷰 09-26·09-27, 확신도 B): 졸업 토큰 고점 배수 중앙값 1.00(무차별 진입=손실), 10x 5%, 러그 ≥17%(하한). 계보로 갈림: 단독 배포자 러그 24% vs 4+ 클러스터 9%. 릴레이 체인 클러스터 `63410261…`(배포자 63, 토큰 129) 러그 0/91·10x 30% — 빌더형. 팜형 `45a29e…` 러그 55%. 핵심 가설 첫 확인.
-- **알려진 설계 한계(수정 예정, 우선순위 순)**: ① lp_pull 과소 탐지 — 유동성 고점을 첫 평가 때 현재값으로 잡음 → collect 시 GT `reserve_in_usd`를 `meta.reserve_usd_at_seen`에 저장하고 평가 시 바닥값으로 사용 ② 첫 1시간 급등이 배수에서 사라짐 → 첫 24h는 GT 5분 캔들(aggregate=5, limit 1000)로 평가, `RULES_CHANGED_AT` 갱신으로 재평가 ③ unknown 자금원 12% → WSOL 랩·언랩(syncNative/closeAccount)은 `swap`으로 분류 ④ 클러스터 ID가 재계산마다 바뀌어 날짜 간 추적 불가 → 최소 지갑 주소 기반으로 안정화.
-- **다음 단계**: 위 ①②(고점 측정 정확화) → 클러스터 점수 ≥0.9·평가 ≥10 토큰 대상 페이퍼 러너(`memebot/execution/paper.py` 골격 있음) → 2주 관찰 → `GO_LIVE_CHECKLIST.md`. 3주차 원안(트레이드 테이프·KOL 선행 지갑)은 페이퍼 결과 보고 착수.
-- 작업 흐름: 브랜치 푸시 → ci 성공 확인 → `git push origin claude/typesafe-jev-pricing-4tueat:main` → 경로 변경된 워크플로 smoke 실행 로그 확인 → 다음 stats로 값 검증. "status ok"가 아니라 **값 범위**를 확인할 것(09-25 고점 배수 56억 배가 ok로 통과한 전례).
+- **09-27 17:08Z 적용(main)**: ① 유동성 고점 바닥값(`meta.reserve_usd_at_seen`, 신규 수집분부터) ② 결과 규칙 v3 — 첫 24h 5분 캔들(`before_timestamp`=생성+24h, 288개), `RULES_CHANGED_AT`=18:05Z 전량 1회 재평가(18:05 이전 실행분은 한 번 더 평가됨 — 의도). 기준선(16:37Z): 평가 3,563 / lp_pull 8 / price_collapse 662(p50 고점 1.00) / >100x 1.2%.
+- **알려진 설계 한계(남은 것)**: ③ unknown 자금원 12% → WSOL 랩·언랩(syncNative/closeAccount)은 `swap`으로 분류 ④ 클러스터 ID가 재계산마다 바뀌어 날짜 간 추적 불가 → 최소 지갑 주소 기반으로 안정화.
+- **다음 단계**: v3 재평가 완료 후 값 범위 확인(>100x ≤2%, max ≤1000) → ④ 클러스터 ID 안정화(페이퍼 선행 조건) → 클러스터 점수 ≥0.9·평가 ≥10 토큰 대상 페이퍼 러너(`memebot/execution/paper.py` 골격 있음) → 2주 관찰 → `GO_LIVE_CHECKLIST.md`. 3주차 원안(트레이드 테이프·KOL 선행 지갑)은 페이퍼 결과 보고 착수.
+- 작업 흐름: 브랜치 푸시 → ci 성공 확인 → `git push origin <작업 브랜치>:main` → 경로 변경된 워크플로 smoke 실행 로그 확인 → 다음 stats로 값 검증. "status ok"가 아니라 **값 범위**를 확인할 것(09-25 고점 배수 56억 배가 ok로 통과한 전례).
 
 ## 알려진 제약
 - 이 클라우드 세션은 외부 API 접근 불가 → 실통신 테스트는 GitHub Actions push 트리거로
