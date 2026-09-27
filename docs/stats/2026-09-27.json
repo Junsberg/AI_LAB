@@ -1,18 +1,18 @@
 {
- "generated_at": "2026-09-27T18:37:15.392139+00:00",
+ "generated_at": "2026-09-27T18:38:40.036662+00:00",
  "counts": [
   {
    "tokens": 4882,
-   "tokens_24h": 1210,
+   "tokens_24h": 1205,
    "deployers": 3537,
    "deployers_traced": 2632,
    "deployers_unknown_src": 407,
    "edges": 5088,
    "clusters": 2859,
    "multi_token_clusters": 469,
-   "outcomes": 3652,
-   "rugged": 694,
-   "tenx": 227,
+   "outcomes": 3659,
+   "rugged": 695,
+   "tenx": 228,
    "with_risk": 4882,
    "signals": 0,
    "positions": 0,
@@ -33,7 +33,7 @@
  "tokens_per_hour_24h": [
   {
    "h": "2026-09-26 18:00",
-   "n": 23
+   "n": 18
   },
   {
    "h": "2026-09-26 19:00",
@@ -299,14 +299,14 @@
  "outcomes_summary": [
   {
    "rug_reason": "none",
-   "n": 2946,
+   "n": 2952,
    "p50_peak": 1.0,
-   "p90_peak": 3.13,
+   "p90_peak": 3.15,
    "max_peak": 935.73
   },
   {
    "rug_reason": "price_collapse",
-   "n": 685,
+   "n": 686,
    "p50_peak": 1.0,
    "p90_peak": 1.26,
    "max_peak": 417.02
@@ -329,19 +329,19 @@
  "outcome_by_cluster_size": [
   {
    "bucket": "2-3",
-   "n": 521,
+   "n": 522,
    "rug_rate": 0.161,
    "p50_peak": 1.0
   },
   {
    "bucket": "4+",
-   "n": 1319,
-   "rug_rate": 0.099,
+   "n": 1321,
+   "rug_rate": 0.098,
    "p50_peak": 1.0
   },
   {
    "bucket": "single",
-   "n": 1812,
+   "n": 1816,
    "rug_rate": 0.265,
    "p50_peak": 1.0
   }
