@@ -1,34 +1,32 @@
 {
- "generated_at": "2026-09-27T14:37:58Z",
+ "generated_at": "2026-09-27T15:37:25Z",
  "window_h": 24,
- "runs": 278,
+ "runs": 279,
  "by_workflow": {
-  "enrich": {
-   "push:in_progress": 1,
-   "workflow_dispatch:success": 24,
-   "schedule:success": 6,
-   "push:success": 1
-  },
-  "collect": {
-   "push:in_progress": 1,
-   "workflow_dispatch:success": 144,
-   "schedule:success": 6,
-   "push:success": 1
-  },
   "stats": {
    "workflow_dispatch:in_progress": 1,
-   "schedule:success": 6,
    "workflow_dispatch:success": 23,
+   "schedule:success": 6,
    "push:success": 1
-  },
-  "ci": {
-   "push:success": 8
   },
   "outcomes": {
    "workflow_dispatch:in_progress": 1,
    "workflow_dispatch:success": 47,
    "schedule:success": 6,
    "push:success": 1
+  },
+  "collect": {
+   "workflow_dispatch:success": 144,
+   "schedule:success": 7,
+   "push:success": 2
+  },
+  "enrich": {
+   "workflow_dispatch:success": 24,
+   "push:success": 2,
+   "schedule:success": 6
+  },
+  "ci": {
+   "push:success": 8
   }
  },
  "failures": []
