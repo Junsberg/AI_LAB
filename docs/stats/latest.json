@@ -1,19 +1,19 @@
 {
- "generated_at": "2026-09-27T17:37:15.090720+00:00",
+ "generated_at": "2026-09-27T18:37:15.392139+00:00",
  "counts": [
   {
-   "tokens": 4825,
-   "tokens_24h": 1201,
-   "deployers": 3497,
-   "deployers_traced": 2594,
-   "deployers_unknown_src": 405,
-   "edges": 5018,
-   "clusters": 2816,
-   "multi_token_clusters": 462,
-   "outcomes": 3605,
-   "rugged": 682,
-   "tenx": 216,
-   "with_risk": 4825,
+   "tokens": 4882,
+   "tokens_24h": 1210,
+   "deployers": 3537,
+   "deployers_traced": 2632,
+   "deployers_unknown_src": 407,
+   "edges": 5088,
+   "clusters": 2859,
+   "multi_token_clusters": 469,
+   "outcomes": 3652,
+   "rugged": 694,
+   "tenx": 227,
+   "with_risk": 4882,
    "signals": 0,
    "positions": 0,
    "hypotheses": 0
@@ -21,23 +21,19 @@
  ],
  "risk_distribution": [
   {
-   "top10_p50": 9.8,
-   "top10_p90": 62.5,
+   "top10_p50": 9.9,
+   "top10_p90": 62.9,
    "insiders_avg": 0.0,
-   "lp_locked": 2158,
+   "lp_locked": 2177,
    "freeze_on": 4,
    "mint_on": 0,
-   "n": 4747
+   "n": 4804
   }
  ],
  "tokens_per_hour_24h": [
   {
-   "h": "2026-09-26 17:00",
-   "n": 15
-  },
-  {
    "h": "2026-09-26 18:00",
-   "n": 56
+   "n": 23
   },
   {
    "h": "2026-09-26 19:00",
@@ -129,7 +125,11 @@
   },
   {
    "h": "2026-09-27 17:00",
-   "n": 34
+   "n": 60
+  },
+  {
+   "h": "2026-09-27 18:00",
+   "n": 31
   }
  ],
  "top_deployers": [
@@ -190,47 +190,47 @@
    "last_t": "09-24 07:14"
   },
   {
-   "deployer": "5whEE6vB9T7NJrB9bHLu67kiSet1DMvc2VQ9kmrdwb8e",
-   "n": 14,
-   "syms": "SI,SI,PESOS,MOONCATS,SIDELINED,TOKENS,Elephant,SDOG,VISE,IshiGo,Meme,PROM,fush,RETIRE",
-   "first_t": "09-24 05:06",
-   "last_t": "09-24 12:49"
-  },
-  {
    "deployer": "BvDc6R79TyZXGg7murNY79yYJRFDQtbQmid4tHcnBoji",
    "n": 14,
    "syms": "玉兔,玉兔,中秋玉兔,中秋玉兔,中秋玉兔,中秋玉兔,玉兔,币安玉兔,中秋玉兔,玉兔,玉兔,中秋玉兔,中国人能飞,LGBT",
    "first_t": "09-24 06:48",
    "last_t": "09-25 23:18"
+  },
+  {
+   "deployer": "5whEE6vB9T7NJrB9bHLu67kiSet1DMvc2VQ9kmrdwb8e",
+   "n": 14,
+   "syms": "SI,SI,PESOS,MOONCATS,SIDELINED,TOKENS,Elephant,SDOG,VISE,IshiGo,Meme,PROM,fush,RETIRE",
+   "first_t": "09-24 05:06",
+   "last_t": "09-24 12:49"
   }
  ],
  "top_clusters": [
   {
    "cluster_id": "63410261d4772a3c",
    "tokens_total": 152,
-   "tokens_evaluated": 104,
+   "tokens_evaluated": 109,
    "tokens_rugged": 0,
-   "tokens_10x": 34,
-   "score": 0.9914,
+   "tokens_10x": 39,
+   "score": 0.9921,
    "deployers": 64
   },
   {
-   "cluster_id": "68af5a201a67f887",
-   "tokens_total": 49,
+   "cluster_id": "f25e5b66cdc907c6",
+   "tokens_total": 50,
    "tokens_evaluated": 36,
    "tokens_rugged": 20,
    "tokens_10x": 0,
    "score": 0.4487,
-   "deployers": 48
+   "deployers": 49
   },
   {
    "cluster_id": "7ed913765a3a4f01",
-   "tokens_total": 43,
+   "tokens_total": 47,
    "tokens_evaluated": 29,
    "tokens_rugged": 0,
    "tokens_10x": 8,
    "score": 0.9688,
-   "deployers": 24
+   "deployers": 25
   },
   {
    "cluster_id": "7bd23c96a96168b4",
@@ -244,10 +244,10 @@
   {
    "cluster_id": "e138b28750810679",
    "tokens_total": 38,
-   "tokens_evaluated": 26,
+   "tokens_evaluated": 27,
    "tokens_rugged": 2,
    "tokens_10x": 1,
-   "score": 0.8871,
+   "score": 0.8906,
    "deployers": 1
   },
   {
@@ -262,10 +262,10 @@
   {
    "cluster_id": "baca84838ef2f1b1",
    "tokens_total": 28,
-   "tokens_evaluated": 19,
+   "tokens_evaluated": 20,
    "tokens_rugged": 1,
    "tokens_10x": 1,
-   "score": 0.8958,
+   "score": 0.9,
    "deployers": 1
   },
   {
@@ -299,21 +299,21 @@
  "outcomes_summary": [
   {
    "rug_reason": "none",
-   "n": 2912,
+   "n": 2946,
    "p50_peak": 1.0,
-   "p90_peak": 2.83,
+   "p90_peak": 3.13,
    "max_peak": 935.73
   },
   {
    "rug_reason": "price_collapse",
-   "n": 673,
+   "n": 685,
    "p50_peak": 1.0,
-   "p90_peak": 1.09,
+   "p90_peak": 1.26,
    "max_peak": 417.02
   },
   {
    "rug_reason": "no_data",
-   "n": 11,
+   "n": 12,
    "p50_peak": null,
    "p90_peak": null,
    "max_peak": null
@@ -329,20 +329,20 @@
  "outcome_by_cluster_size": [
   {
    "bucket": "2-3",
-   "n": 513,
-   "rug_rate": 0.162,
+   "n": 521,
+   "rug_rate": 0.161,
    "p50_peak": 1.0
   },
   {
    "bucket": "4+",
-   "n": 1299,
-   "rug_rate": 0.098,
+   "n": 1319,
+   "rug_rate": 0.099,
    "p50_peak": 1.0
   },
   {
    "bucket": "single",
-   "n": 1793,
-   "rug_rate": 0.263,
+   "n": 1812,
+   "rug_rate": 0.265,
    "p50_peak": 1.0
   }
  ],
@@ -350,12 +350,12 @@
   {
    "src": "rugcheck",
    "verified": "-",
-   "n": 3705
+   "n": 3755
   },
   {
    "src": "rpc",
    "verified": "-",
-   "n": 626
+   "n": 633
   },
   {
    "src": "pre-fix",
@@ -376,43 +376,43 @@
  "unknown_funding_first_tx_kinds": [
   {
    "kind": "111111:transfer",
-   "n": 456
+   "n": 458
   },
   {
    "kind": "Comput:-",
-   "n": 320
+   "n": 324
   },
   {
    "kind": "111111:createAccount",
-   "n": 287
+   "n": 291
   },
   {
    "kind": "Tokenk:syncNative",
-   "n": 196
+   "n": 198
   },
   {
    "kind": "Tokenk:closeAccount",
-   "n": 185
+   "n": 187
   },
   {
    "kind": "AToken:createIdempotent",
-   "n": 184
+   "n": 186
   },
   {
    "kind": "Tokenk:initializeAccount3",
-   "n": 172
+   "n": 174
   },
   {
    "kind": "Tokenz:initializeMetadataPointer",
-   "n": 128
+   "n": 130
   },
   {
    "kind": "Tokenk:initializeImmutableOwner",
-   "n": 109
+   "n": 111
   },
   {
    "kind": "Tokenk:getAccountDataSize",
-   "n": 109
+   "n": 111
   },
   {
    "kind": "6EF8rr:-",
@@ -449,6 +449,12 @@
    "avg_creator_pct": 13.87
   },
   {
+   "deployer": "BXN4VrMRj4kDBaw5YmvteWJ3nCfhxVv4Mvrf7vBy93x2",
+   "n_tokens": 11,
+   "n_symbols": 8,
+   "avg_creator_pct": 12.02
+  },
+  {
    "deployer": "DoEt8yw22pNGnao7yEbhL3hjtmzzrXi1r6jqGGD84yUQ",
    "n_tokens": 10,
    "n_symbols": 10,
@@ -458,23 +464,23 @@
  "funding_sources": [
   {
    "src": "wallet",
-   "n": 2485
+   "n": 2520
   },
   {
    "src": "hub",
-   "n": 469
+   "n": 476
   },
   {
    "src": "unknown",
-   "n": 405
+   "n": 407
   },
   {
    "src": "cex",
-   "n": 107
+   "n": 110
   },
   {
    "src": "untraced",
-   "n": 31
+   "n": 24
   }
  ]
 }
