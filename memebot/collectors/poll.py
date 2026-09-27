@@ -92,8 +92,9 @@ async def find_deployer(client: httpx.AsyncClient, mint: str, max_pages: int = 3
     tx = await transaction(client, oldest["signature"])
     if not tx:
         return None, None
-    keys = tx["transaction"]["message"]["accountKeys"]
-    signer = next((k["pubkey"] for k in keys if k.get("signer")), None)
+    # .get chain: a transaction shape we do not know yields "no deployer", never a crash
+    keys = ((tx.get("transaction") or {}).get("message") or {}).get("accountKeys") or []
+    signer = next((k.get("pubkey") for k in keys if isinstance(k, dict) and k.get("signer")), None)
     return signer, tx.get("slot")
 
 

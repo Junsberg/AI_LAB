@@ -67,3 +67,23 @@ async def test_find_deployer_refuses_when_history_too_long():
 
     async with httpx.AsyncClient(transport=httpx.MockTransport(handler)) as c:
         assert await find_deployer(c, "MINT", max_pages=2) == (None, None)
+
+
+@pytest.mark.asyncio
+async def test_rpc_accepts_v1_transactions_and_unknown_shape_is_no_deployer():
+    import json
+
+    from memebot.collectors.poll import find_deployer
+
+    seen = {}
+
+    async def handler(request: httpx.Request) -> httpx.Response:
+        req = json.loads(request.read())
+        if req["method"] == "getSignaturesForAddress":
+            return httpx.Response(200, json={"result": [{"signature": "s0"}]})
+        seen["opts"] = req["params"][1]
+        return httpx.Response(200, json={"result": {"slot": 1, "transaction": {"message": {}}}})
+
+    async with httpx.AsyncClient(transport=httpx.MockTransport(handler)) as c:
+        assert await find_deployer(c, "MINT", max_pages=1) == (None, 1)
+    assert seen["opts"]["maxSupportedTransactionVersion"] == 1

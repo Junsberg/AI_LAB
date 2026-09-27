@@ -49,13 +49,17 @@ async def signatures(
     return out, False
 
 
+MAX_TX_VERSION = 1
+
+
 async def transaction(
     client: httpx.AsyncClient, sig: str, commitment: str = "confirmed"
 ) -> dict | None:
     """`confirmed` (not the RPC default `finalized`) so a tx seen at processed commitment
-    is readable within ~1s instead of returning null for 12-15s."""
+    is readable within ~1s instead of returning null for 12-15s. Version 1 transactions
+    appeared on mainnet around 09-27; with version 0 the RPC rejects them (-32015)."""
     return await rpc(
         client,
         "getTransaction",
-        [sig, {"encoding": "jsonParsed", "maxSupportedTransactionVersion": 0, "commitment": commitment}],
+        [sig, {"encoding": "jsonParsed", "maxSupportedTransactionVersion": MAX_TX_VERSION, "commitment": commitment}],
     )
