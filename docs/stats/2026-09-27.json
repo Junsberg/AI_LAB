@@ -1,19 +1,19 @@
 {
- "generated_at": "2026-09-27T03:37:14.896180+00:00",
+ "generated_at": "2026-09-27T04:37:17.852330+00:00",
  "counts": [
   {
-   "tokens": 4046,
-   "tokens_24h": 1131,
-   "deployers": 2959,
-   "deployers_traced": 2179,
-   "deployers_unknown_src": 357,
-   "edges": 4227,
-   "clusters": 2406,
-   "multi_token_clusters": 408,
-   "outcomes": 2901,
-   "rugged": 495,
-   "tenx": 154,
-   "with_risk": 4046,
+   "tokens": 4098,
+   "tokens_24h": 1140,
+   "deployers": 2994,
+   "deployers_traced": 2200,
+   "deployers_unknown_src": 362,
+   "edges": 4267,
+   "clusters": 2428,
+   "multi_token_clusters": 409,
+   "outcomes": 2946,
+   "rugged": 504,
+   "tenx": 155,
+   "with_risk": 4098,
    "signals": 0,
    "positions": 0,
    "hypotheses": 0
@@ -21,23 +21,19 @@
  ],
  "risk_distribution": [
   {
-   "top10_p50": 9.7,
-   "top10_p90": 62.2,
+   "top10_p50": 9.6,
+   "top10_p90": 61.7,
    "insiders_avg": 0.0,
-   "lp_locked": 1898,
+   "lp_locked": 1913,
    "freeze_on": 4,
    "mint_on": 0,
-   "n": 4023
+   "n": 4075
   }
  ],
  "tokens_per_hour_24h": [
   {
-   "h": "2026-09-26 03:00",
-   "n": 21
-  },
-  {
    "h": "2026-09-26 04:00",
-   "n": 52
+   "n": 30
   },
   {
    "h": "2026-09-26 05:00",
@@ -129,30 +125,34 @@
   },
   {
    "h": "2026-09-27 03:00",
-   "n": 18
+   "n": 39
+  },
+  {
+   "h": "2026-09-27 04:00",
+   "n": 31
   }
  ],
  "top_deployers": [
   {
    "deployer": "Be3MwhYqH9Y7NMVZqUJBL7fmEshHgQnU5prttJbGRCpW",
-   "n": 29,
-   "syms": "Hybrid cat,Hybrid cat,Hybrid cat,Kitty,Kitty,Kitty,Kitty,Kitty,🍒Cherry,Thief Bear,🐻Bear,🐻Bear,🐻Bear,🐻Bear,🐻Bear,Bitty,Betty,Betty,Betty,🐻Bear,ポケモン,PenguinCat,PenguinCat,PenguinCat,Betty,Betty,Betty,Betty,PenguinCat",
+   "n": 31,
+   "syms": "Hybrid cat,Hybrid cat,Hybrid cat,Kitty,Kitty,Kitty,Kitty,Kitty,🍒Cherry,Thief Bear,🐻Bear,🐻Bear,🐻Bear,🐻Bear,🐻Bear,Bitty,Betty,Betty,Betty,🐻Bear,ポケモン,PenguinCat,PenguinCat,PenguinCat,Betty,Betty,Betty,Betty,PenguinCat,PenguinCat,PenguinCat",
    "first_t": "09-24 06:22",
-   "last_t": "09-27 01:46"
+   "last_t": "09-27 04:14"
   },
   {
    "deployer": "9baMg22GMZzsp68rvmrUAVP6ZdrrmJnTcndwy4QudsMT",
-   "n": 24,
-   "syms": "Pokémon,RABBIT,RABBIT,游本昌老师,花好月圆夜,🎉中秋快乐,Bugs Bunny,Bob's Bear,平平和福双,平平和福双,平平和福双,平平和福双,平平和福双,Crude oil,🍒车厘子,福双,刘欢2026,刘欢2026,刘欢2026,刘欢2026,刘欢,刘欢,China-U.S.,China-U.S.",
+   "n": 25,
+   "syms": "Pokémon,RABBIT,RABBIT,游本昌老师,花好月圆夜,🎉中秋快乐,Bugs Bunny,Bob's Bear,平平和福双,平平和福双,平平和福双,平平和福双,平平和福双,Crude oil,🍒车厘子,福双,刘欢2026,刘欢2026,刘欢2026,刘欢2026,刘欢,刘欢,China-U.S.,China-U.S.,MR BEAST",
    "first_t": "09-24 07:05",
-   "last_t": "09-27 01:47"
+   "last_t": "09-27 04:26"
   },
   {
    "deployer": "7w87862Aiq9rGnH4onF17yaKzmqxw79TUGEhDwJCUbSf",
-   "n": 19,
-   "syms": "claude,claude,claude,claude,claude,claude5.5,claude5.5,Claude,CLAUDE,CLAUDE,Claude,Claude,Claude,Claude,Claude,Claude,Claude,Claude,Claude",
+   "n": 20,
+   "syms": "claude,claude,claude,claude,claude,claude5.5,claude5.5,Claude,CLAUDE,CLAUDE,Claude,Claude,Claude,Claude,Claude,Claude,Claude,Claude,Claude,Claude",
    "first_t": "09-25 01:33",
-   "last_t": "09-27 02:15"
+   "last_t": "09-27 04:24"
   },
   {
    "deployer": "E3jbmhG8VSfxJ8Ab2vgwjnDLY2Azk4sYCNvP4S9CD3yC",
@@ -176,13 +176,6 @@
    "last_t": "09-25 03:07"
   },
   {
-   "deployer": "CGcbvoobbnPzAN1mduBYapAUak6FUe3PHLACkEZWv42P",
-   "n": 14,
-   "syms": "CV,CV,CV,CV,CV,CV,CV,CV,CV,CV,CV,CV,CV,CV",
-   "first_t": "09-24 05:05",
-   "last_t": "09-24 07:32"
-  },
-  {
    "deployer": "CrVW9jpbbKssWULzncQtf31rSxvzJwPe56zg2o65sjA7",
    "n": 14,
    "syms": "MONEY,MONEY,MONEY,MONEY,MONEY,MONEY,MONEY,MONEY,MONEY,MONEY,MONEY,MONEY,MONEY,MONEY",
@@ -202,26 +195,33 @@
    "syms": "玉兔,玉兔,中秋玉兔,中秋玉兔,中秋玉兔,中秋玉兔,玉兔,币安玉兔,中秋玉兔,玉兔,玉兔,中秋玉兔,中国人能飞,LGBT",
    "first_t": "09-24 06:48",
    "last_t": "09-25 23:18"
+  },
+  {
+   "deployer": "CGcbvoobbnPzAN1mduBYapAUak6FUe3PHLACkEZWv42P",
+   "n": 14,
+   "syms": "CV,CV,CV,CV,CV,CV,CV,CV,CV,CV,CV,CV,CV,CV",
+   "first_t": "09-24 05:05",
+   "last_t": "09-24 07:32"
   }
  ],
  "top_clusters": [
   {
-   "cluster_id": "677676736d13bb39",
-   "tokens_total": 101,
-   "tokens_evaluated": 66,
+   "cluster_id": "63410261d4772a3c",
+   "tokens_total": 128,
+   "tokens_evaluated": 80,
    "tokens_rugged": 0,
-   "tokens_10x": 21,
-   "score": 0.9865,
-   "deployers": 49
+   "tokens_10x": 25,
+   "score": 0.9887,
+   "deployers": 60
   },
   {
-   "cluster_id": "a3256c5eed9739de",
-   "tokens_total": 38,
+   "cluster_id": "de7a8609e17a12e4",
+   "tokens_total": 39,
    "tokens_evaluated": 29,
    "tokens_rugged": 16,
    "tokens_10x": 0,
    "score": 0.4531,
-   "deployers": 37
+   "deployers": 38
   },
   {
    "cluster_id": "2ed21ad32dd2b9b3",
@@ -234,7 +234,7 @@
   },
   {
    "cluster_id": "e138b28750810679",
-   "tokens_total": 29,
+   "tokens_total": 30,
    "tokens_evaluated": 19,
    "tokens_rugged": 1,
    "tokens_10x": 1,
@@ -251,6 +251,15 @@
    "deployers": 8
   },
   {
+   "cluster_id": "7bd23c96a96168b4",
+   "tokens_total": 28,
+   "tokens_evaluated": 17,
+   "tokens_rugged": 1,
+   "tokens_10x": 0,
+   "score": 0.875,
+   "deployers": 5
+  },
+  {
    "cluster_id": "331297bc4e47d236",
    "tokens_total": 28,
    "tokens_evaluated": 28,
@@ -258,15 +267,6 @@
    "tokens_10x": 0,
    "score": 0.9516,
    "deployers": 3
-  },
-  {
-   "cluster_id": "7bd23c96a96168b4",
-   "tokens_total": 27,
-   "tokens_evaluated": 17,
-   "tokens_rugged": 1,
-   "tokens_10x": 0,
-   "score": 0.875,
-   "deployers": 5
   },
   {
    "cluster_id": "baca84838ef2f1b1",
@@ -287,26 +287,26 @@
    "deployers": 23
   },
   {
-   "cluster_id": "624e0bf86ef0dfdc",
-   "tokens_total": 23,
-   "tokens_evaluated": 13,
+   "cluster_id": "639a2c37efba111c",
+   "tokens_total": 21,
+   "tokens_evaluated": 0,
    "tokens_rugged": 0,
-   "tokens_10x": 4,
-   "score": 0.9375,
+   "tokens_10x": 0,
+   "score": 0.5,
    "deployers": 10
   }
  ],
  "outcomes_summary": [
   {
    "rug_reason": "none",
-   "n": 2399,
+   "n": 2435,
    "p50_peak": 1.0,
-   "p90_peak": 2.46,
-   "max_peak": 856.67
+   "p90_peak": 2.42,
+   "max_peak": 935.73
   },
   {
    "rug_reason": "price_collapse",
-   "n": 492,
+   "n": 501,
    "p50_peak": 1.0,
    "p90_peak": 1.0,
    "max_peak": 417.02
@@ -329,19 +329,19 @@
  "outcome_by_cluster_size": [
   {
    "bucket": "2-3",
-   "n": 434,
+   "n": 442,
    "rug_rate": 0.147,
    "p50_peak": 1.0
   },
   {
    "bucket": "4+",
-   "n": 1048,
+   "n": 1058,
    "rug_rate": 0.096,
    "p50_peak": 1.0
   },
   {
    "bucket": "single",
-   "n": 1419,
+   "n": 1446,
    "rug_rate": 0.233,
    "p50_peak": 1.0
   }
@@ -350,12 +350,12 @@
   {
    "src": "rugcheck",
    "verified": "-",
-   "n": 3089
+   "n": 3140
   },
   {
    "src": "rpc",
    "verified": "-",
-   "n": 463
+   "n": 464
   },
   {
    "src": "pre-fix",
@@ -376,43 +376,43 @@
  "unknown_funding_first_tx_kinds": [
   {
    "kind": "111111:transfer",
-   "n": 399
+   "n": 402
   },
   {
    "kind": "Comput:-",
-   "n": 243
+   "n": 249
   },
   {
    "kind": "111111:createAccount",
-   "n": 216
+   "n": 222
   },
   {
    "kind": "Tokenk:syncNative",
-   "n": 153
+   "n": 156
   },
   {
    "kind": "Tokenk:closeAccount",
-   "n": 144
+   "n": 147
   },
   {
    "kind": "AToken:createIdempotent",
-   "n": 141
+   "n": 144
   },
   {
    "kind": "Tokenk:initializeAccount3",
-   "n": 132
+   "n": 135
   },
   {
    "kind": "Tokenz:initializeMetadataPointer",
-   "n": 93
+   "n": 96
   },
   {
    "kind": "Tokenk:initializeImmutableOwner",
-   "n": 75
+   "n": 78
   },
   {
    "kind": "Tokenk:getAccountDataSize",
-   "n": 75
+   "n": 78
   },
   {
    "kind": "6EF8rr:-",
@@ -441,28 +441,34 @@
    "n_tokens": 10,
    "n_symbols": 9,
    "avg_creator_pct": 3.04
+  },
+  {
+   "deployer": "G6AtnfK9smY5Eiarhu5Zr5YKc9rFzvxNT5H2eTso4w7h",
+   "n_tokens": 10,
+   "n_symbols": 8,
+   "avg_creator_pct": 12.29
   }
  ],
  "funding_sources": [
   {
    "src": "wallet",
-   "n": 2086
+   "n": 2105
   },
   {
    "src": "hub",
-   "n": 396
+   "n": 401
   },
   {
    "src": "unknown",
-   "n": 357
+   "n": 362
   },
   {
    "src": "cex",
-   "n": 91
+   "n": 93
   },
   {
    "src": "untraced",
-   "n": 29
+   "n": 33
   }
  ]
 }
