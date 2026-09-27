@@ -25,7 +25,7 @@
 | 코드 | GitHub `Junsberg/AI_LAB` (public), 작업 브랜치는 세션마다 지정(09-27 후반: `claude/handoff-design-limits-et7v32`), 워크플로는 main 필요 → ff-merge 관행 | |
 | DB | Supabase 프로젝트 `memebot` (`umjfzpdlzzatrjxumkgv`, 서울) | `saja-live`와 절대 섞지 말 것 |
 | 스케줄 | Supabase pg_cron → GitHub workflow_dispatch (`public.gh_dispatch`, Vault `GH_PAT`) | GitHub 자체 cron은 불안정, 백업용 |
-| 잡 | collect 10분 / enrich 매시 17분 / outcomes 매시 05·35분(20분 예산) / stats 매시 37분 / ci(main 외 푸시, 실제 Postgres) | `.github/workflows/` |
+| 잡 | collect 10분 / enrich 매시 17분 / outcomes 매시 05·35분(20분 예산) / stats 매시 37분 / **paper 10분(:03, pg_cron `gh_paper`)** / replay(수동·코드 변경 시) / ci(main 외 푸시, 실제 Postgres) | `.github/workflows/` |
 | 시크릿 | GitHub Secrets: `HELIUS_API_KEY`, `DATABASE_URL`. Supabase Vault: `GH_PAT` | 채팅에 절대 안 붙임 |
 | 리뷰·점검 | 루틴 2개(데일리 08:00 KST, 6h 점검 05/11/17 UTC)가 **전용 세션 "memebot 루틴 전용 (opus)"(Opus 5.5, AI_LAB 작업 브랜치 체크아웃)** 에 바인딩. GitHub API·DB 도구 없음 → 파일 기반: `latest.json`·`health.json`·`actions.json`(stats 잡이 매시간 Actions 24h 집계). 결과는 `docs/reviews/`, `docs/checks/`. 코드 수정 시 브랜치 푸시까지만, main 머지는 CI 확인 후 메인 세션. "매번 새 세션" 방식 루틴은 레포가 안 붙어 실패하므로 쓰지 말 것 | 전용 세션 문맥이 커지면 create_session 으로 새로 만들고 루틴의 persistent_session_id 교체 |
 | HL 카피봇 | 별도 레포 `claudecode_factory` — **수정 금지**, 읽기만 | |
@@ -49,7 +49,8 @@ GeckoTerminal new_pools → 배포자(rugcheck creator 1순위, RPC 폴백은 �
 - **09-27 17:08Z 적용(main)**: ① 유동성 고점 바닥값(`meta.reserve_usd_at_seen`, 신규 수집분부터) ② 결과 규칙 v3 — 첫 24h 5분 캔들(`before_timestamp`=생성+24h, 288개), `RULES_CHANGED_AT`=17:14:40Z(v3 첫 실행) 전량 1회 재평가, 최신 토큰부터. 첫 v3 실행이 2콜/토큰으로 회당 51건(429 병목) → 80h 이하 토큰은 5분봉 1콜+시간봉 합성으로 수정(`aa76eed`). 재평가 ~3,600건은 하루 이상 걸릴 수 있음 — `outcome_backlog`는 신규만 세므로 정상이어야 함. 기준선(16:37Z): 평가 3,563 / lp_pull 8 / price_collapse 662(p50 고점 1.00) / >100x 1.2%.
 - **알려진 설계 한계(남은 것)**: ③ unknown 자금원 12% → WSOL 랩·언랩(syncNative/closeAccount)은 `swap`으로 분류 ④ 클러스터 ID — 09-27 이전 ID 상속으로 해결.
 - **페이퍼 러너 설계(확정, DECISIONS 09-27)**: 진입 = 클러스터 점수 ≥0.9·평가 ≥10 + 기존 게이트, 계보 단독 진입 모드. 진입가 = `seen_at` 시점 GT 가격, 슬리피지 = CPMM 충격+수수료, 청산 = 5분 캔들 재생(손절은 wick 저가·갭은 시가, 익절은 몸통, 동시 충족 시 손절 우선), 홀더·배포자·KOL 청산은 '측정 불가'로 비활성 명시. `paper.yml` 10분, 리스크 캡은 실행기에서 강제, 대조군 = 같은 시각 무작위 졸업 토큰+같은 청산.
-- **다음 단계**: v3 재평가 완료 후 값 범위 확인(>100x ≤2%, max ≤1000) → ✅ ④ 클러스터 ID 상속·`seen_at`(09-27) → 과거 1주 리플레이(진입 건수) → 클러스터 점수 ≥0.9·평가 ≥10 토큰 대상 페이퍼 러너(`memebot/execution/paper.py` 골격 있음) → 2주 관찰 → `GO_LIVE_CHECKLIST.md`. 3주차 원안(트레이드 테이프·KOL 선행 지갑)은 페이퍼 결과 보고 착수.
+- **09-27 19:00Z 페이퍼 가동**: `execution/paper_runner.py`(결정·관리), `execution/sim.py`(청산 재생, 리플레이와 공용), 마이그레이션 003(Supabase 적용 완료), stats `paper_summary`·`paper_exit_reasons`·`paper_decisions_24h`. 대조군 = `mode='paper_control'`(게이트 통과·미선정 토큰의 결정적 5%, 동시 10개). 보유 한도 24h. 리플레이 리포트 `docs/stats/replay_lineage_v0.json`.
+- **다음 단계**: v3 재평가 완료(~1.5일) 후 값 범위 재확인 → 페이퍼 2주(10-11) 중간 판정: 전략 vs 대조군 mean_ret±stderr, 진입 건수(첫 주 <5건이면 완화 가설) → 4주·청산 100건 → `GO_LIVE_CHECKLIST.md`. 3주차 원안(트레이드 테이프·KOL 선행 지갑)은 페이퍼 결과 보고 착수.
 - 작업 흐름: 브랜치 푸시 → ci 성공 확인 → `git push origin <작업 브랜치>:main` → 경로 변경된 워크플로 smoke 실행 로그 확인 → 다음 stats로 값 검증. "status ok"가 아니라 **값 범위**를 확인할 것(09-25 고점 배수 56억 배가 ok로 통과한 전례).
 
 ## 알려진 제약
