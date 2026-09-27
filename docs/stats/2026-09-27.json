@@ -1,10 +1,10 @@
 {
- "generated_at": "2026-09-27T01:37:18.594311+00:00",
+ "generated_at": "2026-09-27T01:46:14.731066+00:00",
  "counts": [
   {
-   "tokens": 3952,
-   "tokens_24h": 1123,
-   "deployers": 2894,
+   "tokens": 3956,
+   "tokens_24h": 1121,
+   "deployers": 2898,
    "deployers_traced": 2128,
    "deployers_unknown_src": 354,
    "edges": 4116,
@@ -13,7 +13,7 @@
    "outcomes": 2828,
    "rugged": 478,
    "tenx": 154,
-   "with_risk": 3952,
+   "with_risk": 3956,
    "signals": 0,
    "positions": 0,
    "hypotheses": 0
@@ -22,18 +22,18 @@
  "risk_distribution": [
   {
    "top10_p50": 9.6,
-   "top10_p90": 62.3,
+   "top10_p90": 62.2,
    "insiders_avg": 0.0,
-   "lp_locked": 1858,
+   "lp_locked": 1859,
    "freeze_on": 4,
    "mint_on": 0,
-   "n": 3929
+   "n": 3933
   }
  ],
  "tokens_per_hour_24h": [
   {
    "h": "2026-09-26 01:00",
-   "n": 23
+   "n": 17
   },
   {
    "h": "2026-09-26 02:00",
@@ -129,7 +129,7 @@
   },
   {
    "h": "2026-09-27 01:00",
-   "n": 29
+   "n": 33
   }
  ],
  "top_deployers": [
@@ -350,7 +350,7 @@
   {
    "src": "rugcheck",
    "verified": "-",
-   "n": 3001
+   "n": 3005
   },
   {
    "src": "rpc",
@@ -462,7 +462,7 @@
   },
   {
    "src": "untraced",
-   "n": 26
+   "n": 30
   }
  ]
 }
