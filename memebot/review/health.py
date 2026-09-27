@@ -53,7 +53,16 @@ def run() -> dict:
               (select count(*) from wallet_edges where amount_sol > 10000) edge_huge,
               (select count(*) from tokens where created_at > now() or created_at < '2026-09-01') bad_timestamps,
               (select count(*) from wallet_edges where src = dst) self_edges,
-              (select coalesce(max(cnt),0) from (select cluster_id, count(*) cnt from wallets where cluster_id is not null group by 1) x) max_cluster_wallets
+              (select coalesce(max(cnt),0) from (select cluster_id, count(*) cnt from wallets where cluster_id is not null group by 1) x) max_cluster_wallets,
+              -- largest cluster that contains a hub wallet (degree >= 3). A relay chain
+              -- (every wallet degree <= 2) is one operator passing SOL down a line of
+              -- deployers, which is legitimate lineage however long it gets.
+              (with sz as (select cluster_id, count(*) n from wallets where cluster_id is not null group by 1),
+                    dg as (select w.cluster_id,
+                                  (select count(*) from wallet_edges e where e.src = w.address or e.dst = w.address) deg
+                           from wallets w where w.cluster_id is not null),
+                    md as (select cluster_id, max(deg) maxdeg from dg group by 1)
+               select coalesce(max(sz.n), 0) from sz join md using (cluster_id) where md.maxdeg >= 3) max_hubbed_cluster_wallets
             """,
             (structural,),
         )
@@ -84,7 +93,7 @@ def run() -> dict:
     chk("edge_amounts_sane", "warn", m["edge_huge"] > 3, f"funding edges > 10k SOL: {m['edge_huge']}")
     chk("timestamps_sane", "critical", m["bad_timestamps"] > 0, f"tokens with impossible created_at: {m['bad_timestamps']}")
     chk("no_self_edges", "critical", m["self_edges"] > 0, f"self edges: {m['self_edges']}")
-    chk("cluster_size_sane", "warn", m["max_cluster_wallets"] > 40, f"largest cluster = {m['max_cluster_wallets']} wallets (exchange acting as glue?)")
+    chk("cluster_size_sane", "warn", m["max_hubbed_cluster_wallets"] > 40, f"largest hub-joined cluster = {m['max_hubbed_cluster_wallets']} wallets (exchange/service glue?); largest overall = {m['max_cluster_wallets']}")
 
     critical = [x for x in checks if x["level"] == "critical" and not x["ok"]]
     warns = [x for x in checks if x["level"] == "warn" and not x["ok"]]
