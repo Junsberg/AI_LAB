@@ -1,19 +1,19 @@
 {
- "generated_at": "2026-09-27T04:37:25.047708+00:00",
+ "generated_at": "2026-09-27T05:37:24.649099+00:00",
  "status": "warn",
  "metrics": {
-  "tokens_70m": 55,
-  "tokens_24h": 1140,
+  "tokens_70m": 66,
+  "tokens_24h": 1148,
   "risk_missing": 0,
-  "risk_eligible": 4062,
+  "risk_eligible": 4134,
   "top10_over90": 199,
-  "top10_n": 4075,
-  "deployers": 2994,
-  "traced": 2200,
-  "untraceable": 763,
+  "top10_n": 4138,
+  "deployers": 3035,
+  "traced": 2225,
+  "untraceable": 780,
   "trace_backlog": 20,
   "outcome_backlog": 0,
-  "outcomes": 2946,
+  "outcomes": 3000,
   "outcomes_no_data": 7,
   "outcomes_over100x": 34,
   "backfill_pending": 0,
@@ -31,31 +31,31 @@
    "name": "collect_alive",
    "level": "critical",
    "ok": true,
-   "detail": "tokens last 70m = 55"
+   "detail": "tokens last 70m = 66"
   },
   {
    "name": "collect_flood",
    "level": "warn",
    "ok": true,
-   "detail": "tokens last 70m = 55 (>150 suggests bonding-stage leak)"
+   "detail": "tokens last 70m = 66 (>150 suggests bonding-stage leak)"
   },
   {
    "name": "risk_coverage",
    "level": "warn",
    "ok": true,
-   "detail": "risk missing 0/4062 (0%)"
+   "detail": "risk missing 0/4134 (0%)"
   },
   {
    "name": "holder_concentration_sane",
    "level": "warn",
    "ok": true,
-   "detail": "top10>90%: 199/4075 (5%) → pool filter gap"
+   "detail": "top10>90%: 199/4138 (5%) → pool filter gap"
   },
   {
    "name": "trace_quality",
    "level": "warn",
    "ok": true,
-   "detail": "unknown+hub 763/2994 (25%)"
+   "detail": "unknown+hub 780/3035 (26%)"
   },
   {
    "name": "trace_backlog",
@@ -73,13 +73,13 @@
    "name": "outcome_data_quality",
    "level": "warn",
    "ok": true,
-   "detail": "no_data outcomes 7/2946 (0%)"
+   "detail": "no_data outcomes 7/3000 (0%)"
   },
   {
    "name": "peak_multiple_sane",
    "level": "warn",
    "ok": true,
-   "detail": "outcomes >100x: 34/2946 (1.2%) → candle glitch leaking into peaks"
+   "detail": "outcomes >100x: 34/3000 (1.1%) → candle glitch leaking into peaks"
   },
   {
    "name": "universe_clean",
