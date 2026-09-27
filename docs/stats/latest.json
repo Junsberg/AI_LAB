@@ -1,21 +1,21 @@
 {
- "generated_at": "2026-09-27T22:32:52.010218+00:00",
+ "generated_at": "2026-09-27T22:37:16.070996+00:00",
  "counts": [
   {
    "tokens": 5078,
-   "tokens_24h": 1258,
+   "tokens_24h": 1255,
    "deployers": 3676,
    "deployers_traced": 2745,
    "deployers_unknown_src": 427,
    "edges": 5315,
    "clusters": 2963,
    "multi_token_clusters": 487,
-   "outcomes": 3806,
-   "rugged": 761,
+   "outcomes": 3817,
+   "rugged": 763,
    "tenx": 284,
    "with_risk": 5078,
-   "signals": 199,
-   "positions": 15,
+   "signals": 205,
+   "positions": 16,
    "hypotheses": 0
   }
  ],
@@ -33,7 +33,7 @@
  "tokens_per_hour_24h": [
   {
    "h": "2026-09-26 22:00",
-   "n": 24
+   "n": 21
   },
   {
    "h": "2026-09-26 23:00",
@@ -299,14 +299,14 @@
  "outcomes_summary": [
   {
    "rug_reason": "none",
-   "n": 3029,
+   "n": 3038,
    "p50_peak": 1.0,
-   "p90_peak": 6.62,
+   "p90_peak": 6.59,
    "max_peak": 856.67
   },
   {
    "rug_reason": "price_collapse",
-   "n": 751,
+   "n": 753,
    "p50_peak": 1.0,
    "p90_peak": 2.16,
    "max_peak": 417.02
@@ -329,19 +329,19 @@
  "outcome_by_cluster_size": [
   {
    "bucket": "2-3",
-   "n": 538,
+   "n": 539,
    "rug_rate": 0.167,
    "p50_peak": 1.0
   },
   {
    "bucket": "4+",
-   "n": 1391,
+   "n": 1395,
    "rug_rate": 0.103,
    "p50_peak": 1.0
   },
   {
    "bucket": "single",
-   "n": 1877,
+   "n": 1883,
    "rug_rate": 0.281,
    "p50_peak": 1.0
   }
@@ -493,11 +493,11 @@
   {
    "mode": "paper",
    "open": 1,
-   "closed": 7,
-   "mean_ret": 0.4808,
-   "stderr": 0.4324,
-   "win_rate": 0.333,
-   "pnl_sol": 0.57106767,
+   "closed": 8,
+   "mean_ret": 0.4116,
+   "stderr": 0.372,
+   "win_rate": 0.286,
+   "pnl_sol": 0.56935753,
    "first_opened": "2026-09-27 18:56:10.562552+00:00"
   },
   {
@@ -515,8 +515,8 @@
   {
    "mode": "paper",
    "exit_reason": "dead_volume",
-   "n": 6,
-   "mean_ret": 0.4808
+   "n": 7,
+   "mean_ret": 0.4116
   },
   {
    "mode": "paper",
@@ -541,22 +541,22 @@
   {
    "decision": "skip",
    "reason": "lineage_below",
-   "n": 107
+   "n": 110
   },
   {
    "decision": "reject",
    "reason": "low_liquidity",
-   "n": 48
+   "n": 49
   },
   {
    "decision": "reject",
    "reason": "concentrated",
-   "n": 29
+   "n": 30
   },
   {
    "decision": "enter",
    "reason": "-",
-   "n": 15
+   "n": 16
   }
  ]
 }

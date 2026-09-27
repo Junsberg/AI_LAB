@@ -1,11 +1,11 @@
 {
- "generated_at": "2026-09-27T22:33:02.890763+00:00",
+ "generated_at": "2026-09-27T22:37:26.698083+00:00",
  "status": "warn",
  "metrics": {
   "tokens_70m": 43,
-  "tokens_24h": 1258,
+  "tokens_24h": 1254,
   "risk_missing": 0,
-  "risk_eligible": 5055,
+  "risk_eligible": 5065,
   "top10_over90": 252,
   "top10_n": 5000,
   "deployers": 3676,
@@ -13,7 +13,7 @@
   "untraceable": 927,
   "trace_backlog": 0,
   "outcome_backlog": 0,
-  "outcomes": 3806,
+  "outcomes": 3818,
   "outcomes_no_data": 16,
   "outcomes_over100x": 67,
   "backfill_pending": 0,
@@ -44,7 +44,7 @@
    "name": "risk_coverage",
    "level": "warn",
    "ok": true,
-   "detail": "risk missing 0/5055 (0%)"
+   "detail": "risk missing 0/5065 (0%)"
   },
   {
    "name": "holder_concentration_sane",
@@ -74,13 +74,13 @@
    "name": "outcome_data_quality",
    "level": "warn",
    "ok": true,
-   "detail": "no_data outcomes 16/3806 (0%)"
+   "detail": "no_data outcomes 16/3818 (0%)"
   },
   {
    "name": "peak_multiple_sane",
    "level": "warn",
    "ok": true,
-   "detail": "outcomes >100x: 67/3806 (1.8%) → candle glitch leaking into peaks"
+   "detail": "outcomes >100x: 67/3818 (1.8%) → candle glitch leaking into peaks"
   },
   {
    "name": "universe_clean",
