@@ -55,7 +55,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           since=$(date -u -d '24 hours ago' +%FT%TZ)
-          gh run list --limit 400 --created ">=$since" \
+          gh run list --limit 1000 --created ">=$since" \
             --json name,event,conclusion,status,createdAt,url,headBranch \
             | python -c "
           import json,sys,collections

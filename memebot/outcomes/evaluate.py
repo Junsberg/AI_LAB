@@ -99,18 +99,22 @@ async def _pools(client: httpx.AsyncClient, pools: list[str], deadline: float) -
             r.raise_for_status()
             found = parse_multi(r.json())
         await asyncio.sleep(GT_SLEEP)
-    except (httpx.HTTPStatusError, TypeError, ValueError) as e:
+    except (httpx.HTTPError, TypeError, ValueError) as e:  # HTTPError covers timeouts too
         log.warning("outcome.multi_failed", n=len(pools), error=str(e))
     for pool in pools:
         if pool in found:
             continue
-        r = await _get(client, f"{GT}/networks/solana/pools/{pool}", None, deadline)
-        await asyncio.sleep(GT_SLEEP)
-        if r.status_code == 404:
-            found[pool] = {}  # delisted pool: classify() gets no liquidity/price, as before
-            continue
-        r.raise_for_status()
-        found[pool] = r.json().get("data", {}).get("attributes", {}) or {}
+        try:
+            r = await _get(client, f"{GT}/networks/solana/pools/{pool}", None, deadline)
+            await asyncio.sleep(GT_SLEEP)
+            if r.status_code == 404:
+                found[pool] = {}  # delisted pool: classify() gets no liquidity/price, as before
+                continue
+            r.raise_for_status()
+            found[pool] = r.json().get("data", {}).get("attributes", {}) or {}
+        except (httpx.HTTPError, TypeError, ValueError) as e:
+            # One bad pool must not sink the other 29: leave it out so its token is skipped.
+            log.warning("outcome.pool_failed", pool=pool, error=str(e))
     return found
 
 
@@ -172,6 +176,10 @@ async def run(limit: int = 400, budget_s: float = RUN_BUDGET_S) -> int:
                     log.warning("outcome.pools_failed", n=len(batch), error=str(e))
                     continue
                 for r in batch:
+                    if time.monotonic() >= deadline:
+                        raise BudgetExhausted  # stop cleanly, not via the workflow's kill
+                    if r["pool_address"] not in attrs_by_pool:
+                        continue  # pool lookup failed above; next run retries it
                     age_h = (datetime.now(timezone.utc) - r["created_at"]).total_seconds() / 3600
                     try:
                         candles = await _ohlcv(client, r["pool_address"], age_h, deadline)

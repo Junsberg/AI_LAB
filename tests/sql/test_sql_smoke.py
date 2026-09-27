@@ -117,7 +117,8 @@ def test_insert_paths_roundtrip():
     assert rebuild_clusters() >= 1
     assert refresh_cluster_scores() >= 1
     with conn() as c:
-        c.execute("delete from wallet_edges; delete from cluster_scores; delete from wallets; delete from tokens;")
+        c.execute("delete from wallet_edges; delete from cluster_scores; delete from wallets; "
+                  "delete from token_outcomes; delete from tokens;")
         c.commit()
 
 
@@ -127,6 +128,7 @@ def test_outcomes_selection_and_upsert_roundtrip():
     from memebot.outcomes.rules import Outcome
 
     with conn() as c:
+        c.execute("delete from token_outcomes where mint='MINT_OUT'")  # rerunnable on a persistent DB
         c.execute("insert into tokens(mint, deployer, launch_platform, created_at, pool_address) "
                   "values ('MINT_OUT', 'DEP_OUT', 'pumpfun', now() - interval '30 hours', 'POOL_OUT') "
                   "on conflict (mint) do nothing")

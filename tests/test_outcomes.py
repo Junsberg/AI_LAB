@@ -155,3 +155,16 @@ def test_pools_falls_back_to_single_lookup_for_missing(monkeypatch):
     out = asyncio.run(ev._pools(client, ["A", "B"], time.monotonic() + 1000))
     assert out == {"A": {"address": "A", "reserve_in_usd": "1"}, "B": {}}
     assert seen == ["/api/v2/networks/solana/pools/multi/A,B", "/api/v2/networks/solana/pools/B"]
+
+
+def test_pools_one_bad_pool_does_not_sink_the_batch(monkeypatch):
+    async def no_sleep(s):
+        pass
+
+    monkeypatch.setattr(ev.asyncio, "sleep", no_sleep)
+    client = _client([
+        lambda req: httpx.Response(200, json={"data": [{"attributes": {"address": "A", "reserve_in_usd": "1"}}]}),
+        lambda req: httpx.Response(500),  # single lookup for B fails
+    ])
+    out = asyncio.run(ev._pools(client, ["A", "B"], time.monotonic() + 1000))
+    assert out == {"A": {"address": "A", "reserve_in_usd": "1"}}  # B absent → its token is skipped, A survives
