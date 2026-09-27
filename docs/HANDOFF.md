@@ -7,7 +7,7 @@
 |---|---|
 | `DESIGN.md` | 현재 설계 (v2) |
 | `DECISIONS.md` | 결정 기록 — 왜 그렇게 했고 언제 되돌리는지 |
-| `INVARIANTS.md` | 건강검진 규칙 16개: 왜·임계값·자동 조치·**오탐** |
+| `INVARIANTS.md` | 건강검진 규칙 17개: 왜·임계값·자동 조치·**오탐** |
 | `RUNBOOK.md` | 장애 대응 절차 |
 | `GO_LIVE_CHECKLIST.md` | 실매매 전 관문 |
 | `reviews/` | 데일리 리뷰 (확신도 A/B/C 표기) |
@@ -25,7 +25,7 @@
 | 코드 | GitHub `Junsberg/AI_LAB` (public), 작업 브랜치 `claude/typesafe-jev-pricing-4tueat`, 워크플로는 main 필요 → ff-merge 관행 | |
 | DB | Supabase 프로젝트 `memebot` (`umjfzpdlzzatrjxumkgv`, 서울) | `saja-live`와 절대 섞지 말 것 |
 | 스케줄 | Supabase pg_cron → GitHub workflow_dispatch (`public.gh_dispatch`, Vault `GH_PAT`) | GitHub 자체 cron은 불안정, 백업용 |
-| 잡 | collect 10분 / enrich 매시 17분 / stats 매시 37분 | `.github/workflows/` |
+| 잡 | collect 10분 / enrich 매시 17분 / outcomes 매시 05·35분(20분 예산) / stats 매시 37분 / ci(main 외 푸시, 실제 Postgres) | `.github/workflows/` |
 | 시크릿 | GitHub Secrets: `HELIUS_API_KEY`, `DATABASE_URL`. Supabase Vault: `GH_PAT` | 채팅에 절대 안 붙임 |
 | 리뷰·점검 | 루틴 2개(데일리 08:00 KST, 6h 점검 05/11/17 UTC)가 **전용 세션 "memebot 루틴 전용 (opus)"(Opus 5.5, AI_LAB 작업 브랜치 체크아웃)** 에 바인딩. GitHub API·DB 도구 없음 → 파일 기반: `latest.json`·`health.json`·`actions.json`(stats 잡이 매시간 Actions 24h 집계). 결과는 `docs/reviews/`, `docs/checks/`. 코드 수정 시 브랜치 푸시까지만, main 머지는 CI 확인 후 메인 세션. "매번 새 세션" 방식 루틴은 레포가 안 붙어 실패하므로 쓰지 말 것 | 전용 세션 문맥이 커지면 create_session 으로 새로 만들고 루틴의 persistent_session_id 교체 |
 | HL 카피봇 | 별도 레포 `claudecode_factory` — **수정 금지**, 읽기만 | |
@@ -42,11 +42,13 @@ GeckoTerminal new_pools → 배포자(rugcheck creator 1순위, RPC 폴백은 �
 - 텔레그램 계정 없음 → 콜은 온체인 볼륨 스파이크 역추정
 - 로컬 PC(Windows 10)는 실거래 단계에서만 필요. 그때 새 세션에서 연결
 
-## 진행 상태 (2026-09-24 저녁)
-- 1~2주차 완료: 수집·계보·결과 평가·클러스터 점수·통계·리뷰 루틴·건강검진 16개·6h 점검 루틴
-- 코드 리뷰 12건 + 데이터 검증으로 발견한 6건 수정 완료 (배포자 30% 오류, 풀 계정 오염, 본딩커브 유입, 자금 시각 역전, 구조 계정 배포자, 거래소 접착)
-- 데이터: 토큰 ~1,100(졸업 풀 기준 시간당 30~60), 결과 평가는 09-24 밤부터
-- **다음**: 3주차 — 트레이드 테이프 수집(추적 토큰의 매수·매도 지갑), 볼륨 스파이크=콜 시점 추정, KOL 선행 지갑 테이블. 4주차 — 페이퍼 러너.
+## 진행 상태 (2026-09-27 15:00 UTC)
+- 1~2주차 완료. 3일치 데이터: 토큰 ~4,500(24h 유입 ~1,150), 결과 평가 ~3,300, 배포자 추적 73%.
+- 09-25~27 수정(전부 main, CI 통과): outcomes 429 처리·20분 예산·pools/multi 배치(회당 9→100건) / 결과 규칙 v2(캔들 글리치 제거: 몸통 기준·거래량 0 제외·1000배 초과 no_data, 전량 재평가 완료) / 건강검진 `peak_multiple_sane` 추가 / `cluster_size_sane` 허브형만 경고 / 독립 리뷰 4건(배치 내 1개 실패 격리, 예산 확인, actions 집계 1000건, SQL 테스트 재실행성).
+- **데이터가 말하는 것** (리뷰 09-26·09-27, 확신도 B): 졸업 토큰 고점 배수 중앙값 1.00(무차별 진입=손실), 10x 5%, 러그 ≥17%(하한). 계보로 갈림: 단독 배포자 러그 24% vs 4+ 클러스터 9%. 릴레이 체인 클러스터 `63410261…`(배포자 63, 토큰 129) 러그 0/91·10x 30% — 빌더형. 팜형 `45a29e…` 러그 55%. 핵심 가설 첫 확인.
+- **알려진 설계 한계(수정 예정, 우선순위 순)**: ① lp_pull 과소 탐지 — 유동성 고점을 첫 평가 때 현재값으로 잡음 → collect 시 GT `reserve_in_usd`를 `meta.reserve_usd_at_seen`에 저장하고 평가 시 바닥값으로 사용 ② 첫 1시간 급등이 배수에서 사라짐 → 첫 24h는 GT 5분 캔들(aggregate=5, limit 1000)로 평가, `RULES_CHANGED_AT` 갱신으로 재평가 ③ unknown 자금원 12% → WSOL 랩·언랩(syncNative/closeAccount)은 `swap`으로 분류 ④ 클러스터 ID가 재계산마다 바뀌어 날짜 간 추적 불가 → 최소 지갑 주소 기반으로 안정화.
+- **다음 단계**: 위 ①②(고점 측정 정확화) → 클러스터 점수 ≥0.9·평가 ≥10 토큰 대상 페이퍼 러너(`memebot/execution/paper.py` 골격 있음) → 2주 관찰 → `GO_LIVE_CHECKLIST.md`. 3주차 원안(트레이드 테이프·KOL 선행 지갑)은 페이퍼 결과 보고 착수.
+- 작업 흐름: 브랜치 푸시 → ci 성공 확인 → `git push origin claude/typesafe-jev-pricing-4tueat:main` → 경로 변경된 워크플로 smoke 실행 로그 확인 → 다음 stats로 값 검증. "status ok"가 아니라 **값 범위**를 확인할 것(09-25 고점 배수 56억 배가 ok로 통과한 전례).
 
 ## 알려진 제약
 - 이 클라우드 세션은 외부 API 접근 불가 → 실통신 테스트는 GitHub Actions push 트리거로
