@@ -39,6 +39,7 @@ class NewPool:
     symbol: str | None
     name: str | None
     created_at: datetime
+    reserve_usd: float | None = None  # liquidity when first seen: floor for the outcome evaluator's peak
 
 
 async def fetch_new_pools(client: httpx.AsyncClient, pages: int = 6) -> list[NewPool]:
@@ -59,7 +60,8 @@ async def fetch_new_pools(client: httpx.AsyncClient, pages: int = 6) -> list[New
                 continue
             if dex not in UNIVERSE:
                 continue
-            if float(a.get("reserve_in_usd") or 0) < MIN_RESERVE_USD:
+            reserve = float(a.get("reserve_in_usd") or 0)
+            if reserve < MIN_RESERVE_USD:
                 continue
             sym = (a.get("name") or "").split(" / ")[0] or None
             out.append(
@@ -72,6 +74,7 @@ async def fetch_new_pools(client: httpx.AsyncClient, pages: int = 6) -> list[New
                     created_at=datetime.fromisoformat(
                         a["pool_created_at"].replace("Z", "+00:00")
                     ),
+                    reserve_usd=reserve,
                 )
             )
         await asyncio.sleep(1.2)  # GT free: ~30 req/min
@@ -161,6 +164,8 @@ async def run_once(max_new: int = 60) -> int:
 
 def _insert_token(p: NewPool, deployer: str, platform: str, slot, source: str, kind: str, risk) -> None:
     meta = {"deployer_source": source, "dex": p.dex, "stage": "graduated", "deployer_kind": kind}
+    if p.reserve_usd:
+        meta["reserve_usd_at_seen"] = p.reserve_usd
     if risk:
         meta["risk"] = risk
     with conn() as c:

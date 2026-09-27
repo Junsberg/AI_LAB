@@ -48,6 +48,7 @@ async def test_fetch_new_pools_parses_and_skips_sol():
     p = pools[0]
     assert p.mint == "7GCihgDB8fe6KNjn2MYtkzZcRjQy3t9GHdC8uHYmW2hr"
     assert p.dex == "pumpswap" and p.symbol == "DOGE" and p.pool == "POOL1"
+    assert p.reserve_usd == 12000.0  # stored as meta.reserve_usd_at_seen → lp_pull floor
 
 
 @pytest.mark.asyncio

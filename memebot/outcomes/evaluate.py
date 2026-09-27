@@ -118,6 +118,20 @@ async def _pools(client: httpx.AsyncClient, pools: list[str], deadline: float) -
     return found
 
 
+def _num(v) -> float:
+    try:
+        return max(float(v), 0.0) if v is not None else 0.0
+    except (TypeError, ValueError):
+        return 0.0
+
+
+def liquidity_peak(stored, seen, now) -> float | None:
+    """Peak-liquidity proxy: max(previous stored, reserve when collected, now).
+    Without the collect-time floor a pool drained before its first evaluation had
+    peak == now and could never be an lp_pull (2 of 462 rugs on 09-27)."""
+    return max(_num(stored), _num(seen), _num(now)) or None
+
+
 def _upsert(mint: str, liq_peak: float | None, o) -> None:
     with conn() as c:
         c.execute(
@@ -147,7 +161,8 @@ def pending_rows(limit: int) -> list[dict]:
     """Tokens due for (re-)evaluation: never evaluated first, then oldest."""
     with conn() as c:
         return c.execute(
-            """select t.mint, t.pool_address, t.created_at, o.evaluated_at, o.peak_mcap_usd as liq_peak
+            """select t.mint, t.pool_address, t.created_at, o.evaluated_at, o.peak_mcap_usd as liq_peak,
+                      t.meta->>'reserve_usd_at_seen' as liq_seen
                from tokens t left join token_outcomes o on o.mint = t.mint
                where t.pool_address is not null
                  and t.created_at < now() - interval '24 hours'
@@ -190,8 +205,7 @@ async def run(limit: int = 400, budget_s: float = RUN_BUDGET_S) -> int:
                     attrs = attrs_by_pool.get(r["pool_address"], {})
                     raw_liq = attrs.get("reserve_in_usd")
                     liq_now = None if raw_liq is None else float(raw_liq)  # 0.0 is a real (drained) value
-                    # v1 proxy for peak liquidity: max(previous stored, now). Improves as we re-evaluate.
-                    liq_peak = max(float(r["liq_peak"] or 0), liq_now or 0.0) or None
+                    liq_peak = liquidity_peak(r["liq_peak"], r["liq_seen"], liq_now)
                     price_now = float(attrs.get("base_token_price_usd") or 0) or None
                     _upsert(r["mint"], liq_peak, classify(candles, liq_now, liq_peak, price_now))
                     n += 1

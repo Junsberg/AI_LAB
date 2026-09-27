@@ -133,7 +133,12 @@ def test_outcomes_selection_and_upsert_roundtrip():
                   "values ('MINT_OUT', 'DEP_OUT', 'pumpfun', now() - interval '30 hours', 'POOL_OUT') "
                   "on conflict (mint) do nothing")
         c.commit()
-    assert any(r["mint"] == "MINT_OUT" for r in ev.pending_rows(50))
+    with conn() as c:
+        c.execute("""update tokens set meta = coalesce(meta, '{}'::jsonb) || '{"reserve_usd_at_seen": 12000.0}'::jsonb
+                     where mint='MINT_OUT'""")
+        c.commit()
+    row = next(r for r in ev.pending_rows(50) if r["mint"] == "MINT_OUT")
+    assert ev.liquidity_peak(row["liq_peak"], row["liq_seen"], 0.0) == 12000.0
     ev._upsert("MINT_OUT", 1234.5, Outcome(3.0, 1_700_000_000, True, "price_collapse", 0.96))
     ev._upsert("MINT_OUT", 1234.5, Outcome(3.0, 1_700_000_000, False, "none", 0.1))  # recovered → rug_at cleared
     with conn() as c:

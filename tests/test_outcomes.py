@@ -168,3 +168,13 @@ def test_pools_one_bad_pool_does_not_sink_the_batch(monkeypatch):
     ])
     out = asyncio.run(ev._pools(client, ["A", "B"], time.monotonic() + 1000))
     assert out == {"A": {"address": "A", "reserve_in_usd": "1"}}  # B absent → its token is skipped, A survives
+
+
+def test_liquidity_peak_uses_collect_time_floor():
+    # pool drained before its first evaluation: without the floor peak == now and lp_pull is impossible
+    assert ev.liquidity_peak(None, "12000", 0.0) == 12000.0
+    assert ev.liquidity_peak(30_000, "12000", 500) == 30_000.0
+    assert ev.liquidity_peak(None, None, 800.0) == 800.0
+    assert ev.liquidity_peak(None, "junk", None) is None
+    o = classify([c(1, 1.0, 5.0, 0.9, 4.0), c(2, 4.0, 4.1, 0.1, 0.2)], 0.0, ev.liquidity_peak(None, "12000", 0.0))
+    assert o.rug_reason == "lp_pull"
