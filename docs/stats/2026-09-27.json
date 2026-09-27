@@ -1,20 +1,20 @@
 {
- "generated_at": "2026-09-27T19:20:37.503139+00:00",
+ "generated_at": "2026-09-27T19:37:15.866105+00:00",
  "counts": [
   {
-   "tokens": 4938,
-   "tokens_24h": 1231,
-   "deployers": 3574,
+   "tokens": 4941,
+   "tokens_24h": 1219,
+   "deployers": 3577,
    "deployers_traced": 2675,
    "deployers_unknown_src": 419,
    "edges": 5163,
    "clusters": 2880,
    "multi_token_clusters": 474,
-   "outcomes": 3695,
-   "rugged": 710,
-   "tenx": 237,
-   "with_risk": 4938,
-   "signals": 61,
+   "outcomes": 3711,
+   "rugged": 715,
+   "tenx": 239,
+   "with_risk": 4941,
+   "signals": 68,
    "positions": 4,
    "hypotheses": 0
   }
@@ -22,18 +22,18 @@
  "risk_distribution": [
   {
    "top10_p50": 9.9,
-   "top10_p90": 62.8,
+   "top10_p90": 62.7,
    "insiders_avg": 0.0,
-   "lp_locked": 2196,
+   "lp_locked": 2198,
    "freeze_on": 4,
    "mint_on": 0,
-   "n": 4860
+   "n": 4863
   }
  ],
  "tokens_per_hour_24h": [
   {
    "h": "2026-09-26 19:00",
-   "n": 27
+   "n": 12
   },
   {
    "h": "2026-09-26 20:00",
@@ -129,7 +129,7 @@
   },
   {
    "h": "2026-09-27 19:00",
-   "n": 11
+   "n": 14
   }
  ],
  "top_deployers": [
@@ -299,16 +299,16 @@
  "outcomes_summary": [
   {
    "rug_reason": "none",
-   "n": 2972,
+   "n": 2983,
    "p50_peak": 1.0,
    "p90_peak": 3.46,
    "max_peak": 935.73
   },
   {
    "rug_reason": "price_collapse",
-   "n": 701,
+   "n": 706,
    "p50_peak": 1.0,
-   "p90_peak": 1.43,
+   "p90_peak": 1.44,
    "max_peak": 417.02
   },
   {
@@ -329,19 +329,19 @@
  "outcome_by_cluster_size": [
   {
    "bucket": "2-3",
-   "n": 525,
-   "rug_rate": 0.164,
+   "n": 527,
+   "rug_rate": 0.163,
    "p50_peak": 1.0
   },
   {
    "bucket": "4+",
-   "n": 1337,
-   "rug_rate": 0.099,
+   "n": 1346,
+   "rug_rate": 0.101,
    "p50_peak": 1.0
   },
   {
    "bucket": "single",
-   "n": 1833,
+   "n": 1838,
    "rug_rate": 0.268,
    "p50_peak": 1.0
   }
@@ -350,7 +350,7 @@
   {
    "src": "rugcheck",
    "verified": "-",
-   "n": 3811
+   "n": 3814
   },
   {
    "src": "rpc",
@@ -480,7 +480,7 @@
   },
   {
    "src": "untraced",
-   "n": 2
+   "n": 5
   }
  ],
  "paper_summary": [
@@ -510,17 +510,17 @@
   {
    "decision": "skip",
    "reason": "lineage_below",
-   "n": 30
+   "n": 34
   },
   {
    "decision": "reject",
    "reason": "low_liquidity",
-   "n": 21
+   "n": 23
   },
   {
    "decision": "reject",
    "reason": "concentrated",
-   "n": 6
+   "n": 7
   },
   {
    "decision": "enter",
