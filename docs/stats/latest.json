@@ -1,19 +1,19 @@
 {
- "generated_at": "2026-09-27T16:37:16.905164+00:00",
+ "generated_at": "2026-09-27T17:37:15.090720+00:00",
  "counts": [
   {
-   "tokens": 4773,
-   "tokens_24h": 1205,
-   "deployers": 3459,
-   "deployers_traced": 2561,
+   "tokens": 4825,
+   "tokens_24h": 1201,
+   "deployers": 3497,
+   "deployers_traced": 2594,
    "deployers_unknown_src": 405,
-   "edges": 4947,
-   "clusters": 2785,
-   "multi_token_clusters": 458,
-   "outcomes": 3563,
-   "rugged": 670,
-   "tenx": 209,
-   "with_risk": 4772,
+   "edges": 5018,
+   "clusters": 2816,
+   "multi_token_clusters": 462,
+   "outcomes": 3605,
+   "rugged": 682,
+   "tenx": 216,
+   "with_risk": 4825,
    "signals": 0,
    "positions": 0,
    "hypotheses": 0
@@ -21,23 +21,19 @@
  ],
  "risk_distribution": [
   {
-   "top10_p50": 9.7,
-   "top10_p90": 61.5,
+   "top10_p50": 9.8,
+   "top10_p90": 62.5,
    "insiders_avg": 0.0,
-   "lp_locked": 2130,
+   "lp_locked": 2158,
    "freeze_on": 4,
    "mint_on": 0,
-   "n": 4702
+   "n": 4747
   }
  ],
  "tokens_per_hour_24h": [
   {
-   "h": "2026-09-26 16:00",
-   "n": 21
-  },
-  {
    "h": "2026-09-26 17:00",
-   "n": 50
+   "n": 15
   },
   {
    "h": "2026-09-26 18:00",
@@ -129,7 +125,11 @@
   },
   {
    "h": "2026-09-27 16:00",
-   "n": 18
+   "n": 36
+  },
+  {
+   "h": "2026-09-27 17:00",
+   "n": 34
   }
  ],
  "top_deployers": [
@@ -156,10 +156,10 @@
   },
   {
    "deployer": "FdscpiHD4PT2yjFTe6emEyZyfQ2nR7T1LsUujKayxCvx",
-   "n": 18,
-   "syms": "Trump AI,Trump AI,Trump AI,Trump AI,Trump AI,Trump AI,Trump AI,Trump AI,Trump AI,Trump AI,Trump AI,Trump AI,Trump AI,Trump AI,Trump AI,Trump AI,Trump AI,GOOMS",
+   "n": 19,
+   "syms": "Trump AI,Trump AI,Trump AI,Trump AI,Trump AI,Trump AI,Trump AI,Trump AI,Trump AI,Trump AI,Trump AI,Trump AI,Trump AI,Trump AI,Trump AI,Trump AI,Trump AI,GOOMS,葵花宝典",
    "first_t": "09-26 07:31",
-   "last_t": "09-27 13:49"
+   "last_t": "09-27 16:56"
   },
   {
    "deployer": "E3jbmhG8VSfxJ8Ab2vgwjnDLY2Azk4sYCNvP4S9CD3yC",
@@ -183,13 +183,6 @@
    "last_t": "09-25 03:07"
   },
   {
-   "deployer": "CGcbvoobbnPzAN1mduBYapAUak6FUe3PHLACkEZWv42P",
-   "n": 14,
-   "syms": "CV,CV,CV,CV,CV,CV,CV,CV,CV,CV,CV,CV,CV,CV",
-   "first_t": "09-24 05:05",
-   "last_t": "09-24 07:32"
-  },
-  {
    "deployer": "CrVW9jpbbKssWULzncQtf31rSxvzJwPe56zg2o65sjA7",
    "n": 14,
    "syms": "MONEY,MONEY,MONEY,MONEY,MONEY,MONEY,MONEY,MONEY,MONEY,MONEY,MONEY,MONEY,MONEY,MONEY",
@@ -202,16 +195,23 @@
    "syms": "SI,SI,PESOS,MOONCATS,SIDELINED,TOKENS,Elephant,SDOG,VISE,IshiGo,Meme,PROM,fush,RETIRE",
    "first_t": "09-24 05:06",
    "last_t": "09-24 12:49"
+  },
+  {
+   "deployer": "BvDc6R79TyZXGg7murNY79yYJRFDQtbQmid4tHcnBoji",
+   "n": 14,
+   "syms": "玉兔,玉兔,中秋玉兔,中秋玉兔,中秋玉兔,中秋玉兔,玉兔,币安玉兔,中秋玉兔,玉兔,玉兔,中秋玉兔,中国人能飞,LGBT",
+   "first_t": "09-24 06:48",
+   "last_t": "09-25 23:18"
   }
  ],
  "top_clusters": [
   {
    "cluster_id": "63410261d4772a3c",
-   "tokens_total": 150,
-   "tokens_evaluated": 101,
+   "tokens_total": 152,
+   "tokens_evaluated": 104,
    "tokens_rugged": 0,
-   "tokens_10x": 31,
-   "score": 0.991,
+   "tokens_10x": 34,
+   "score": 0.9914,
    "deployers": 64
   },
   {
@@ -225,7 +225,7 @@
   },
   {
    "cluster_id": "7ed913765a3a4f01",
-   "tokens_total": 42,
+   "tokens_total": 43,
    "tokens_evaluated": 29,
    "tokens_rugged": 0,
    "tokens_10x": 8,
@@ -234,7 +234,7 @@
   },
   {
    "cluster_id": "7bd23c96a96168b4",
-   "tokens_total": 38,
+   "tokens_total": 39,
    "tokens_evaluated": 27,
    "tokens_rugged": 2,
    "tokens_10x": 0,
@@ -244,38 +244,29 @@
   {
    "cluster_id": "e138b28750810679",
    "tokens_total": 38,
-   "tokens_evaluated": 24,
+   "tokens_evaluated": 26,
    "tokens_rugged": 2,
    "tokens_10x": 1,
-   "score": 0.8793,
+   "score": 0.8871,
    "deployers": 1
   },
   {
    "cluster_id": "e36e8bfcc9b9fa79",
    "tokens_total": 29,
-   "tokens_evaluated": 28,
+   "tokens_evaluated": 29,
    "tokens_rugged": 0,
    "tokens_10x": 0,
-   "score": 0.9516,
+   "score": 0.9531,
    "deployers": 8
   },
   {
    "cluster_id": "baca84838ef2f1b1",
    "tokens_total": 28,
-   "tokens_evaluated": 18,
+   "tokens_evaluated": 19,
    "tokens_rugged": 1,
    "tokens_10x": 1,
-   "score": 0.8913,
+   "score": 0.8958,
    "deployers": 1
-  },
-  {
-   "cluster_id": "c2baf4c70717868a",
-   "tokens_total": 28,
-   "tokens_evaluated": 22,
-   "tokens_rugged": 9,
-   "tokens_10x": 0,
-   "score": 0.58,
-   "deployers": 28
   },
   {
    "cluster_id": "331297bc4e47d236",
@@ -285,6 +276,15 @@
    "tokens_10x": 0,
    "score": 0.9516,
    "deployers": 3
+  },
+  {
+   "cluster_id": "c2baf4c70717868a",
+   "tokens_total": 28,
+   "tokens_evaluated": 22,
+   "tokens_rugged": 9,
+   "tokens_10x": 0,
+   "score": 0.58,
+   "deployers": 28
   },
   {
    "cluster_id": "a8fbbcb2dcaeb532",
@@ -299,16 +299,16 @@
  "outcomes_summary": [
   {
    "rug_reason": "none",
-   "n": 2882,
+   "n": 2912,
    "p50_peak": 1.0,
-   "p90_peak": 2.76,
+   "p90_peak": 2.83,
    "max_peak": 935.73
   },
   {
    "rug_reason": "price_collapse",
-   "n": 662,
+   "n": 673,
    "p50_peak": 1.0,
-   "p90_peak": 1.08,
+   "p90_peak": 1.09,
    "max_peak": 417.02
   },
   {
@@ -320,29 +320,29 @@
   },
   {
    "rug_reason": "lp_pull",
-   "n": 8,
-   "p50_peak": 1.64,
-   "p90_peak": 6.7,
+   "n": 9,
+   "p50_peak": 1.79,
+   "p90_peak": 6.55,
    "max_peak": 7.73
   }
  ],
  "outcome_by_cluster_size": [
   {
    "bucket": "2-3",
-   "n": 504,
-   "rug_rate": 0.161,
+   "n": 513,
+   "rug_rate": 0.162,
    "p50_peak": 1.0
   },
   {
    "bucket": "4+",
-   "n": 1288,
+   "n": 1299,
    "rug_rate": 0.098,
    "p50_peak": 1.0
   },
   {
    "bucket": "single",
-   "n": 1771,
-   "rug_rate": 0.261,
+   "n": 1793,
+   "rug_rate": 0.263,
    "p50_peak": 1.0
   }
  ],
@@ -350,12 +350,12 @@
   {
    "src": "rugcheck",
    "verified": "-",
-   "n": 3692
+   "n": 3705
   },
   {
    "src": "rpc",
    "verified": "-",
-   "n": 587
+   "n": 626
   },
   {
    "src": "pre-fix",
@@ -458,11 +458,11 @@
  "funding_sources": [
   {
    "src": "wallet",
-   "n": 2454
+   "n": 2485
   },
   {
    "src": "hub",
-   "n": 466
+   "n": 469
   },
   {
    "src": "unknown",
@@ -470,11 +470,11 @@
   },
   {
    "src": "cex",
-   "n": 105
+   "n": 107
   },
   {
    "src": "untraced",
-   "n": 29
+   "n": 31
   }
  ]
 }
