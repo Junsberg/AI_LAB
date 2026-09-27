@@ -27,7 +27,7 @@
 | 스케줄 | Supabase pg_cron → GitHub workflow_dispatch (`public.gh_dispatch`, Vault `GH_PAT`) | GitHub 자체 cron은 불안정, 백업용 |
 | 잡 | collect 10분 / enrich 매시 17분 / stats 매시 37분 | `.github/workflows/` |
 | 시크릿 | GitHub Secrets: `HELIUS_API_KEY`, `DATABASE_URL`. Supabase Vault: `GH_PAT` | 채팅에 절대 안 붙임 |
-| 리뷰·점검 | 루틴 2개(데일리 08:00 KST, 6h 점검 05/11/17 UTC) — **매번 새 세션, Opus 5.5**, GitHub API·DB 도구 없음. 모든 수치는 파일: `latest.json`·`health.json`·`actions.json`(stats 잡이 매시간 Actions 24h 집계 기록). 코드 수정 시 브랜치 푸시까지만, main 머지는 CI 확인 후 사람/메인 세션 | 2026-09-26: Fable 세션 바인딩 루틴은 토큰 비용으로 비활성 |
+| 리뷰·점검 | 루틴 2개(데일리 08:00 KST, 6h 점검 05/11/17 UTC)가 **전용 세션 "memebot 루틴 전용 (opus)"(Opus 5.5, AI_LAB 작업 브랜치 체크아웃)** 에 바인딩. GitHub API·DB 도구 없음 → 파일 기반: `latest.json`·`health.json`·`actions.json`(stats 잡이 매시간 Actions 24h 집계). 결과는 `docs/reviews/`, `docs/checks/`. 코드 수정 시 브랜치 푸시까지만, main 머지는 CI 확인 후 메인 세션. "매번 새 세션" 방식 루틴은 레포가 안 붙어 실패하므로 쓰지 말 것 | 전용 세션 문맥이 커지면 create_session 으로 새로 만들고 루틴의 persistent_session_id 교체 |
 | HL 카피봇 | 별도 레포 `claudecode_factory` — **수정 금지**, 읽기만 | |
 
 ## 파이프라인
