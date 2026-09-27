@@ -1,19 +1,19 @@
 {
- "generated_at": "2026-09-27T13:37:19.567955+00:00",
+ "generated_at": "2026-09-27T14:16:39.108920+00:00",
  "counts": [
   {
-   "tokens": 4639,
-   "tokens_24h": 1232,
-   "deployers": 3357,
-   "deployers_traced": 2471,
-   "deployers_unknown_src": 398,
-   "edges": 4772,
-   "clusters": 2701,
-   "multi_token_clusters": 447,
-   "outcomes": 3404,
-   "rugged": 622,
-   "tenx": 186,
-   "with_risk": 4639,
+   "tokens": 4672,
+   "tokens_24h": 1219,
+   "deployers": 3384,
+   "deployers_traced": 2498,
+   "deployers_unknown_src": 399,
+   "edges": 4824,
+   "clusters": 2729,
+   "multi_token_clusters": 449,
+   "outcomes": 3441,
+   "rugged": 631,
+   "tenx": 194,
+   "with_risk": 4672,
    "signals": 0,
    "positions": 0,
    "hypotheses": 0
@@ -22,22 +22,18 @@
  "risk_distribution": [
   {
    "top10_p50": 9.8,
-   "top10_p90": 62.2,
+   "top10_p90": 61.9,
    "insiders_avg": 0.0,
-   "lp_locked": 2092,
+   "lp_locked": 2110,
    "freeze_on": 4,
    "mint_on": 0,
-   "n": 4613
+   "n": 4649
   }
  ],
  "tokens_per_hour_24h": [
   {
-   "h": "2026-09-26 13:00",
-   "n": 34
-  },
-  {
    "h": "2026-09-26 14:00",
-   "n": 56
+   "n": 44
   },
   {
    "h": "2026-09-26 15:00",
@@ -129,7 +125,11 @@
   },
   {
    "h": "2026-09-27 13:00",
-   "n": 33
+   "n": 61
+  },
+  {
+   "h": "2026-09-27 14:00",
+   "n": 5
   }
  ],
  "top_deployers": [
@@ -155,18 +155,18 @@
    "last_t": "09-27 11:29"
   },
   {
+   "deployer": "FdscpiHD4PT2yjFTe6emEyZyfQ2nR7T1LsUujKayxCvx",
+   "n": 18,
+   "syms": "Trump AI,Trump AI,Trump AI,Trump AI,Trump AI,Trump AI,Trump AI,Trump AI,Trump AI,Trump AI,Trump AI,Trump AI,Trump AI,Trump AI,Trump AI,Trump AI,Trump AI,GOOMS",
+   "first_t": "09-26 07:31",
+   "last_t": "09-27 13:49"
+  },
+  {
    "deployer": "E3jbmhG8VSfxJ8Ab2vgwjnDLY2Azk4sYCNvP4S9CD3yC",
    "n": 18,
    "syms": "kittylick,CHAROC,GNB,GNB,GNB,GNB,GNB,GNB,GNB,GNB,GNB,GNB,GNB,OTTER,OTTER,OTTER,OTTER,OTTER",
    "first_t": "09-24 05:05",
    "last_t": "09-24 07:21"
-  },
-  {
-   "deployer": "FdscpiHD4PT2yjFTe6emEyZyfQ2nR7T1LsUujKayxCvx",
-   "n": 17,
-   "syms": "Trump AI,Trump AI,Trump AI,Trump AI,Trump AI,Trump AI,Trump AI,Trump AI,Trump AI,Trump AI,Trump AI,Trump AI,Trump AI,Trump AI,Trump AI,Trump AI,Trump AI",
-   "first_t": "09-26 07:31",
-   "last_t": "09-27 12:48"
   },
   {
    "deployer": "BAGSB9TpGrZxQbEsrEznv5jXXdwyP6AXerN8aVRiAmcv",
@@ -207,7 +207,7 @@
  "top_clusters": [
   {
    "cluster_id": "63410261d4772a3c",
-   "tokens_total": 145,
+   "tokens_total": 148,
    "tokens_evaluated": 96,
    "tokens_rugged": 0,
    "tokens_10x": 29,
@@ -215,13 +215,13 @@
    "deployers": 64
   },
   {
-   "cluster_id": "0cb3f9939665dd41",
-   "tokens_total": 46,
+   "cluster_id": "225d0c6baad8a062",
+   "tokens_total": 47,
    "tokens_evaluated": 35,
    "tokens_rugged": 19,
    "tokens_10x": 0,
    "score": 0.4605,
-   "deployers": 45
+   "deployers": 46
   },
   {
    "cluster_id": "7ed913765a3a4f01",
@@ -234,7 +234,7 @@
   },
   {
    "cluster_id": "7bd23c96a96168b4",
-   "tokens_total": 37,
+   "tokens_total": 38,
    "tokens_evaluated": 25,
    "tokens_rugged": 1,
    "tokens_10x": 0,
@@ -260,15 +260,6 @@
    "deployers": 8
   },
   {
-   "cluster_id": "c2baf4c70717868a",
-   "tokens_total": 28,
-   "tokens_evaluated": 22,
-   "tokens_rugged": 9,
-   "tokens_10x": 0,
-   "score": 0.58,
-   "deployers": 28
-  },
-  {
    "cluster_id": "331297bc4e47d236",
    "tokens_total": 28,
    "tokens_evaluated": 28,
@@ -276,6 +267,15 @@
    "tokens_10x": 0,
    "score": 0.9516,
    "deployers": 3
+  },
+  {
+   "cluster_id": "c2baf4c70717868a",
+   "tokens_total": 28,
+   "tokens_evaluated": 22,
+   "tokens_rugged": 9,
+   "tokens_10x": 0,
+   "score": 0.58,
+   "deployers": 28
   },
   {
    "cluster_id": "baca84838ef2f1b1",
@@ -299,16 +299,16 @@
  "outcomes_summary": [
   {
    "rug_reason": "none",
-   "n": 2771,
+   "n": 2799,
    "p50_peak": 1.0,
-   "p90_peak": 2.52,
+   "p90_peak": 2.61,
    "max_peak": 935.73
   },
   {
    "rug_reason": "price_collapse",
-   "n": 616,
+   "n": 623,
    "p50_peak": 1.0,
-   "p90_peak": 1.01,
+   "p90_peak": 1.02,
    "max_peak": 417.02
   },
   {
@@ -320,29 +320,29 @@
   },
   {
    "rug_reason": "lp_pull",
-   "n": 7,
-   "p50_peak": 1.48,
-   "p90_peak": 4.28,
-   "max_peak": 6.26
+   "n": 8,
+   "p50_peak": 1.64,
+   "p90_peak": 6.7,
+   "max_peak": 7.73
   }
  ],
  "outcome_by_cluster_size": [
   {
    "bucket": "2-3",
-   "n": 495,
-   "rug_rate": 0.158,
+   "n": 498,
+   "rug_rate": 0.159,
    "p50_peak": 1.0
   },
   {
    "bucket": "4+",
-   "n": 1239,
-   "rug_rate": 0.097,
+   "n": 1256,
+   "rug_rate": 0.096,
    "p50_peak": 1.0
   },
   {
    "bucket": "single",
-   "n": 1671,
-   "rug_rate": 0.254,
+   "n": 1687,
+   "rug_rate": 0.255,
    "p50_peak": 1.0
   }
  ],
@@ -350,12 +350,12 @@
   {
    "src": "rugcheck",
    "verified": "-",
-   "n": 3621
+   "n": 3649
   },
   {
    "src": "rpc",
    "verified": "-",
-   "n": 524
+   "n": 529
   },
   {
    "src": "pre-fix",
@@ -449,12 +449,6 @@
    "avg_creator_pct": 13.87
   },
   {
-   "deployer": "3RnqXCyNrzCZZumL4AdBLCrpsgAgUrMPek8hRSmErBWA",
-   "n_tokens": 10,
-   "n_symbols": 9,
-   "avg_creator_pct": 3.04
-  },
-  {
    "deployer": "DoEt8yw22pNGnao7yEbhL3hjtmzzrXi1r6jqGGD84yUQ",
    "n_tokens": 10,
    "n_symbols": 10,
@@ -464,23 +458,23 @@
  "funding_sources": [
   {
    "src": "wallet",
-   "n": 2369
+   "n": 2395
   },
   {
    "src": "hub",
-   "n": 454
+   "n": 455
   },
   {
    "src": "unknown",
-   "n": 398
+   "n": 399
   },
   {
    "src": "cex",
-   "n": 100
+   "n": 101
   },
   {
    "src": "untraced",
-   "n": 36
+   "n": 34
   }
  ]
 }
