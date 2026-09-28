@@ -1,20 +1,20 @@
 {
- "generated_at": "2026-09-28T14:37:17.644017+00:00",
+ "generated_at": "2026-09-28T15:37:17.960351+00:00",
  "counts": [
   {
-   "tokens": 5864,
-   "tokens_24h": 1164,
-   "deployers": 4290,
-   "deployers_traced": 3170,
-   "deployers_unknown_src": 480,
-   "edges": 6186,
-   "clusters": 3465,
-   "multi_token_clusters": 544,
-   "outcomes": 4688,
-   "rugged": 1041,
-   "tenx": 372,
-   "with_risk": 5864,
-   "signals": 991,
+   "tokens": 5895,
+   "tokens_24h": 1150,
+   "deployers": 4314,
+   "deployers_traced": 3186,
+   "deployers_unknown_src": 482,
+   "edges": 6219,
+   "clusters": 3487,
+   "multi_token_clusters": 548,
+   "outcomes": 4733,
+   "rugged": 1058,
+   "tenx": 383,
+   "with_risk": 5895,
+   "signals": 1022,
    "positions": 48,
    "hypotheses": 0
   }
@@ -22,22 +22,18 @@
  "risk_distribution": [
   {
    "top10_p50": 9.6,
-   "top10_p90": 60.7,
+   "top10_p90": 60.9,
    "insiders_avg": 0.0,
-   "lp_locked": 2522,
+   "lp_locked": 2533,
    "freeze_on": 5,
    "mint_on": 1,
-   "n": 5786
+   "n": 5817
   }
  ],
  "tokens_per_hour_24h": [
   {
-   "h": "2026-09-27 14:00",
-   "n": 21
-  },
-  {
    "h": "2026-09-27 15:00",
-   "n": 34
+   "n": 10
   },
   {
    "h": "2026-09-27 16:00",
@@ -129,16 +125,20 @@
   },
   {
    "h": "2026-09-28 14:00",
-   "n": 15
+   "n": 33
+  },
+  {
+   "h": "2026-09-28 15:00",
+   "n": 13
   }
  ],
  "top_deployers": [
   {
    "deployer": "Be3MwhYqH9Y7NMVZqUJBL7fmEshHgQnU5prttJbGRCpW",
-   "n": 43,
-   "syms": "Hybrid cat,Hybrid cat,Hybrid cat,Kitty,Kitty,Kitty,Kitty,Kitty,🍒Cherry,Thief Bear,🐻Bear,🐻Bear,🐻Bear,🐻Bear,🐻Bear,Bitty,Betty,Betty,Betty,🐻Bear,ポケモン,PenguinCat,PenguinCat,PenguinCat,Betty,Betty,Betty,Betty,PenguinCat,PenguinCat,PenguinCat,PenguinCat,PenguinCat,PenguinCat,FISH,FISH,Betty,NEARPAD,中國人會飛,中國人會飛,PenguinCat,PenguinCat,PenguinCat",
+   "n": 44,
+   "syms": "Hybrid cat,Hybrid cat,Hybrid cat,Kitty,Kitty,Kitty,Kitty,Kitty,🍒Cherry,Thief Bear,🐻Bear,🐻Bear,🐻Bear,🐻Bear,🐻Bear,Bitty,Betty,Betty,Betty,🐻Bear,ポケモン,PenguinCat,PenguinCat,PenguinCat,Betty,Betty,Betty,Betty,PenguinCat,PenguinCat,PenguinCat,PenguinCat,PenguinCat,PenguinCat,FISH,FISH,Betty,NEARPAD,中國人會飛,中國人會飛,PenguinCat,PenguinCat,PenguinCat,Betty",
    "first_t": "09-24 06:22",
-   "last_t": "09-28 11:06"
+   "last_t": "09-28 14:52"
   },
   {
    "deployer": "9baMg22GMZzsp68rvmrUAVP6ZdrrmJnTcndwy4QudsMT",
@@ -208,28 +208,28 @@
   {
    "cluster_id": "63410261d4772a3c",
    "tokens_total": 251,
-   "tokens_evaluated": 190,
+   "tokens_evaluated": 192,
    "tokens_rugged": 3,
    "tokens_10x": 0,
-   "score": 0.3394,
+   "score": 0.3256,
    "deployers": 96
   },
   {
    "cluster_id": "f25e5b66cdc907c6",
    "tokens_total": 56,
-   "tokens_evaluated": 48,
-   "tokens_rugged": 33,
+   "tokens_evaluated": 49,
+   "tokens_rugged": 34,
    "tokens_10x": 0,
-   "score": 0.3039,
+   "score": 0.2981,
    "deployers": 55
   },
   {
    "cluster_id": "e138b28750810679",
-   "tokens_total": 43,
-   "tokens_evaluated": 37,
+   "tokens_total": 44,
+   "tokens_evaluated": 38,
    "tokens_rugged": 6,
    "tokens_10x": 0,
-   "score": 0.3875,
+   "score": 0.378,
    "deployers": 1
   },
   {
@@ -245,18 +245,18 @@
    "cluster_id": "c2baf4c70717868a",
    "tokens_total": 33,
    "tokens_evaluated": 28,
-   "tokens_rugged": 15,
+   "tokens_rugged": 16,
    "tokens_10x": 0,
-   "score": 0.4677,
+   "score": 0.4355,
    "deployers": 33
   },
   {
    "cluster_id": "baca84838ef2f1b1",
    "tokens_total": 31,
-   "tokens_evaluated": 26,
+   "tokens_evaluated": 28,
    "tokens_rugged": 3,
    "tokens_10x": 1,
-   "score": 0.629,
+   "score": 0.5909,
    "deployers": 1
   },
   {
@@ -271,10 +271,10 @@
   {
    "cluster_id": "84972152f476882b",
    "tokens_total": 28,
-   "tokens_evaluated": 16,
+   "tokens_evaluated": 17,
    "tokens_rugged": 0,
    "tokens_10x": 0,
-   "score": 0.0789,
+   "score": 0.075,
    "deployers": 5
   },
   {
@@ -283,7 +283,7 @@
    "tokens_evaluated": 28,
    "tokens_rugged": 0,
    "tokens_10x": 0,
-   "score": 0.1774,
+   "score": 0.0484,
    "deployers": 3
   },
   {
@@ -299,90 +299,90 @@
  "outcomes_summary": [
   {
    "rug_reason": "none",
-   "n": 1883,
+   "n": 1846,
    "p50_peak": 1.0,
-   "p90_peak": 9.88,
+   "p90_peak": 10.45,
    "max_peak": 922.68,
-   "p50_entry": 1.16,
-   "p90_entry": 5.16,
+   "p50_entry": 1.15,
+   "p90_entry": 5.15,
    "entry_10x": 22,
-   "v4": 474
+   "v4": 490
   },
   {
    "rug_reason": "dead",
-   "n": 1741,
+   "n": 1804,
    "p50_peak": 1.25,
-   "p90_peak": 5.33,
+   "p90_peak": 5.56,
    "max_peak": 844.45,
    "p50_entry": 1.0,
    "p90_entry": 1.72,
-   "entry_10x": 7,
-   "v4": 1741
+   "entry_10x": 8,
+   "v4": 1804
   },
   {
    "rug_reason": "price_collapse",
-   "n": 1025,
+   "n": 1041,
    "p50_peak": 1.0,
-   "p90_peak": 3.51,
+   "p90_peak": 3.52,
    "max_peak": 448.34,
    "p50_entry": 1.0,
-   "p90_entry": 2.68,
+   "p90_entry": 2.58,
    "entry_10x": 7,
-   "v4": 750
+   "v4": 792
   },
   {
    "rug_reason": "no_data",
-   "n": 23,
+   "n": 25,
    "p50_peak": null,
    "p90_peak": null,
    "max_peak": null,
    "p50_entry": null,
    "p90_entry": null,
    "entry_10x": 0,
-   "v4": 17
+   "v4": 21
   },
   {
    "rug_reason": "lp_pull",
-   "n": 16,
-   "p50_peak": 2.34,
-   "p90_peak": 7.0,
+   "n": 17,
+   "p50_peak": 1.79,
+   "p90_peak": 6.85,
    "max_peak": 10.43,
-   "p50_entry": 2.81,
-   "p90_entry": 6.58,
+   "p50_entry": 2.24,
+   "p90_entry": 6.26,
    "entry_10x": 0,
-   "v4": 7
+   "v4": 8
   }
  ],
  "outcome_by_cluster_size": [
   {
    "bucket": "2-3",
-   "n": 616,
-   "rug_rate": 0.19,
+   "n": 622,
+   "rug_rate": 0.193,
    "p50_peak": 1.0
   },
   {
    "bucket": "4+",
-   "n": 1784,
-   "rug_rate": 0.121,
-   "p50_peak": 1.05
+   "n": 1798,
+   "rug_rate": 0.122,
+   "p50_peak": 1.06
   },
   {
    "bucket": "single",
-   "n": 2288,
-   "rug_rate": 0.309,
-   "p50_peak": 1.03
+   "n": 2313,
+   "rug_rate": 0.31,
+   "p50_peak": 1.05
   }
  ],
  "deployer_provenance": [
   {
    "src": "rugcheck",
    "verified": "-",
-   "n": 4660
+   "n": 4687
   },
   {
    "src": "rpc",
    "verified": "-",
-   "n": 710
+   "n": 714
   },
   {
    "src": "pre-fix",
@@ -403,7 +403,7 @@
  "unknown_funding_first_tx_kinds": [
   {
    "kind": "111111:transfer",
-   "n": 550
+   "n": 558
   },
   {
    "kind": "Comput:-",
@@ -411,11 +411,11 @@
   },
   {
    "kind": "111111:createAccount",
-   "n": 406
+   "n": 407
   },
   {
    "kind": "Tokenk:syncNative",
-   "n": 255
+   "n": 256
   },
   {
    "kind": "AToken:createIdempotent",
@@ -423,11 +423,11 @@
   },
   {
    "kind": "Tokenk:closeAccount",
-   "n": 240
+   "n": 241
   },
   {
    "kind": "Tokenk:initializeAccount3",
-   "n": 226
+   "n": 227
   },
   {
    "kind": "Tokenz:initializeMetadataPointer",
@@ -482,12 +482,6 @@
    "avg_creator_pct": 23.92
   },
   {
-   "deployer": "7V9v87f2v8zuctwzfNxYJ1DAjNYCTmgm1u6wRtwWPK19",
-   "n_tokens": 10,
-   "n_symbols": 9,
-   "avg_creator_pct": 0.68
-  },
-  {
    "deployer": "GFUJwSwNUNpg3LwLMQKjWgfmFwpYX3Acg3cpB4vqqSKp",
    "n_tokens": 10,
    "n_symbols": 9,
@@ -497,23 +491,23 @@
  "funding_sources": [
   {
    "src": "wallet",
-   "n": 3036
+   "n": 3051
   },
   {
    "src": "hub",
-   "n": 636
+   "n": 641
   },
   {
    "src": "unknown",
-   "n": 480
+   "n": 482
   },
   {
    "src": "cex",
-   "n": 132
+   "n": 133
   },
   {
    "src": "untraced",
-   "n": 6
+   "n": 7
   }
  ],
  "paper_summary": [
@@ -529,12 +523,12 @@
   },
   {
    "mode": "paper_control",
-   "open": 4,
-   "closed": 24,
-   "mean_ret": 1.459,
-   "stderr": 1.3931,
-   "win_rate": 0.583,
-   "pnl_sol": 7.00336,
+   "open": 1,
+   "closed": 27,
+   "mean_ret": 1.2754,
+   "stderr": 1.2396,
+   "win_rate": 0.519,
+   "pnl_sol": 6.8874,
    "first_opened": "2026-09-27 18:56:10.562552+00:00"
   }
  ],
@@ -554,8 +548,8 @@
   {
    "mode": "paper_control",
    "exit_reason": "dead_volume",
-   "n": 19,
-   "mean_ret": 1.9774
+   "n": 22,
+   "mean_ret": 1.6814
   },
   {
    "mode": "paper_control",
@@ -568,17 +562,17 @@
   {
    "decision": "skip",
    "reason": "lineage_below",
-   "n": 625
+   "n": 649
   },
   {
    "decision": "reject",
    "reason": "low_liquidity",
-   "n": 168
+   "n": 169
   },
   {
    "decision": "reject",
    "reason": "concentrated",
-   "n": 150
+   "n": 156
   },
   {
    "decision": "enter",
