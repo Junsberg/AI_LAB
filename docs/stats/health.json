@@ -1,21 +1,21 @@
 {
- "generated_at": "2026-09-28T07:37:31.279431+00:00",
+ "generated_at": "2026-09-28T08:37:29.008665+00:00",
  "status": "warn",
  "metrics": {
-  "tokens_70m": 68,
-  "tokens_24h": 1258,
+  "tokens_70m": 48,
+  "tokens_24h": 1237,
   "risk_missing": 0,
-  "risk_eligible": 5526,
-  "top10_over90": 269,
-  "top10_n": 5479,
-  "deployers": 4037,
-  "traced": 2986,
-  "untraceable": 1035,
+  "risk_eligible": 5572,
+  "top10_over90": 270,
+  "top10_n": 5517,
+  "deployers": 4069,
+  "traced": 3014,
+  "untraceable": 1043,
   "trace_backlog": 0,
   "outcome_backlog": 0,
-  "outcomes": 4266,
+  "outcomes": 4334,
   "outcomes_no_data": 19,
-  "outcomes_over100x": 78,
+  "outcomes_over100x": 82,
   "backfill_pending": 0,
   "deployers_corrected": 81,
   "out_of_universe": 0,
@@ -32,31 +32,31 @@
    "name": "collect_alive",
    "level": "critical",
    "ok": true,
-   "detail": "tokens last 70m = 68"
+   "detail": "tokens last 70m = 48"
   },
   {
    "name": "collect_flood",
    "level": "warn",
    "ok": true,
-   "detail": "tokens last 70m = 68 (>150 suggests bonding-stage leak)"
+   "detail": "tokens last 70m = 48 (>150 suggests bonding-stage leak)"
   },
   {
    "name": "risk_coverage",
    "level": "warn",
    "ok": true,
-   "detail": "risk missing 0/5526 (0%)"
+   "detail": "risk missing 0/5572 (0%)"
   },
   {
    "name": "holder_concentration_sane",
    "level": "warn",
    "ok": true,
-   "detail": "top10>90%: 269/5479 (5%) → pool filter gap"
+   "detail": "top10>90%: 270/5517 (5%) → pool filter gap"
   },
   {
    "name": "trace_quality",
    "level": "warn",
    "ok": true,
-   "detail": "unknown+hub 1035/4037 (26%)"
+   "detail": "unknown+hub 1043/4069 (26%)"
   },
   {
    "name": "trace_backlog",
@@ -74,13 +74,13 @@
    "name": "outcome_data_quality",
    "level": "warn",
    "ok": true,
-   "detail": "no_data outcomes 19/4266 (0%)"
+   "detail": "no_data outcomes 19/4334 (0%)"
   },
   {
    "name": "peak_multiple_sane",
    "level": "warn",
    "ok": true,
-   "detail": "outcomes >100x: 78/4266 (1.8%) → candle glitch leaking into peaks"
+   "detail": "outcomes >100x: 82/4334 (1.9%) → candle glitch leaking into peaks"
   },
   {
    "name": "universe_clean",
