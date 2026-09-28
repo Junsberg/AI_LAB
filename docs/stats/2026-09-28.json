@@ -1,43 +1,39 @@
 {
- "generated_at": "2026-09-28T19:37:19.582059+00:00",
+ "generated_at": "2026-09-28T20:37:15.749790+00:00",
  "counts": [
   {
-   "tokens": 6076,
-   "tokens_24h": 1135,
-   "deployers": 4461,
-   "deployers_traced": 3274,
-   "deployers_unknown_src": 502,
-   "edges": 6383,
-   "clusters": 3612,
-   "multi_token_clusters": 556,
-   "outcomes": 4938,
-   "rugged": 1124,
-   "tenx": 426,
-   "with_risk": 6076,
-   "signals": 1196,
-   "positions": 57,
+   "tokens": 6119,
+   "tokens_24h": 1124,
+   "deployers": 4485,
+   "deployers_traced": 3298,
+   "deployers_unknown_src": 506,
+   "edges": 6430,
+   "clusters": 3641,
+   "multi_token_clusters": 561,
+   "outcomes": 4979,
+   "rugged": 1141,
+   "tenx": 430,
+   "with_risk": 6119,
+   "signals": 1246,
+   "positions": 60,
    "hypotheses": 0
   }
  ],
  "risk_distribution": [
   {
    "top10_p50": 9.5,
-   "top10_p90": 58.7,
+   "top10_p90": 59.2,
    "insiders_avg": 0.0,
-   "lp_locked": 2601,
+   "lp_locked": 2617,
    "freeze_on": 5,
    "mint_on": 1,
-   "n": 5998
+   "n": 6041
   }
  ],
  "tokens_per_hour_24h": [
   {
-   "h": "2026-09-27 19:00",
-   "n": 26
-  },
-  {
    "h": "2026-09-27 20:00",
-   "n": 48
+   "n": 20
   },
   {
    "h": "2026-09-27 21:00",
@@ -129,16 +125,20 @@
   },
   {
    "h": "2026-09-28 19:00",
-   "n": 28
+   "n": 51
+  },
+  {
+   "h": "2026-09-28 20:00",
+   "n": 20
   }
  ],
  "top_deployers": [
   {
    "deployer": "Be3MwhYqH9Y7NMVZqUJBL7fmEshHgQnU5prttJbGRCpW",
-   "n": 46,
-   "syms": "Hybrid cat,Hybrid cat,Hybrid cat,Kitty,Kitty,Kitty,Kitty,Kitty,🍒Cherry,Thief Bear,🐻Bear,🐻Bear,🐻Bear,🐻Bear,🐻Bear,Bitty,Betty,Betty,Betty,🐻Bear,ポケモン,PenguinCat,PenguinCat,PenguinCat,Betty,Betty,Betty,Betty,PenguinCat,PenguinCat,PenguinCat,PenguinCat,PenguinCat,PenguinCat,FISH,FISH,Betty,NEARPAD,中國人會飛,中國人會飛,PenguinCat,PenguinCat,PenguinCat,Betty,π3.1415926,π3.1415926",
+   "n": 47,
+   "syms": "Hybrid cat,Hybrid cat,Hybrid cat,Kitty,Kitty,Kitty,Kitty,Kitty,🍒Cherry,Thief Bear,🐻Bear,🐻Bear,🐻Bear,🐻Bear,🐻Bear,Bitty,Betty,Betty,Betty,🐻Bear,ポケモン,PenguinCat,PenguinCat,PenguinCat,Betty,Betty,Betty,Betty,PenguinCat,PenguinCat,PenguinCat,PenguinCat,PenguinCat,PenguinCat,FISH,FISH,Betty,NEARPAD,中國人會飛,中國人會飛,PenguinCat,PenguinCat,PenguinCat,Betty,π3.1415926,π3.1415926,π3.1415926",
    "first_t": "09-24 06:22",
-   "last_t": "09-28 19:34"
+   "last_t": "09-28 19:58"
   },
   {
    "deployer": "9baMg22GMZzsp68rvmrUAVP6ZdrrmJnTcndwy4QudsMT",
@@ -149,10 +149,10 @@
   },
   {
    "deployer": "7w87862Aiq9rGnH4onF17yaKzmqxw79TUGEhDwJCUbSf",
-   "n": 27,
-   "syms": "claude,claude,claude,claude,claude,claude5.5,claude5.5,Claude,CLAUDE,CLAUDE,Claude,Claude,Claude,Claude,Claude,Claude,Claude,Claude,Claude,Claude,Claude,Claude,Claude,Claude,Claude,Claude,CLAUDE AI",
+   "n": 28,
+   "syms": "claude,claude,claude,claude,claude,claude5.5,claude5.5,Claude,CLAUDE,CLAUDE,Claude,Claude,Claude,Claude,Claude,Claude,Claude,Claude,Claude,Claude,Claude,Claude,Claude,Claude,Claude,Claude,CLAUDE AI,世界末日",
    "first_t": "09-25 01:33",
-   "last_t": "09-28 01:57"
+   "last_t": "09-28 19:36"
   },
   {
    "deployer": "FdscpiHD4PT2yjFTe6emEyZyfQ2nR7T1LsUujKayxCvx",
@@ -169,18 +169,18 @@
    "last_t": "09-24 07:21"
   },
   {
-   "deployer": "CdMsg91p586MHo3RcKvNwFNzoPijF2BbMcUH8yUoSPj",
-   "n": 16,
-   "syms": "FomoFantas,Musepad,AETHOS,PUMP,⌀,COLLECT,looks,CHIPS,PILLS,LAND,COMPANY,~4°,POKESTRTGY,MASTERBALL,KIM,KIM",
-   "first_t": "09-24 23:46",
-   "last_t": "09-25 03:07"
-  },
-  {
    "deployer": "BAGSB9TpGrZxQbEsrEznv5jXXdwyP6AXerN8aVRiAmcv",
    "n": 16,
    "syms": "VWA,QUANTA,GTA IV,GEMINI,OPENAI,MM,DRAGONBALL,SPONGEBOB,POKER,GOOGLE,BITFOOTS,₽,ROCKET,₽,NS,BAGSPAYBOT",
    "first_t": "09-24 06:30",
    "last_t": "09-26 20:18"
+  },
+  {
+   "deployer": "CdMsg91p586MHo3RcKvNwFNzoPijF2BbMcUH8yUoSPj",
+   "n": 16,
+   "syms": "FomoFantas,Musepad,AETHOS,PUMP,⌀,COLLECT,looks,CHIPS,PILLS,LAND,COMPANY,~4°,POKESTRTGY,MASTERBALL,KIM,KIM",
+   "first_t": "09-24 23:46",
+   "last_t": "09-25 03:07"
   },
   {
    "deployer": "79m7B6fBPXMLHE4ouqKgt4L963fJuGthjyag4ezaSWzY",
@@ -197,39 +197,39 @@
    "last_t": "09-28 05:58"
   },
   {
-   "deployer": "BvDc6R79TyZXGg7murNY79yYJRFDQtbQmid4tHcnBoji",
+   "deployer": "5whEE6vB9T7NJrB9bHLu67kiSet1DMvc2VQ9kmrdwb8e",
    "n": 14,
-   "syms": "玉兔,玉兔,中秋玉兔,中秋玉兔,中秋玉兔,中秋玉兔,玉兔,币安玉兔,中秋玉兔,玉兔,玉兔,中秋玉兔,中国人能飞,LGBT",
-   "first_t": "09-24 06:48",
-   "last_t": "09-25 23:18"
+   "syms": "SI,SI,PESOS,MOONCATS,SIDELINED,TOKENS,Elephant,SDOG,VISE,IshiGo,Meme,PROM,fush,RETIRE",
+   "first_t": "09-24 05:06",
+   "last_t": "09-24 12:49"
   }
  ],
  "top_clusters": [
   {
    "cluster_id": "63410261d4772a3c",
-   "tokens_total": 258,
-   "tokens_evaluated": 202,
+   "tokens_total": 259,
+   "tokens_evaluated": 204,
    "tokens_rugged": 3,
    "tokens_10x": 0,
-   "score": 0.222,
+   "score": 0.2101,
    "deployers": 96
   },
   {
    "cluster_id": "f25e5b66cdc907c6",
    "tokens_total": 56,
-   "tokens_evaluated": 50,
+   "tokens_evaluated": 51,
    "tokens_rugged": 35,
    "tokens_10x": 0,
-   "score": 0.2925,
+   "score": 0.3056,
    "deployers": 55
   },
   {
    "cluster_id": "e138b28750810679",
-   "tokens_total": 45,
+   "tokens_total": 47,
    "tokens_evaluated": 39,
    "tokens_rugged": 7,
    "tokens_10x": 1,
-   "score": 0.3523,
+   "score": 0.3068,
    "deployers": 1
   },
   {
@@ -253,10 +253,10 @@
   {
    "cluster_id": "baca84838ef2f1b1",
    "tokens_total": 31,
-   "tokens_evaluated": 28,
+   "tokens_evaluated": 29,
    "tokens_rugged": 3,
    "tokens_10x": 1,
-   "score": 0.5606,
+   "score": 0.5735,
    "deployers": 1
   },
   {
@@ -288,7 +288,7 @@
   },
   {
    "cluster_id": "a8fbbcb2dcaeb532",
-   "tokens_total": 27,
+   "tokens_total": 28,
    "tokens_evaluated": 26,
    "tokens_rugged": 0,
    "tokens_10x": 2,
@@ -299,47 +299,47 @@
  "outcomes_summary": [
   {
    "rug_reason": "dead",
-   "n": 2128,
+   "n": 2184,
    "p50_peak": 1.26,
-   "p90_peak": 6.26,
+   "p90_peak": 6.17,
    "max_peak": 844.45,
    "p50_entry": 1.0,
-   "p90_entry": 1.7,
+   "p90_entry": 1.66,
    "entry_10x": 9,
-   "v4": 2128
+   "v4": 2184
   },
   {
    "rug_reason": "none",
-   "n": 1656,
+   "n": 1624,
    "p50_peak": 1.0,
-   "p90_peak": 15.26,
+   "p90_peak": 16.5,
    "max_peak": 922.68,
    "p50_entry": 1.11,
-   "p90_entry": 5.31,
+   "p90_entry": 5.37,
    "entry_10x": 27,
-   "v4": 566
+   "v4": 575
   },
   {
    "rug_reason": "price_collapse",
-   "n": 1077,
+   "n": 1080,
    "p50_peak": 1.0,
-   "p90_peak": 3.91,
+   "p90_peak": 3.96,
    "max_peak": 713.03,
    "p50_entry": 1.0,
    "p90_entry": 2.53,
    "entry_10x": 8,
-   "v4": 899
+   "v4": 913
   },
   {
    "rug_reason": "lp_pull",
-   "n": 47,
-   "p50_peak": 1.38,
-   "p90_peak": 5.37,
+   "n": 61,
+   "p50_peak": 1.34,
+   "p90_peak": 5.62,
    "max_peak": 12.04,
    "p50_entry": 1.0,
-   "p90_entry": 4.15,
+   "p90_entry": 4.12,
    "entry_10x": 0,
-   "v4": 40
+   "v4": 56
   },
   {
    "rug_reason": "no_data",
@@ -356,33 +356,33 @@
  "outcome_by_cluster_size": [
   {
    "bucket": "2-3",
-   "n": 644,
-   "rug_rate": 0.197,
-   "p50_peak": 1.04
+   "n": 647,
+   "rug_rate": 0.198,
+   "p50_peak": 1.05
   },
   {
    "bucket": "4+",
-   "n": 1889,
-   "rug_rate": 0.125,
-   "p50_peak": 1.08
+   "n": 1904,
+   "rug_rate": 0.128,
+   "p50_peak": 1.09
   },
   {
    "bucket": "single",
-   "n": 2405,
-   "rug_rate": 0.316,
-   "p50_peak": 1.12
+   "n": 2428,
+   "rug_rate": 0.317,
+   "p50_peak": 1.13
   }
  ],
  "deployer_provenance": [
   {
    "src": "rugcheck",
    "verified": "-",
-   "n": 4853
+   "n": 4892
   },
   {
    "src": "rpc",
    "verified": "-",
-   "n": 729
+   "n": 733
   },
   {
    "src": "pre-fix",
@@ -403,39 +403,39 @@
  "unknown_funding_first_tx_kinds": [
   {
    "kind": "111111:transfer",
-   "n": 597
+   "n": 600
   },
   {
    "kind": "Comput:-",
-   "n": 469
+   "n": 471
   },
   {
    "kind": "111111:createAccount",
-   "n": 439
+   "n": 451
   },
   {
    "kind": "Tokenk:syncNative",
-   "n": 270
+   "n": 272
   },
   {
    "kind": "AToken:createIdempotent",
-   "n": 269
+   "n": 270
   },
   {
    "kind": "Tokenk:closeAccount",
-   "n": 259
+   "n": 262
   },
   {
    "kind": "Tokenk:initializeAccount3",
-   "n": 246
+   "n": 248
   },
   {
    "kind": "Tokenz:initializeMetadataPointer",
-   "n": 191
+   "n": 193
   },
   {
    "kind": "Tokenk:getAccountDataSize",
-   "n": 161
+   "n": 162
   },
   {
    "kind": "Tokenk:initializeImmutableOwner",
@@ -447,15 +447,15 @@
   },
   {
    "kind": "dbcij3:-",
-   "n": 60
+   "n": 62
   },
   {
    "kind": "111111:createAccountWithSeed",
-   "n": 56
+   "n": 58
   },
   {
    "kind": "Tokenz:initializeMint2",
-   "n": 31
+   "n": 33
   },
   {
    "kind": "Tokenz:getAccountDataSize",
@@ -465,37 +465,31 @@
  "service_wallet_candidates": [
   {
    "deployer": "BcV2En8ME5ksPPWp3s81UHRPZRoCWB6Cs5LST9HVycZd",
-   "n_tokens": 13,
-   "n_symbols": 11,
-   "avg_creator_pct": 1.53
-  },
-  {
-   "deployer": "HgzeyuDtzrssR9L5VZVCTqzVqYtuTKvr61HuH7Unwky7",
-   "n_tokens": 10,
-   "n_symbols": 9,
-   "avg_creator_pct": 23.37
+   "n_tokens": 14,
+   "n_symbols": 12,
+   "avg_creator_pct": 1.61
   }
  ],
  "funding_sources": [
   {
    "src": "wallet",
-   "n": 3132
+   "n": 3155
   },
   {
    "src": "hub",
-   "n": 669
+   "n": 675
   },
   {
    "src": "unknown",
-   "n": 502
+   "n": 506
   },
   {
    "src": "cex",
-   "n": 140
+   "n": 141
   },
   {
    "src": "untraced",
-   "n": 18
+   "n": 8
   }
  ],
  "paper_summary": [
@@ -512,11 +506,11 @@
   {
    "mode": "paper_control",
    "open": 5,
-   "closed": 32,
-   "mean_ret": 2.1084,
-   "stderr": 1.4179,
-   "win_rate": 0.563,
-   "pnl_sol": 13.4938,
+   "closed": 35,
+   "mean_ret": 2.9298,
+   "stderr": 1.6061,
+   "win_rate": 0.571,
+   "pnl_sol": 20.50846,
    "first_opened": "2026-09-27 18:56:10.562552+00:00"
   }
  ],
@@ -536,36 +530,36 @@
   {
    "mode": "paper_control",
    "exit_reason": "dead_volume",
-   "n": 26,
-   "mean_ret": 2.6845
+   "n": 28,
+   "mean_ret": 3.7639
   },
   {
    "mode": "paper_control",
    "exit_reason": "hard_stop",
-   "n": 6,
-   "mean_ret": -0.3881
+   "n": 7,
+   "mean_ret": -0.4067
   }
  ],
  "paper_decisions_24h": [
   {
    "decision": "skip",
    "reason": "lineage_below",
-   "n": 736
+   "n": 733
   },
   {
    "decision": "reject",
    "reason": "low_liquidity",
-   "n": 179
+   "n": 175
   },
   {
    "decision": "reject",
    "reason": "concentrated",
-   "n": 160
+   "n": 166
   },
   {
    "decision": "enter",
    "reason": "-",
-   "n": 53
+   "n": 52
   }
  ]
 }
