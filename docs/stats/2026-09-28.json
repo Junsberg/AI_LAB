@@ -1,43 +1,39 @@
 {
- "generated_at": "2026-09-28T10:37:17.433158+00:00",
+ "generated_at": "2026-09-28T11:37:52.862901+00:00",
  "counts": [
   {
-   "tokens": 5685,
-   "tokens_24h": 1221,
-   "deployers": 4143,
-   "deployers_traced": 3069,
-   "deployers_unknown_src": 464,
-   "edges": 5997,
-   "clusters": 3341,
-   "multi_token_clusters": 529,
-   "outcomes": 4441,
-   "rugged": 976,
-   "tenx": 332,
-   "with_risk": 5685,
-   "signals": 812,
-   "positions": 42,
+   "tokens": 5732,
+   "tokens_24h": 1210,
+   "deployers": 4185,
+   "deployers_traced": 3103,
+   "deployers_unknown_src": 465,
+   "edges": 6054,
+   "clusters": 3368,
+   "multi_token_clusters": 533,
+   "outcomes": 4515,
+   "rugged": 991,
+   "tenx": 340,
+   "with_risk": 5732,
+   "signals": 859,
+   "positions": 44,
    "hypotheses": 0
   }
  ],
  "risk_distribution": [
   {
-   "top10_p50": 9.7,
-   "top10_p90": 60.4,
+   "top10_p50": 9.6,
+   "top10_p90": 59.4,
    "insiders_avg": 0.0,
-   "lp_locked": 2460,
+   "lp_locked": 2472,
    "freeze_on": 4,
    "mint_on": 0,
-   "n": 5607
+   "n": 5654
   }
  ],
  "tokens_per_hour_24h": [
   {
-   "h": "2026-09-27 10:00",
-   "n": 28
-  },
-  {
    "h": "2026-09-27 11:00",
-   "n": 53
+   "n": 23
   },
   {
    "h": "2026-09-27 12:00",
@@ -129,16 +125,20 @@
   },
   {
    "h": "2026-09-28 10:00",
-   "n": 16
+   "n": 37
+  },
+  {
+   "h": "2026-09-28 11:00",
+   "n": 26
   }
  ],
  "top_deployers": [
   {
    "deployer": "Be3MwhYqH9Y7NMVZqUJBL7fmEshHgQnU5prttJbGRCpW",
-   "n": 42,
-   "syms": "Hybrid cat,Hybrid cat,Hybrid cat,Kitty,Kitty,Kitty,Kitty,Kitty,🍒Cherry,Thief Bear,🐻Bear,🐻Bear,🐻Bear,🐻Bear,🐻Bear,Bitty,Betty,Betty,Betty,🐻Bear,ポケモン,PenguinCat,PenguinCat,PenguinCat,Betty,Betty,Betty,Betty,PenguinCat,PenguinCat,PenguinCat,PenguinCat,PenguinCat,PenguinCat,FISH,FISH,Betty,NEARPAD,中國人會飛,中國人會飛,PenguinCat,PenguinCat",
+   "n": 43,
+   "syms": "Hybrid cat,Hybrid cat,Hybrid cat,Kitty,Kitty,Kitty,Kitty,Kitty,🍒Cherry,Thief Bear,🐻Bear,🐻Bear,🐻Bear,🐻Bear,🐻Bear,Bitty,Betty,Betty,Betty,🐻Bear,ポケモン,PenguinCat,PenguinCat,PenguinCat,Betty,Betty,Betty,Betty,PenguinCat,PenguinCat,PenguinCat,PenguinCat,PenguinCat,PenguinCat,FISH,FISH,Betty,NEARPAD,中國人會飛,中國人會飛,PenguinCat,PenguinCat,PenguinCat",
    "first_t": "09-24 06:22",
-   "last_t": "09-28 09:04"
+   "last_t": "09-28 11:06"
   },
   {
    "deployer": "9baMg22GMZzsp68rvmrUAVP6ZdrrmJnTcndwy4QudsMT",
@@ -207,21 +207,30 @@
  "top_clusters": [
   {
    "cluster_id": "63410261d4772a3c",
-   "tokens_total": 242,
-   "tokens_evaluated": 176,
+   "tokens_total": 244,
+   "tokens_evaluated": 180,
    "tokens_rugged": 2,
    "tokens_10x": 0,
-   "score": 0.433,
-   "deployers": 93
+   "score": 0.4126,
+   "deployers": 95
   },
   {
    "cluster_id": "f25e5b66cdc907c6",
    "tokens_total": 55,
-   "tokens_evaluated": 42,
+   "tokens_evaluated": 44,
    "tokens_rugged": 30,
    "tokens_10x": 0,
-   "score": 0.3,
+   "score": 0.3298,
    "deployers": 54
+  },
+  {
+   "cluster_id": "e138b28750810679",
+   "tokens_total": 43,
+   "tokens_evaluated": 36,
+   "tokens_rugged": 6,
+   "tokens_10x": 0,
+   "score": 0.3974,
+   "deployers": 1
   },
   {
    "cluster_id": "7bd23c96a96168b4",
@@ -233,13 +242,13 @@
    "deployers": 5
   },
   {
-   "cluster_id": "e138b28750810679",
-   "tokens_total": 42,
-   "tokens_evaluated": 35,
-   "tokens_rugged": 6,
+   "cluster_id": "c2baf4c70717868a",
+   "tokens_total": 33,
+   "tokens_evaluated": 27,
+   "tokens_rugged": 13,
    "tokens_10x": 0,
-   "score": 0.4079,
-   "deployers": 1
+   "score": 0.5167,
+   "deployers": 33
   },
   {
    "cluster_id": "baca84838ef2f1b1",
@@ -249,15 +258,6 @@
    "tokens_10x": 1,
    "score": 0.65,
    "deployers": 1
-  },
-  {
-   "cluster_id": "c2baf4c70717868a",
-   "tokens_total": 31,
-   "tokens_evaluated": 27,
-   "tokens_rugged": 13,
-   "tokens_10x": 0,
-   "score": 0.5167,
-   "deployers": 31
   },
   {
    "cluster_id": "e36e8bfcc9b9fa79",
@@ -271,10 +271,10 @@
   {
    "cluster_id": "84972152f476882b",
    "tokens_total": 28,
-   "tokens_evaluated": 10,
+   "tokens_evaluated": 12,
    "tokens_rugged": 0,
    "tokens_10x": 0,
-   "score": 0.1154,
+   "score": 0.1,
    "deployers": 5
   },
   {
@@ -283,52 +283,52 @@
    "tokens_evaluated": 28,
    "tokens_rugged": 0,
    "tokens_10x": 0,
-   "score": 0.7903,
+   "score": 0.6935,
    "deployers": 3
   },
   {
    "cluster_id": "a8fbbcb2dcaeb532",
    "tokens_total": 27,
-   "tokens_evaluated": 23,
+   "tokens_evaluated": 24,
    "tokens_rugged": 0,
    "tokens_10x": 2,
-   "score": 0.3833,
+   "score": 0.371,
    "deployers": 1
   }
  ],
  "outcomes_summary": [
   {
    "rug_reason": "none",
-   "n": 2067,
+   "n": 2023,
    "p50_peak": 1.0,
-   "p90_peak": 6.64,
+   "p90_peak": 7.18,
    "max_peak": 922.68,
-   "p50_entry": 1.15,
-   "p90_entry": 5.42,
+   "p50_entry": 1.18,
+   "p90_entry": 5.32,
    "entry_10x": 20,
-   "v4": 385
+   "v4": 418
   },
   {
    "rug_reason": "dead",
-   "n": 1379,
+   "n": 1483,
    "p50_peak": 1.25,
-   "p90_peak": 6.42,
+   "p90_peak": 5.82,
    "max_peak": 684.53,
    "p50_entry": 1.0,
-   "p90_entry": 1.76,
+   "p90_entry": 1.74,
    "entry_10x": 6,
-   "v4": 1379
+   "v4": 1483
   },
   {
    "rug_reason": "price_collapse",
-   "n": 964,
+   "n": 977,
    "p50_peak": 1.0,
-   "p90_peak": 3.17,
+   "p90_peak": 3.29,
    "max_peak": 448.34,
    "p50_entry": 1.0,
-   "p90_entry": 2.54,
+   "p90_entry": 2.48,
    "entry_10x": 6,
-   "v4": 633
+   "v4": 664
   },
   {
    "rug_reason": "no_data",
@@ -343,32 +343,32 @@
   },
   {
    "rug_reason": "lp_pull",
-   "n": 12,
-   "p50_peak": 1.75,
-   "p90_peak": 6.03,
+   "n": 14,
+   "p50_peak": 1.77,
+   "p90_peak": 5.69,
    "max_peak": 7.73,
-   "p50_entry": 1.65,
-   "p90_entry": 2.58,
+   "p50_entry": 1.67,
+   "p90_entry": 3.64,
    "entry_10x": 0,
-   "v4": 3
+   "v4": 5
   }
  ],
  "outcome_by_cluster_size": [
   {
    "bucket": "2-3",
-   "n": 601,
+   "n": 606,
    "rug_rate": 0.185,
    "p50_peak": 1.0
   },
   {
    "bucket": "4+",
-   "n": 1664,
+   "n": 1705,
    "rug_rate": 0.118,
-   "p50_peak": 1.01
+   "p50_peak": 1.03
   },
   {
    "bucket": "single",
-   "n": 2176,
+   "n": 2205,
    "rug_rate": 0.307,
    "p50_peak": 1.0
   }
@@ -377,7 +377,7 @@
   {
    "src": "rugcheck",
    "verified": "-",
-   "n": 4486
+   "n": 4533
   },
   {
    "src": "rpc",
@@ -403,43 +403,43 @@
  "unknown_funding_first_tx_kinds": [
   {
    "kind": "111111:transfer",
-   "n": 520
+   "n": 521
   },
   {
    "kind": "Comput:-",
-   "n": 417
+   "n": 419
   },
   {
    "kind": "111111:createAccount",
-   "n": 378
+   "n": 380
   },
   {
    "kind": "Tokenk:syncNative",
-   "n": 241
+   "n": 242
   },
   {
    "kind": "AToken:createIdempotent",
-   "n": 240
+   "n": 241
   },
   {
    "kind": "Tokenk:closeAccount",
-   "n": 224
+   "n": 225
   },
   {
    "kind": "Tokenk:initializeAccount3",
-   "n": 210
+   "n": 211
   },
   {
    "kind": "Tokenz:initializeMetadataPointer",
-   "n": 168
+   "n": 169
   },
   {
    "kind": "Tokenk:getAccountDataSize",
-   "n": 139
+   "n": 140
   },
   {
    "kind": "Tokenk:initializeImmutableOwner",
-   "n": 139
+   "n": 140
   },
   {
    "kind": "6EF8rr:-",
@@ -497,23 +497,23 @@
  "funding_sources": [
   {
    "src": "wallet",
-   "n": 2938
+   "n": 2971
   },
   {
    "src": "hub",
-   "n": 600
+   "n": 606
   },
   {
    "src": "unknown",
-   "n": 464
+   "n": 465
   },
   {
    "src": "cex",
-   "n": 129
+   "n": 130
   },
   {
    "src": "untraced",
-   "n": 12
+   "n": 13
   }
  ],
  "paper_summary": [
@@ -529,7 +529,7 @@
   },
   {
    "mode": "paper_control",
-   "open": 0,
+   "open": 2,
    "closed": 22,
    "mean_ret": 0.073,
    "stderr": 0.1449,
@@ -568,22 +568,22 @@
   {
    "decision": "skip",
    "reason": "lineage_below",
-   "n": 503
+   "n": 537
   },
   {
    "decision": "reject",
    "reason": "low_liquidity",
-   "n": 148
+   "n": 154
   },
   {
    "decision": "reject",
    "reason": "concentrated",
-   "n": 119
+   "n": 124
   },
   {
    "decision": "enter",
    "reason": "-",
-   "n": 42
+   "n": 44
   }
  ]
 }
