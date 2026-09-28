@@ -1,68 +1,42 @@
 {
- "generated_at": "2026-09-28T16:37:32Z",
+ "generated_at": "2026-09-28T17:37:30Z",
  "window_h": 24,
- "runs": 448,
+ "runs": 442,
  "by_workflow": {
   "stats": {
    "workflow_dispatch:in_progress": 1,
-   "schedule:success": 5,
    "workflow_dispatch:success": 23,
+   "schedule:success": 5,
    "push:success": 3
   },
   "outcomes": {
+   "schedule:pending": 1,
    "workflow_dispatch:in_progress": 1,
    "workflow_dispatch:success": 47,
-   "schedule:success": 5,
-   "push:success": 2,
-   "push:cancelled": 2
+   "schedule:success": 4,
+   "push:success": 2
   },
   "paper": {
-   "workflow_dispatch:success": 130,
+   "workflow_dispatch:success": 136,
    "schedule:success": 4,
    "push:success": 1
   },
   "collect": {
-   "workflow_dispatch:success": 142,
+   "workflow_dispatch:success": 143,
    "schedule:success": 5,
-   "push:success": 8,
-   "workflow_dispatch:cancelled": 1
+   "push:success": 6
   },
   "enrich": {
    "workflow_dispatch:success": 24,
    "schedule:success": 5,
-   "push:success": 8
+   "push:success": 6
   },
   "ci": {
-   "push:success": 28
+   "push:success": 22
   },
   "replay": {
    "push:success": 3
   }
  },
- "failures": [
-  {
-   "name": "outcomes",
-   "event": "push",
-   "conclusion": "cancelled",
-   "createdAt": "2026-09-27T17:08:50Z",
-   "url": "https://github.com/Junsberg/AI_LAB/actions/runs/36335841858",
-   "headBranch": "main"
-  },
-  {
-   "name": "outcomes",
-   "event": "push",
-   "conclusion": "cancelled",
-   "createdAt": "2026-09-27T17:07:25Z",
-   "url": "https://github.com/Junsberg/AI_LAB/actions/runs/36335754060",
-   "headBranch": "main"
-  },
-  {
-   "name": "collect",
-   "event": "workflow_dispatch",
-   "conclusion": "cancelled",
-   "createdAt": "2026-09-27T16:40:01Z",
-   "url": "https://github.com/Junsberg/AI_LAB/actions/runs/36334075455",
-   "headBranch": "main"
-  }
- ]
+ "failures": []
 }
