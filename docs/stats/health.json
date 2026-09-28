@@ -1,19 +1,19 @@
 {
- "generated_at": "2026-09-28T22:16:26.834957+00:00",
+ "generated_at": "2026-09-28T22:37:32.392210+00:00",
  "status": "warn",
  "metrics": {
-  "tokens_70m": 32,
-  "tokens_24h": 1100,
+  "tokens_70m": 38,
+  "tokens_24h": 1097,
   "risk_missing": 0,
-  "risk_eligible": 6146,
+  "risk_eligible": 6155,
   "top10_over90": 297,
-  "top10_n": 6090,
-  "deployers": 4524,
-  "traced": 3325,
+  "top10_n": 6102,
+  "deployers": 4534,
+  "traced": 3330,
   "untraceable": 1196,
   "trace_backlog": 0,
   "outcome_backlog": 0,
-  "outcomes": 5065,
+  "outcomes": 5077,
   "outcomes_no_data": 31,
   "outcomes_over100x": 109,
   "backfill_pending": 0,
@@ -32,31 +32,31 @@
    "name": "collect_alive",
    "level": "critical",
    "ok": true,
-   "detail": "tokens last 70m = 32"
+   "detail": "tokens last 70m = 38"
   },
   {
    "name": "collect_flood",
    "level": "warn",
    "ok": true,
-   "detail": "tokens last 70m = 32 (>150 suggests bonding-stage leak)"
+   "detail": "tokens last 70m = 38 (>150 suggests bonding-stage leak)"
   },
   {
    "name": "risk_coverage",
    "level": "warn",
    "ok": true,
-   "detail": "risk missing 0/6146 (0%)"
+   "detail": "risk missing 0/6155 (0%)"
   },
   {
    "name": "holder_concentration_sane",
    "level": "warn",
    "ok": true,
-   "detail": "top10>90%: 297/6090 (5%) → pool filter gap"
+   "detail": "top10>90%: 297/6102 (5%) → pool filter gap"
   },
   {
    "name": "trace_quality",
    "level": "warn",
    "ok": true,
-   "detail": "unknown+hub 1196/4524 (26%)"
+   "detail": "unknown+hub 1196/4534 (26%)"
   },
   {
    "name": "trace_backlog",
@@ -74,13 +74,13 @@
    "name": "outcome_data_quality",
    "level": "warn",
    "ok": true,
-   "detail": "no_data outcomes 31/5065 (1%)"
+   "detail": "no_data outcomes 31/5077 (1%)"
   },
   {
    "name": "peak_multiple_sane",
    "level": "warn",
    "ok": false,
-   "detail": "outcomes >100x: 109/5065 (2.2%) → candle glitch leaking into peaks"
+   "detail": "outcomes >100x: 109/5077 (2.1%) → candle glitch leaking into peaks"
   },
   {
    "name": "universe_clean",
