@@ -1,43 +1,39 @@
 {
- "generated_at": "2026-09-28T06:37:15.263629+00:00",
+ "generated_at": "2026-09-28T07:36:09.960964+00:00",
  "counts": [
   {
-   "tokens": 5492,
-   "tokens_24h": 1259,
-   "deployers": 3978,
-   "deployers_traced": 2939,
-   "deployers_unknown_src": 454,
-   "edges": 5732,
-   "clusters": 3211,
-   "multi_token_clusters": 518,
-   "outcomes": 4206,
-   "rugged": 900,
-   "tenx": 318,
-   "with_risk": 5492,
-   "signals": 619,
-   "positions": 33,
+   "tokens": 5557,
+   "tokens_24h": 1261,
+   "deployers": 4037,
+   "deployers_traced": 2986,
+   "deployers_unknown_src": 458,
+   "edges": 5820,
+   "clusters": 3243,
+   "multi_token_clusters": 522,
+   "outcomes": 4260,
+   "rugged": 912,
+   "tenx": 321,
+   "with_risk": 5557,
+   "signals": 684,
+   "positions": 38,
    "hypotheses": 0
   }
  ],
  "risk_distribution": [
   {
-   "top10_p50": 9.8,
-   "top10_p90": 61.0,
+   "top10_p50": 9.7,
+   "top10_p90": 60.6,
    "insiders_avg": 0.0,
-   "lp_locked": 2405,
+   "lp_locked": 2424,
    "freeze_on": 4,
    "mint_on": 0,
-   "n": 5414
+   "n": 5479
   }
  ],
  "tokens_per_hour_24h": [
   {
-   "h": "2026-09-27 06:00",
-   "n": 18
-  },
-  {
    "h": "2026-09-27 07:00",
-   "n": 70
+   "n": 25
   },
   {
    "h": "2026-09-27 08:00",
@@ -129,7 +125,11 @@
   },
   {
    "h": "2026-09-28 06:00",
-   "n": 34
+   "n": 73
+  },
+  {
+   "h": "2026-09-28 07:00",
+   "n": 26
   }
  ],
  "top_deployers": [
@@ -183,18 +183,18 @@
    "last_t": "09-26 20:18"
   },
   {
-   "deployer": "HgzeyuDtzrssR9L5VZVCTqzVqYtuTKvr61HuH7Unwky7",
-   "n": 15,
-   "syms": "TRUMP,TRUMP,TRUMP,TRUMP,EARN,BARSTOOL,VAULT,VAULT,inu,moin,BOB,all/in,孙宇晨奖,FIM,TREND",
-   "first_t": "09-26 21:17",
-   "last_t": "09-28 05:58"
-  },
-  {
    "deployer": "79m7B6fBPXMLHE4ouqKgt4L963fJuGthjyag4ezaSWzY",
    "n": 15,
    "syms": "币安中秋,币安中秋,币安中秋,币安中秋,币安中秋,币安中秋,币安中秋,SPCXUSD1,WIRED,本昌成佛,本昌成佛,币安赵骗子,本昌成佛,ROB,拼多多",
    "first_t": "09-25 15:28",
    "last_t": "09-28 05:07"
+  },
+  {
+   "deployer": "HgzeyuDtzrssR9L5VZVCTqzVqYtuTKvr61HuH7Unwky7",
+   "n": 15,
+   "syms": "TRUMP,TRUMP,TRUMP,TRUMP,EARN,BARSTOOL,VAULT,VAULT,inu,moin,BOB,all/in,孙宇晨奖,FIM,TREND",
+   "first_t": "09-26 21:17",
+   "last_t": "09-28 05:58"
   },
   {
    "deployer": "BvDc6R79TyZXGg7murNY79yYJRFDQtbQmid4tHcnBoji",
@@ -207,11 +207,11 @@
  "top_clusters": [
   {
    "cluster_id": "63410261d4772a3c",
-   "tokens_total": 232,
-   "tokens_evaluated": 165,
+   "tokens_total": 234,
+   "tokens_evaluated": 168,
    "tokens_rugged": 2,
    "tokens_10x": 0,
-   "score": 0.6101,
+   "score": 0.5526,
    "deployers": 92
   },
   {
@@ -225,11 +225,11 @@
   },
   {
    "cluster_id": "7bd23c96a96168b4",
-   "tokens_total": 41,
-   "tokens_evaluated": 29,
+   "tokens_total": 42,
+   "tokens_evaluated": 31,
    "tokens_rugged": 2,
-   "tokens_10x": 0,
-   "score": 0.6406,
+   "tokens_10x": 1,
+   "score": 0.6528,
    "deployers": 5
   },
   {
@@ -238,7 +238,7 @@
    "tokens_evaluated": 32,
    "tokens_rugged": 3,
    "tokens_10x": 0,
-   "score": 0.6429,
+   "score": 0.6143,
    "deployers": 1
   },
   {
@@ -246,17 +246,17 @@
    "tokens_total": 31,
    "tokens_evaluated": 25,
    "tokens_rugged": 2,
-   "tokens_10x": 0,
-   "score": 0.7679,
+   "tokens_10x": 1,
+   "score": 0.75,
    "deployers": 1
   },
   {
    "cluster_id": "c2baf4c70717868a",
    "tokens_total": 31,
-   "tokens_evaluated": 23,
+   "tokens_evaluated": 24,
    "tokens_rugged": 10,
    "tokens_10x": 0,
-   "score": 0.5577,
+   "score": 0.5741,
    "deployers": 31
   },
   {
@@ -265,16 +265,16 @@
    "tokens_evaluated": 29,
    "tokens_rugged": 0,
    "tokens_10x": 0,
-   "score": 0.5469,
+   "score": 0.3281,
    "deployers": 8
   },
   {
    "cluster_id": "84972152f476882b",
    "tokens_total": 28,
-   "tokens_evaluated": 4,
+   "tokens_evaluated": 6,
    "tokens_rugged": 0,
    "tokens_10x": 0,
-   "score": 0.2143,
+   "score": 0.1667,
    "deployers": 5
   },
   {
@@ -292,43 +292,43 @@
    "tokens_evaluated": 20,
    "tokens_rugged": 0,
    "tokens_10x": 1,
-   "score": 0.58,
+   "score": 0.54,
    "deployers": 1
   }
  ],
  "outcomes_summary": [
   {
    "rug_reason": "none",
-   "n": 2486,
+   "n": 2400,
    "p50_peak": 1.0,
-   "p90_peak": 6.91,
+   "p90_peak": 6.7,
    "max_peak": 922.68,
    "p50_entry": 1.14,
-   "p90_entry": 4.98,
-   "entry_10x": 13,
-   "v4": 249
+   "p90_entry": 5.45,
+   "entry_10x": 15,
+   "v4": 277
+  },
+  {
+   "rug_reason": "dead",
+   "n": 929,
+   "p50_peak": 1.25,
+   "p90_peak": 7.61,
+   "max_peak": 684.53,
+   "p50_entry": 1.0,
+   "p90_entry": 1.72,
+   "entry_10x": 4,
+   "v4": 929
   },
   {
    "rug_reason": "price_collapse",
-   "n": 889,
+   "n": 901,
    "p50_peak": 1.0,
    "p90_peak": 2.97,
    "max_peak": 417.02,
    "p50_entry": 1.0,
-   "p90_entry": 2.45,
+   "p90_entry": 2.35,
    "entry_10x": 4,
-   "v4": 409
-  },
-  {
-   "rug_reason": "dead",
-   "n": 801,
-   "p50_peak": 1.24,
-   "p90_peak": 7.45,
-   "max_peak": 684.53,
-   "p50_entry": 1.0,
-   "p90_entry": 1.7,
-   "entry_10x": 3,
-   "v4": 801
+   "v4": 445
   },
   {
    "rug_reason": "no_data",
@@ -347,28 +347,28 @@
    "p50_peak": 1.79,
    "p90_peak": 6.26,
    "max_peak": 7.73,
-   "p50_entry": null,
-   "p90_entry": null,
+   "p50_entry": 2.81,
+   "p90_entry": 2.81,
    "entry_10x": 0,
-   "v4": 0
+   "v4": 1
   }
  ],
  "outcome_by_cluster_size": [
   {
    "bucket": "2-3",
-   "n": 586,
-   "rug_rate": 0.181,
+   "n": 588,
+   "rug_rate": 0.18,
    "p50_peak": 1.0
   },
   {
    "bucket": "4+",
-   "n": 1557,
-   "rug_rate": 0.112,
+   "n": 1581,
+   "rug_rate": 0.113,
    "p50_peak": 1.0
   },
   {
    "bucket": "single",
-   "n": 2063,
+   "n": 2091,
    "rug_rate": 0.3,
    "p50_peak": 1.0
   }
@@ -377,12 +377,12 @@
   {
    "src": "rugcheck",
    "verified": "-",
-   "n": 4306
+   "n": 4367
   },
   {
    "src": "rpc",
    "verified": "-",
-   "n": 692
+   "n": 696
   },
   {
    "src": "pre-fix",
@@ -403,43 +403,43 @@
  "unknown_funding_first_tx_kinds": [
   {
    "kind": "111111:transfer",
-   "n": 507
+   "n": 513
   },
   {
    "kind": "Comput:-",
-   "n": 397
+   "n": 405
   },
   {
    "kind": "111111:createAccount",
-   "n": 364
+   "n": 368
   },
   {
    "kind": "Tokenk:syncNative",
-   "n": 228
+   "n": 234
   },
   {
    "kind": "AToken:createIdempotent",
-   "n": 227
+   "n": 233
   },
   {
    "kind": "Tokenk:closeAccount",
-   "n": 214
+   "n": 218
   },
   {
    "kind": "Tokenk:initializeAccount3",
-   "n": 200
+   "n": 204
   },
   {
    "kind": "Tokenz:initializeMetadataPointer",
-   "n": 161
+   "n": 163
   },
   {
    "kind": "Tokenk:getAccountDataSize",
-   "n": 132
+   "n": 134
   },
   {
    "kind": "Tokenk:initializeImmutableOwner",
-   "n": 132
+   "n": 134
   },
   {
    "kind": "6EF8rr:-",
@@ -447,11 +447,11 @@
   },
   {
    "kind": "111111:createAccountWithSeed",
-   "n": 45
+   "n": 47
   },
   {
    "kind": "dbcij3:-",
-   "n": 31
+   "n": 33
   },
   {
    "kind": "Tokenz:initializeMint2",
@@ -486,28 +486,34 @@
    "n_tokens": 11,
    "n_symbols": 8,
    "avg_creator_pct": 12.02
+  },
+  {
+   "deployer": "GFUJwSwNUNpg3LwLMQKjWgfmFwpYX3Acg3cpB4vqqSKp",
+   "n_tokens": 10,
+   "n_symbols": 9,
+   "avg_creator_pct": 0.0
   }
  ],
  "funding_sources": [
   {
    "src": "wallet",
-   "n": 2814
+   "n": 2859
   },
   {
    "src": "hub",
-   "n": 566
+   "n": 577
   },
   {
    "src": "unknown",
-   "n": 454
+   "n": 458
   },
   {
    "src": "cex",
-   "n": 123
+   "n": 125
   },
   {
    "src": "untraced",
-   "n": 21
+   "n": 18
   }
  ],
  "paper_summary": [
@@ -523,12 +529,12 @@
   },
   {
    "mode": "paper_control",
-   "open": 2,
-   "closed": 11,
-   "mean_ret": -0.1212,
-   "stderr": 0.0918,
-   "win_rate": 0.364,
-   "pnl_sol": -0.26656,
+   "open": 6,
+   "closed": 12,
+   "mean_ret": -0.0496,
+   "stderr": 0.1103,
+   "win_rate": 0.417,
+   "pnl_sol": -0.11896,
    "first_opened": "2026-09-27 18:56:10.562552+00:00"
   }
  ],
@@ -548,8 +554,8 @@
   {
    "mode": "paper_control",
    "exit_reason": "dead_volume",
-   "n": 8,
-   "mean_ret": -0.0367
+   "n": 9,
+   "mean_ret": 0.0493
   },
   {
    "mode": "paper_control",
@@ -562,22 +568,22 @@
   {
    "decision": "skip",
    "reason": "lineage_below",
-   "n": 374
+   "n": 418
   },
   {
    "decision": "reject",
    "reason": "low_liquidity",
-   "n": 117
+   "n": 125
   },
   {
    "decision": "reject",
    "reason": "concentrated",
-   "n": 95
+   "n": 103
   },
   {
    "decision": "enter",
    "reason": "-",
-   "n": 33
+   "n": 38
   }
  ]
 }

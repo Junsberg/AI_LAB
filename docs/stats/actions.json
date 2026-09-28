@@ -1,11 +1,11 @@
 {
- "generated_at": "2026-09-28T06:37:26Z",
+ "generated_at": "2026-09-28T07:36:22Z",
  "window_h": 24,
- "runs": 398,
+ "runs": 406,
  "by_workflow": {
   "stats": {
-   "workflow_dispatch:in_progress": 1,
-   "workflow_dispatch:success": 23,
+   "schedule:in_progress": 1,
+   "workflow_dispatch:success": 24,
    "schedule:success": 5,
    "push:success": 4
   },
@@ -17,7 +17,7 @@
    "push:cancelled": 2
   },
   "paper": {
-   "workflow_dispatch:success": 70,
+   "workflow_dispatch:success": 76,
    "schedule:success": 3,
    "push:success": 1
   },
@@ -29,7 +29,7 @@
   },
   "enrich": {
    "workflow_dispatch:success": 24,
-   "schedule:success": 5,
+   "schedule:success": 6,
    "push:success": 10
   },
   "ci": {
