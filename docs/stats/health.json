@@ -1,25 +1,25 @@
 {
- "generated_at": "2026-09-28T00:37:26.551639+00:00",
+ "generated_at": "2026-09-28T01:10:25.464482+00:00",
  "status": "warn",
  "metrics": {
-  "tokens_70m": 58,
-  "tokens_24h": 1267,
+  "tokens_70m": 57,
+  "tokens_24h": 1260,
   "risk_missing": 0,
-  "risk_eligible": 5130,
+  "risk_eligible": 5164,
   "top10_over90": 257,
-  "top10_n": 5088,
-  "deployers": 3736,
-  "traced": 2783,
-  "untraceable": 941,
+  "top10_n": 5114,
+  "deployers": 3756,
+  "traced": 2797,
+  "untraceable": 946,
   "trace_backlog": 0,
   "outcome_backlog": 0,
-  "outcomes": 3889,
+  "outcomes": 3926,
   "outcomes_no_data": 17,
-  "outcomes_over100x": 74,
+  "outcomes_over100x": 75,
   "backfill_pending": 0,
   "deployers_corrected": 81,
   "out_of_universe": 0,
-  "funded_after_launch": 0,
+  "funded_after_launch": 1,
   "structural_deployer_unmarked": 0,
   "edge_huge": 1,
   "bad_timestamps": 0,
@@ -32,31 +32,31 @@
    "name": "collect_alive",
    "level": "critical",
    "ok": true,
-   "detail": "tokens last 70m = 58"
+   "detail": "tokens last 70m = 57"
   },
   {
    "name": "collect_flood",
    "level": "warn",
    "ok": true,
-   "detail": "tokens last 70m = 58 (>150 suggests bonding-stage leak)"
+   "detail": "tokens last 70m = 57 (>150 suggests bonding-stage leak)"
   },
   {
    "name": "risk_coverage",
    "level": "warn",
    "ok": true,
-   "detail": "risk missing 0/5130 (0%)"
+   "detail": "risk missing 0/5164 (0%)"
   },
   {
    "name": "holder_concentration_sane",
    "level": "warn",
    "ok": true,
-   "detail": "top10>90%: 257/5088 (5%) → pool filter gap"
+   "detail": "top10>90%: 257/5114 (5%) → pool filter gap"
   },
   {
    "name": "trace_quality",
    "level": "warn",
    "ok": true,
-   "detail": "unknown+hub 941/3736 (25%)"
+   "detail": "unknown+hub 946/3756 (25%)"
   },
   {
    "name": "trace_backlog",
@@ -74,13 +74,13 @@
    "name": "outcome_data_quality",
    "level": "warn",
    "ok": true,
-   "detail": "no_data outcomes 17/3889 (0%)"
+   "detail": "no_data outcomes 17/3926 (0%)"
   },
   {
    "name": "peak_multiple_sane",
    "level": "warn",
    "ok": true,
-   "detail": "outcomes >100x: 74/3889 (1.9%) → candle glitch leaking into peaks"
+   "detail": "outcomes >100x: 75/3926 (1.9%) → candle glitch leaking into peaks"
   },
   {
    "name": "universe_clean",
@@ -91,8 +91,8 @@
   {
    "name": "funding_precedes_launch",
    "level": "warn",
-   "ok": true,
-   "detail": "deployers funded after their first launch: 0 (auto-retraced by enrich)"
+   "ok": false,
+   "detail": "deployers funded after their first launch: 1 (auto-retraced by enrich)"
   },
   {
    "name": "structural_deployers_marked",
