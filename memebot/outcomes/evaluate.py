@@ -30,11 +30,11 @@ GT_SLEEP = 2.2  # ~27 req/min against the ~30/min public limit
 MULTI_BATCH = 30  # GeckoTerminal pools/multi cap
 RUN_BUDGET_S = 20 * 60  # workflow timeout is 25 min
 RETRY_MIN_S, RETRY_DEFAULT_S, RETRY_MAX_S = 5.0, 60.0, 180.0
-# Rows evaluated before this instant were classified by older rules (v1 wick peaks /
-# v2 hourly-only first day, which hid first-hour pumps inside the base candle) and are
-# re-evaluated once. Bump when classify() changes in a way that alters
-# stored values; there is no schema column for a rules version on purpose (no migration).
-RULES_CHANGED_AT = "2026-09-27T17:14:40+00:00"  # v3 (first 24h from 5-minute candles) first ran here
+# Stored outcomes carry the rules version that produced them; rows from an older (or
+# unrecorded, pre-v4) version are re-evaluated once. Bump when classify() changes in a
+# way that alters stored values. (Replaced a wall-clock cutoff that had to be timed
+# against the outcomes schedule and was missed twice on 09-27.)
+RULES_VERSION = 4
 FIRST_DAY_S = 24 * 3600
 FULL_5M_MAX_H = 80  # 1000 five-minute candles = 83h; margin for the window edge
 
@@ -200,14 +200,15 @@ def _upsert(mint: str, liq_peak: float | None, o) -> None:
     with conn() as c:
         c.execute(
             """insert into token_outcomes(mint, peak_mcap_usd, peak_at, peak_multiple, rugged,
-                                          rug_at, rug_reason, evaluated_at)
-               values (%s,%s,%s,%s,%s,%s,%s,now())
+                                          rug_at, rug_reason, entry_multiple, rules_version, evaluated_at)
+               values (%s,%s,%s,%s,%s,%s,%s,%s,%s,now())
                on conflict (mint) do update set
                  peak_mcap_usd=excluded.peak_mcap_usd, peak_at=excluded.peak_at,
                  peak_multiple=excluded.peak_multiple, rugged=excluded.rugged,
                  rug_at=case when excluded.rugged
                              then coalesce(token_outcomes.rug_at, excluded.rug_at) end,
-                 rug_reason=excluded.rug_reason, evaluated_at=now()""",
+                 rug_reason=excluded.rug_reason, entry_multiple=excluded.entry_multiple,
+                 rules_version=excluded.rules_version, evaluated_at=now()""",
             (
                 mint,
                 liq_peak,  # NOTE: column reused as liquidity peak proxy in v1
@@ -216,6 +217,8 @@ def _upsert(mint: str, liq_peak: float | None, o) -> None:
                 o.rugged,
                 datetime.now(timezone.utc) if o.rugged else None,
                 o.rug_reason,
+                o.entry_multiple,
+                RULES_VERSION,
             ),
         )
         c.commit()
@@ -231,11 +234,11 @@ def pending_rows(limit: int) -> list[dict]:
                where t.pool_address is not null
                  and t.created_at < now() - interval '24 hours'
                  and (o.mint is null
-                      or o.evaluated_at < %s::timestamptz
+                      or coalesce(o.rules_version, 0) < %s
                       or (o.evaluated_at < t.created_at + interval '72 hours'
                           and t.created_at < now() - interval '72 hours'))
                order by (o.mint is null) desc, t.created_at desc limit %s""",
-            (RULES_CHANGED_AT, limit),
+            (RULES_VERSION, limit),
         ).fetchall()
 
 

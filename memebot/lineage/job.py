@@ -212,19 +212,23 @@ def rebuild_clusters() -> int:
 def refresh_cluster_scores() -> int:
     """Single INSERT…SELECT. The score formula must stay identical to
     lineage.cluster.score_cluster (prior=3): (clean + 2·tenx + 1.5) / (evaluated + 2·tenx + 3),
-    clean = evaluated − rugged. Unevaluated tokens are neither clean nor rugged."""
+    clean = evaluated − rugged − dead, tenx = entry_multiple ≥ 10 (rules v4). Unevaluated
+    tokens are neither clean nor rugged."""
     with conn() as c:
         n = c.execute(
-            """insert into cluster_scores(cluster_id, tokens_total, tokens_evaluated, tokens_rugged, tokens_10x, score, updated_at)
+            """insert into cluster_scores(cluster_id, tokens_total, tokens_evaluated, tokens_rugged, tokens_dead,
+                                          tokens_10x, score, updated_at)
                select w.cluster_id,
                       count(t.mint),
                       count(o.mint),
                       count(*) filter (where o.rugged),
-                      count(*) filter (where o.peak_multiple >= 10),
+                      count(*) filter (where o.rug_reason = 'dead'),
+                      count(*) filter (where o.entry_multiple >= 10),
                       round(least(1.0, greatest(0.0,
-                        ((count(o.mint) - count(*) filter (where o.rugged))
-                          + 2.0 * count(*) filter (where o.peak_multiple >= 10) + 1.5)
-                        / (count(o.mint) + 2.0 * count(*) filter (where o.peak_multiple >= 10) + 3.0)
+                        ((count(o.mint) - count(*) filter (where o.rugged)
+                                        - count(*) filter (where o.rug_reason = 'dead'))
+                          + 2.0 * count(*) filter (where o.entry_multiple >= 10) + 1.5)
+                        / (count(o.mint) + 2.0 * count(*) filter (where o.entry_multiple >= 10) + 3.0)
                       ))::numeric, 4),
                       now()
                from tokens t
@@ -235,8 +239,8 @@ def refresh_cluster_scores() -> int:
                group by w.cluster_id
                on conflict (cluster_id) do update set
                  tokens_total=excluded.tokens_total, tokens_evaluated=excluded.tokens_evaluated,
-                 tokens_rugged=excluded.tokens_rugged, tokens_10x=excluded.tokens_10x,
-                 score=excluded.score, updated_at=now()"""
+                 tokens_rugged=excluded.tokens_rugged, tokens_dead=excluded.tokens_dead,
+                 tokens_10x=excluded.tokens_10x, score=excluded.score, updated_at=now()"""
         ).rowcount
         c.commit()
     return n

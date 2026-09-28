@@ -45,7 +45,8 @@ SEED = 27
 
 
 def point_in_time_stats(rows: list[dict]) -> dict[str, tuple[int, int, int]]:
-    """rows: mint, cluster_id, created_at, evaluated(bool), rugged(bool), peak_multiple.
+    """rows: mint, cluster_id, created_at, evaluated(bool), rugged(bool: rugged OR dead),
+    peak_multiple (the post-entry multiple, rules v4) — same inputs as cluster_scores.
     → {mint: (evaluated, rugged, tenx)} over same-cluster tokens created at least
     KNOWABLE_AFTER before that mint. O(n²) per cluster; clusters are small."""
     by_cluster: dict[str, list[dict]] = {}
@@ -95,7 +96,8 @@ def _load(window_start: datetime, window_end: datetime) -> tuple[list[dict], lis
     with conn() as c:
         all_rows = c.execute(
             """select t.mint, w.cluster_id, t.created_at, (o.mint is not null) as evaluated,
-                      coalesce(o.rugged, false) as rugged, o.peak_multiple
+                      (coalesce(o.rugged, false) or o.rug_reason = 'dead') as rugged,
+                      o.entry_multiple as peak_multiple
                from tokens t join wallets w on w.address = t.deployer
                left join token_outcomes o on o.mint = t.mint
                where w.cluster_id is not null

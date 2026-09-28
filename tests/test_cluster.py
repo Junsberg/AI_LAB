@@ -33,11 +33,18 @@ def test_score_serial_rugger_low_and_builder_high():
 
 def test_sql_score_formula_matches_python():
     """refresh_cluster_scores() reimplements score_cluster() in SQL; keep them equal."""
-    def sql_formula(evaluated, rugged, tenx):
-        return round(min(1.0, max(0.0, ((evaluated - rugged) + 2.0 * tenx + 1.5) / (evaluated + 2.0 * tenx + 3.0))), 4)
+    def sql_formula(evaluated, rugged, tenx, dead):
+        return round(min(1.0, max(0.0, ((evaluated - rugged - dead) + 2.0 * tenx + 1.5)
+                                  / (evaluated + 2.0 * tenx + 3.0))), 4)
 
-    for ev, rg, tx in [(0, 0, 0), (12, 11, 0), (5, 0, 3), (30, 10, 1), (1, 1, 0)]:
-        assert sql_formula(ev, rg, tx) == round(score_cluster(ClusterStats(ev, rg, tx)), 4)
+    for ev, rg, tx, dd in [(0, 0, 0, 0), (12, 11, 0, 0), (5, 0, 3, 1), (30, 10, 1, 5), (1, 1, 0, 0), (40, 0, 0, 38)]:
+        assert sql_formula(ev, rg, tx, dd) == round(score_cluster(ClusterStats(ev, rg, tx, tokens_dead=dd)), 4)
+
+
+def test_dead_tokens_are_not_clean():
+    # the 09-27 replay cluster: 40 evaluated, 0 rugs, but they had all stopped trading
+    assert score_cluster(ClusterStats(40, 0, 0)) > 0.9
+    assert score_cluster(ClusterStats(40, 0, 0, tokens_dead=38)) < 0.2
 
 
 # --- stable ids across rebuilds (limitation ④) ---------------------------------------

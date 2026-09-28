@@ -61,7 +61,11 @@ QUERIES: dict[str, str] = {
         select rug_reason, count(*) n,
                round(percentile_cont(0.5) within group (order by peak_multiple)::numeric,2) p50_peak,
                round(percentile_cont(0.9) within group (order by peak_multiple)::numeric,2) p90_peak,
-               round(max(peak_multiple),2) max_peak
+               round(max(peak_multiple),2) max_peak,
+               round(percentile_cont(0.5) within group (order by entry_multiple)::numeric,2) p50_entry,
+               round(percentile_cont(0.9) within group (order by entry_multiple)::numeric,2) p90_entry,
+               count(*) filter (where entry_multiple >= 10) entry_10x,
+               count(*) filter (where rules_version >= 4) v4
         from token_outcomes group by 1 order by n desc
     """,
     "outcome_by_cluster_size": """

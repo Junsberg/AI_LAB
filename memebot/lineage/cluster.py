@@ -16,8 +16,9 @@ class Edge:
 class ClusterStats:
     tokens_total: int = 0
     tokens_rugged: int = 0
-    tokens_10x: int = 0
+    tokens_10x: int = 0  # rules v4: 10x reached AFTER the entry point (entry_multiple)
     members: set[str] = field(default_factory=set)
+    tokens_dead: int = 0  # rules v4: stopped trading within the first hour
 
 
 class UnionFind:
@@ -110,11 +111,12 @@ def score_cluster(stats: ClusterStats, prior_tokens: float = 3.0) -> float:
     (no history) lands near the prior, not at 0 or 1.
 
     score = (clean + bonus) / (total + prior)
-      clean = tokens_total - tokens_rugged
-      bonus = tokens_10x * 2   (a cluster that has produced 10x runners is worth more)
+      clean = tokens_total - tokens_rugged - tokens_dead   (a token that simply stops
+              trading never collapses, so without `dead` it looked clean — 09-27 replay)
+      bonus = tokens_10x * 2   (10x runners reachable after entry are worth more)
       prior pulls small samples toward 0.5
     """
-    clean = stats.tokens_total - stats.tokens_rugged
+    clean = stats.tokens_total - stats.tokens_rugged - stats.tokens_dead
     bonus = stats.tokens_10x * 2.0
     num = clean + bonus + prior_tokens * 0.5
     den = stats.tokens_total + bonus + prior_tokens

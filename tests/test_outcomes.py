@@ -17,7 +17,7 @@ def test_no_data():
 
 
 def test_healthy_runner_not_rugged():
-    candles = [c(1, 1.0, 1.2, 0.9, 1.1), c(2, 1.1, 12.0, 1.0, 9.0), c(3, 9.0, 10.0, 7.0, 8.0)]
+    candles = [c(0, 1.0, 1.2, 0.9, 1.1), c(3600, 1.1, 12.0, 1.0, 9.0), c(7200, 9.0, 10.0, 7.0, 8.0)]  # hourly
     o = classify(candles, 50_000, 60_000)
     # base = first-candle body high (1.1), peak = body high (9.0), never the 12.0 wick
     assert o.peak_multiple == round(9.0 / 1.1, 4) and not o.rugged and o.rug_reason == "none"
@@ -43,7 +43,7 @@ def test_deep_drawdown_but_not_collapse_is_not_rug():
 
 def test_wick_glitch_does_not_make_peak_or_collapse():
     # one candle with a 1e6x wick but a normal body: v1 called this a 1e6x "price_collapse"
-    candles = [c(1, 1.0, 1.1, 0.9, 1.0), c(2, 1.0, 1_000_000.0, 0.9, 1.2), c(3, 1.2, 1.3, 1.0, 1.1)]
+    candles = [c(0, 1.0, 1.1, 0.9, 1.0), c(3600, 1.0, 1_000_000.0, 0.9, 1.2), c(7200, 1.2, 1.3, 1.0, 1.1)]
     o = classify(candles, 20_000, 30_000)
     assert o.peak_multiple == 1.2 and not o.rugged and o.rug_reason == "none"
 
@@ -251,3 +251,28 @@ def test_merge_without_coarse_builds_hourly_after_cutoff():
     merged = ev.merge_candles(fine, None, cutoff)
     assert [x.ts for x in merged] == [0, 300, cutoff]
     assert (merged[-1].open, merged[-1].close) == (5, 9)  # hourly body, not the 5m peak body
+
+
+# --- rules v4: dead tokens and the post-entry multiple -----------------------------------
+
+
+def test_dead_when_no_trade_after_first_hour():
+    cs = [c(0, 1.0, 5.0, 1.0, 4.0), c(600, 4.0, 4.0, 3.0, 3.5), c(3000, 3.5, 3.5, 3.0, 3.2)]
+    o = classify(cs, None, None)
+    assert o.rug_reason == "dead" and not o.rugged
+
+
+def test_rug_beats_dead_and_live_token_is_not_dead():
+    collapse = [c(0, 1.0, 10.0, 1.0, 9.0), c(600, 9.0, 9.0, 0.1, 0.2)]
+    assert classify(collapse, None, None).rug_reason == "price_collapse"
+    live = [c(0, 1.0, 1.0, 1.0, 1.0), c(7200, 1.0, 1.2, 1.0, 1.1)]
+    assert classify(live, None, None).rug_reason == "none"
+
+
+def test_entry_multiple_excludes_the_launch_pump():
+    # 1 → 10 in the first 5 minutes, then flat at 8-9: peak_multiple 10x, reachable ~1.1x
+    cs = [c(0, 1.0, 1.0, 1.0, 1.0), c(300, 1.0, 10.0, 1.0, 10.0), c(900, 8.0, 8.0, 8.0, 8.0),
+          c(4000, 8.0, 9.0, 8.0, 9.0)]
+    o = classify(cs, None, None)
+    assert o.peak_multiple == 10.0 and o.entry_multiple == round(9.0 / 8.0, 4)
+    assert classify([c(0, 1.0, 1.0, 1.0, 1.0)], None, None).entry_multiple is None
