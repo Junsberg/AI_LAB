@@ -1,34 +1,35 @@
 {
- "generated_at": "2026-09-28T15:58:46Z",
+ "generated_at": "2026-09-28T16:37:32Z",
  "window_h": 24,
- "runs": 444,
+ "runs": 448,
  "by_workflow": {
   "stats": {
-   "schedule:in_progress": 1,
-   "workflow_dispatch:success": 24,
-   "schedule:success": 4,
+   "workflow_dispatch:in_progress": 1,
+   "schedule:success": 5,
+   "workflow_dispatch:success": 23,
    "push:success": 3
   },
-  "paper": {
-   "workflow_dispatch:success": 126,
-   "schedule:success": 4,
-   "push:success": 1
-  },
-  "collect": {
-   "workflow_dispatch:success": 139,
-   "schedule:success": 5,
-   "push:success": 8,
-   "workflow_dispatch:cancelled": 4
-  },
   "outcomes": {
-   "workflow_dispatch:success": 48,
+   "workflow_dispatch:in_progress": 1,
+   "workflow_dispatch:success": 47,
    "schedule:success": 5,
    "push:success": 2,
    "push:cancelled": 2
   },
-  "enrich": {
+  "paper": {
+   "workflow_dispatch:success": 130,
+   "schedule:success": 4,
+   "push:success": 1
+  },
+  "collect": {
+   "workflow_dispatch:success": 142,
    "schedule:success": 5,
+   "push:success": 8,
+   "workflow_dispatch:cancelled": 1
+  },
+  "enrich": {
    "workflow_dispatch:success": 24,
+   "schedule:success": 5,
    "push:success": 8
   },
   "ci": {
@@ -61,30 +62,6 @@
    "conclusion": "cancelled",
    "createdAt": "2026-09-27T16:40:01Z",
    "url": "https://github.com/Junsberg/AI_LAB/actions/runs/36334075455",
-   "headBranch": "main"
-  },
-  {
-   "name": "collect",
-   "event": "workflow_dispatch",
-   "conclusion": "cancelled",
-   "createdAt": "2026-09-27T16:30:01Z",
-   "url": "https://github.com/Junsberg/AI_LAB/actions/runs/36333462605",
-   "headBranch": "main"
-  },
-  {
-   "name": "collect",
-   "event": "workflow_dispatch",
-   "conclusion": "cancelled",
-   "createdAt": "2026-09-27T16:20:01Z",
-   "url": "https://github.com/Junsberg/AI_LAB/actions/runs/36332845233",
-   "headBranch": "main"
-  },
-  {
-   "name": "collect",
-   "event": "workflow_dispatch",
-   "conclusion": "cancelled",
-   "createdAt": "2026-09-27T16:00:01Z",
-   "url": "https://github.com/Junsberg/AI_LAB/actions/runs/36331581032",
    "headBranch": "main"
   }
  ]
