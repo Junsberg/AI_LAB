@@ -1,43 +1,39 @@
 {
- "generated_at": "2026-09-28T22:37:16.267583+00:00",
+ "generated_at": "2026-09-28T23:37:17.485904+00:00",
  "counts": [
   {
-   "tokens": 6180,
-   "tokens_24h": 1098,
-   "deployers": 4534,
-   "deployers_traced": 3330,
-   "deployers_unknown_src": 514,
-   "edges": 6497,
-   "clusters": 3678,
-   "multi_token_clusters": 565,
-   "outcomes": 5076,
-   "rugged": 1177,
-   "tenx": 434,
-   "with_risk": 6180,
-   "signals": 1307,
-   "positions": 62,
+   "tokens": 6228,
+   "tokens_24h": 1114,
+   "deployers": 4570,
+   "deployers_traced": 3349,
+   "deployers_unknown_src": 520,
+   "edges": 6531,
+   "clusters": 3706,
+   "multi_token_clusters": 567,
+   "outcomes": 5108,
+   "rugged": 1193,
+   "tenx": 440,
+   "with_risk": 6228,
+   "signals": 1355,
+   "positions": 64,
    "hypotheses": 0
   }
  ],
  "risk_distribution": [
   {
    "top10_p50": 9.5,
-   "top10_p90": 59.2,
+   "top10_p90": 59.3,
    "insiders_avg": 0.0,
-   "lp_locked": 2637,
+   "lp_locked": 2660,
    "freeze_on": 5,
    "mint_on": 1,
-   "n": 6102
+   "n": 6150
   }
  ],
  "tokens_per_hour_24h": [
   {
-   "h": "2026-09-27 22:00",
-   "n": 19
-  },
-  {
    "h": "2026-09-27 23:00",
-   "n": 34
+   "n": 21
   },
   {
    "h": "2026-09-28 00:00",
@@ -129,16 +125,20 @@
   },
   {
    "h": "2026-09-28 22:00",
-   "n": 17
+   "n": 44
+  },
+  {
+   "h": "2026-09-28 23:00",
+   "n": 21
   }
  ],
  "top_deployers": [
   {
    "deployer": "Be3MwhYqH9Y7NMVZqUJBL7fmEshHgQnU5prttJbGRCpW",
-   "n": 47,
-   "syms": "Hybrid cat,Hybrid cat,Hybrid cat,Kitty,Kitty,Kitty,Kitty,Kitty,🍒Cherry,Thief Bear,🐻Bear,🐻Bear,🐻Bear,🐻Bear,🐻Bear,Bitty,Betty,Betty,Betty,🐻Bear,ポケモン,PenguinCat,PenguinCat,PenguinCat,Betty,Betty,Betty,Betty,PenguinCat,PenguinCat,PenguinCat,PenguinCat,PenguinCat,PenguinCat,FISH,FISH,Betty,NEARPAD,中國人會飛,中國人會飛,PenguinCat,PenguinCat,PenguinCat,Betty,π3.1415926,π3.1415926,π3.1415926",
+   "n": 48,
+   "syms": "Hybrid cat,Hybrid cat,Hybrid cat,Kitty,Kitty,Kitty,Kitty,Kitty,🍒Cherry,Thief Bear,🐻Bear,🐻Bear,🐻Bear,🐻Bear,🐻Bear,Bitty,Betty,Betty,Betty,🐻Bear,ポケモン,PenguinCat,PenguinCat,PenguinCat,Betty,Betty,Betty,Betty,PenguinCat,PenguinCat,PenguinCat,PenguinCat,PenguinCat,PenguinCat,FISH,FISH,Betty,NEARPAD,中國人會飛,中國人會飛,PenguinCat,PenguinCat,PenguinCat,Betty,π3.1415926,π3.1415926,π3.1415926,Kitty",
    "first_t": "09-24 06:22",
-   "last_t": "09-28 19:58"
+   "last_t": "09-28 22:46"
   },
   {
    "deployer": "9baMg22GMZzsp68rvmrUAVP6ZdrrmJnTcndwy4QudsMT",
@@ -156,10 +156,10 @@
   },
   {
    "deployer": "FdscpiHD4PT2yjFTe6emEyZyfQ2nR7T1LsUujKayxCvx",
-   "n": 23,
-   "syms": "Trump AI,Trump AI,Trump AI,Trump AI,Trump AI,Trump AI,Trump AI,Trump AI,Trump AI,Trump AI,Trump AI,Trump AI,Trump AI,Trump AI,Trump AI,Trump AI,Trump AI,GOOMS,葵花宝典,币安牛来了,Trump AI,阿里巴巴,币安支付",
+   "n": 24,
+   "syms": "Trump AI,Trump AI,Trump AI,Trump AI,Trump AI,Trump AI,Trump AI,Trump AI,Trump AI,Trump AI,Trump AI,Trump AI,Trump AI,Trump AI,Trump AI,Trump AI,Trump AI,GOOMS,葵花宝典,币安牛来了,Trump AI,阿里巴巴,币安支付,中国人能飞",
    "first_t": "09-26 07:31",
-   "last_t": "09-28 21:08"
+   "last_t": "09-28 22:33"
   },
   {
    "deployer": "E3jbmhG8VSfxJ8Ab2vgwjnDLY2Azk4sYCNvP4S9CD3yC",
@@ -167,6 +167,13 @@
    "syms": "kittylick,CHAROC,GNB,GNB,GNB,GNB,GNB,GNB,GNB,GNB,GNB,GNB,GNB,OTTER,OTTER,OTTER,OTTER,OTTER",
    "first_t": "09-24 05:05",
    "last_t": "09-24 07:21"
+  },
+  {
+   "deployer": "HgzeyuDtzrssR9L5VZVCTqzVqYtuTKvr61HuH7Unwky7",
+   "n": 17,
+   "syms": "TRUMP,TRUMP,TRUMP,TRUMP,EARN,BARSTOOL,VAULT,VAULT,inu,moin,BOB,all/in,孙宇晨奖,FIM,TREND,Loomer,Zubit",
+   "first_t": "09-26 21:17",
+   "last_t": "09-28 22:46"
   },
   {
    "deployer": "BAGSB9TpGrZxQbEsrEznv5jXXdwyP6AXerN8aVRiAmcv",
@@ -183,13 +190,6 @@
    "last_t": "09-25 03:07"
   },
   {
-   "deployer": "HgzeyuDtzrssR9L5VZVCTqzVqYtuTKvr61HuH7Unwky7",
-   "n": 16,
-   "syms": "TRUMP,TRUMP,TRUMP,TRUMP,EARN,BARSTOOL,VAULT,VAULT,inu,moin,BOB,all/in,孙宇晨奖,FIM,TREND,Loomer",
-   "first_t": "09-26 21:17",
-   "last_t": "09-28 21:58"
-  },
-  {
    "deployer": "79m7B6fBPXMLHE4ouqKgt4L963fJuGthjyag4ezaSWzY",
    "n": 15,
    "syms": "币安中秋,币安中秋,币安中秋,币安中秋,币安中秋,币安中秋,币安中秋,SPCXUSD1,WIRED,本昌成佛,本昌成佛,币安赵骗子,本昌成佛,ROB,拼多多",
@@ -197,44 +197,44 @@
    "last_t": "09-28 05:07"
   },
   {
-   "deployer": "5whEE6vB9T7NJrB9bHLu67kiSet1DMvc2VQ9kmrdwb8e",
+   "deployer": "3dXBLRFfh551Z2ReqD9r57GvtSM4xVwTLTLjdFnoshWH",
    "n": 14,
-   "syms": "SI,SI,PESOS,MOONCATS,SIDELINED,TOKENS,Elephant,SDOG,VISE,IshiGo,Meme,PROM,fush,RETIRE",
-   "first_t": "09-24 05:06",
-   "last_t": "09-24 12:49"
+   "syms": "Super inu,Super inu,Super inu,Super inu,Super inu,Rockstar,CASHED,玩币归赵,玩币归赵,玩币归赵,天才交易员,币安交易员,玩币归赵,Omninu",
+   "first_t": "09-26 03:52",
+   "last_t": "09-28 02:47"
   }
  ],
  "top_clusters": [
   {
    "cluster_id": "63410261d4772a3c",
-   "tokens_total": 261,
-   "tokens_evaluated": 208,
+   "tokens_total": 263,
+   "tokens_evaluated": 209,
    "tokens_rugged": 3,
    "tokens_10x": 0,
-   "score": 0.1825,
+   "score": 0.1722,
    "deployers": 96
   },
   {
    "cluster_id": "f25e5b66cdc907c6",
-   "tokens_total": 58,
+   "tokens_total": 60,
    "tokens_evaluated": 51,
    "tokens_rugged": 36,
    "tokens_10x": 0,
    "score": 0.287,
-   "deployers": 57
+   "deployers": 59
   },
   {
    "cluster_id": "e138b28750810679",
-   "tokens_total": 47,
+   "tokens_total": 48,
    "tokens_evaluated": 39,
-   "tokens_rugged": 7,
+   "tokens_rugged": 8,
    "tokens_10x": 1,
-   "score": 0.3068,
+   "score": 0.2841,
    "deployers": 1
   },
   {
    "cluster_id": "7bd23c96a96168b4",
-   "tokens_total": 43,
+   "tokens_total": 44,
    "tokens_evaluated": 39,
    "tokens_rugged": 1,
    "tokens_10x": 1,
@@ -243,12 +243,12 @@
   },
   {
    "cluster_id": "c2baf4c70717868a",
-   "tokens_total": 35,
+   "tokens_total": 36,
    "tokens_evaluated": 29,
-   "tokens_rugged": 19,
+   "tokens_rugged": 18,
    "tokens_10x": 0,
-   "score": 0.3594,
-   "deployers": 35
+   "score": 0.3906,
+   "deployers": 36
   },
   {
    "cluster_id": "baca84838ef2f1b1",
@@ -271,10 +271,10 @@
   {
    "cluster_id": "84972152f476882b",
    "tokens_total": 28,
-   "tokens_evaluated": 19,
+   "tokens_evaluated": 20,
    "tokens_rugged": 0,
    "tokens_10x": 0,
-   "score": 0.0682,
+   "score": 0.0652,
    "deployers": 5
   },
   {
@@ -299,90 +299,90 @@
  "outcomes_summary": [
   {
    "rug_reason": "dead",
-   "n": 2311,
+   "n": 2378,
    "p50_peak": 1.26,
-   "p90_peak": 6.13,
+   "p90_peak": 6.16,
    "max_peak": 844.45,
    "p50_entry": 1.0,
-   "p90_entry": 1.66,
+   "p90_entry": 1.67,
    "entry_10x": 9,
-   "v4": 2311
+   "v4": 2378
   },
   {
    "rug_reason": "none",
-   "n": 1557,
+   "n": 1505,
    "p50_peak": 1.0,
-   "p90_peak": 17.41,
+   "p90_peak": 20.41,
    "max_peak": 922.68,
-   "p50_entry": 1.11,
-   "p90_entry": 5.34,
-   "entry_10x": 28,
-   "v4": 599
+   "p50_entry": 1.09,
+   "p90_entry": 5.31,
+   "entry_10x": 29,
+   "v4": 616
   },
   {
    "rug_reason": "price_collapse",
-   "n": 1097,
+   "n": 1101,
    "p50_peak": 1.0,
-   "p90_peak": 4.01,
+   "p90_peak": 4.17,
    "max_peak": 713.03,
    "p50_entry": 1.0,
-   "p90_entry": 2.49,
+   "p90_entry": 2.53,
    "entry_10x": 9,
-   "v4": 948
+   "v4": 973
   },
   {
    "rug_reason": "lp_pull",
-   "n": 80,
+   "n": 92,
    "p50_peak": 1.0,
-   "p90_peak": 5.15,
+   "p90_peak": 4.58,
    "max_peak": 12.04,
    "p50_entry": 1.0,
-   "p90_entry": 4.05,
+   "p90_entry": 3.51,
    "entry_10x": 0,
-   "v4": 77
+   "v4": 90
   },
   {
    "rug_reason": "no_data",
-   "n": 31,
+   "n": 32,
    "p50_peak": null,
    "p90_peak": null,
    "max_peak": null,
    "p50_entry": null,
    "p90_entry": null,
    "entry_10x": 0,
-   "v4": 27
+   "v4": 28
   }
  ],
  "outcome_by_cluster_size": [
   {
    "bucket": "2-3",
-   "n": 665,
+   "n": 670,
    "rug_rate": 0.194,
-   "p50_peak": 1.08
+   "p50_peak": 1.11
   },
   {
    "bucket": "4+",
-   "n": 1933,
-   "rug_rate": 0.132,
-   "p50_peak": 1.1
+   "n": 1942,
+   "rug_rate": 0.134,
+   "p50_peak": 1.11
   },
   {
    "bucket": "single",
-   "n": 2478,
-   "rug_rate": 0.32,
-   "p50_peak": 1.15
+   "n": 2496,
+   "rug_rate": 0.322,
+   "p50_peak": 1.16
   }
  ],
  "deployer_provenance": [
   {
    "src": "rugcheck",
    "verified": "-",
-   "n": 4943
+   "n": 4987
   },
   {
    "src": "rpc",
    "verified": "-",
-   "n": 743
+   "n": 747
   },
   {
    "src": "pre-fix",
@@ -403,43 +403,43 @@
  "unknown_funding_first_tx_kinds": [
   {
    "kind": "111111:transfer",
-   "n": 627
+   "n": 640
   },
   {
    "kind": "Comput:-",
-   "n": 473
+   "n": 481
   },
   {
    "kind": "111111:createAccount",
-   "n": 462
+   "n": 474
   },
   {
    "kind": "Tokenk:syncNative",
-   "n": 278
+   "n": 284
   },
   {
    "kind": "AToken:createIdempotent",
-   "n": 273
+   "n": 277
   },
   {
    "kind": "Tokenk:closeAccount",
-   "n": 269
+   "n": 275
   },
   {
    "kind": "Tokenk:initializeAccount3",
-   "n": 254
+   "n": 260
   },
   {
    "kind": "Tokenz:initializeMetadataPointer",
-   "n": 196
+   "n": 201
   },
   {
    "kind": "Tokenk:getAccountDataSize",
-   "n": 163
+   "n": 167
   },
   {
    "kind": "Tokenk:initializeImmutableOwner",
-   "n": 162
+   "n": 166
   },
   {
    "kind": "6EF8rr:-",
@@ -447,15 +447,15 @@
   },
   {
    "kind": "dbcij3:-",
-   "n": 64
+   "n": 65
   },
   {
    "kind": "111111:createAccountWithSeed",
-   "n": 61
+   "n": 62
   },
   {
    "kind": "Tokenz:initializeMint2",
-   "n": 36
+   "n": 37
   },
   {
    "kind": "Tokenz:getAccountDataSize",
@@ -465,31 +465,31 @@
  "service_wallet_candidates": [
   {
    "deployer": "BcV2En8ME5ksPPWp3s81UHRPZRoCWB6Cs5LST9HVycZd",
-   "n_tokens": 14,
-   "n_symbols": 12,
-   "avg_creator_pct": 1.61
+   "n_tokens": 13,
+   "n_symbols": 11,
+   "avg_creator_pct": 1.5
   }
  ],
  "funding_sources": [
   {
    "src": "wallet",
-   "n": 3186
+   "n": 3204
   },
   {
    "src": "hub",
-   "n": 682
+   "n": 689
   },
   {
    "src": "unknown",
-   "n": 514
+   "n": 520
   },
   {
    "src": "cex",
-   "n": 142
+   "n": 143
   },
   {
    "src": "untraced",
-   "n": 10
+   "n": 14
   }
  ],
  "paper_summary": [
@@ -506,11 +506,11 @@
   {
    "mode": "paper_control",
    "open": 2,
-   "closed": 40,
-   "mean_ret": 4.2978,
-   "stderr": 1.7917,
-   "win_rate": 0.6,
-   "pnl_sol": 34.38228,
+   "closed": 42,
+   "mean_ret": 4.0965,
+   "stderr": 1.7111,
+   "win_rate": 0.595,
+   "pnl_sol": 34.41096,
    "first_opened": "2026-09-27 18:56:10.562552+00:00"
   }
  ],
@@ -530,8 +530,8 @@
   {
    "mode": "paper_control",
    "exit_reason": "dead_volume",
-   "n": 33,
-   "mean_ret": 5.2957
+   "n": 35,
+   "mean_ret": 4.9972
   },
   {
    "mode": "paper_control",
@@ -544,17 +544,17 @@
   {
    "decision": "skip",
    "reason": "lineage_below",
-   "n": 724
+   "n": 730
   },
   {
    "decision": "reject",
    "reason": "low_liquidity",
-   "n": 172
+   "n": 174
   },
   {
    "decision": "reject",
    "reason": "concentrated",
-   "n": 160
+   "n": 167
   },
   {
    "decision": "enter",
