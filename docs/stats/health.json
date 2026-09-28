@@ -1,11 +1,11 @@
 {
- "generated_at": "2026-09-28T07:36:22.246659+00:00",
+ "generated_at": "2026-09-28T07:37:31.279431+00:00",
  "status": "warn",
  "metrics": {
-  "tokens_70m": 70,
-  "tokens_24h": 1261,
+  "tokens_70m": 68,
+  "tokens_24h": 1258,
   "risk_missing": 0,
-  "risk_eligible": 5521,
+  "risk_eligible": 5526,
   "top10_over90": 269,
   "top10_n": 5479,
   "deployers": 4037,
@@ -13,7 +13,7 @@
   "untraceable": 1035,
   "trace_backlog": 0,
   "outcome_backlog": 0,
-  "outcomes": 4260,
+  "outcomes": 4266,
   "outcomes_no_data": 19,
   "outcomes_over100x": 78,
   "backfill_pending": 0,
@@ -32,19 +32,19 @@
    "name": "collect_alive",
    "level": "critical",
    "ok": true,
-   "detail": "tokens last 70m = 70"
+   "detail": "tokens last 70m = 68"
   },
   {
    "name": "collect_flood",
    "level": "warn",
    "ok": true,
-   "detail": "tokens last 70m = 70 (>150 suggests bonding-stage leak)"
+   "detail": "tokens last 70m = 68 (>150 suggests bonding-stage leak)"
   },
   {
    "name": "risk_coverage",
    "level": "warn",
    "ok": true,
-   "detail": "risk missing 0/5521 (0%)"
+   "detail": "risk missing 0/5526 (0%)"
   },
   {
    "name": "holder_concentration_sane",
@@ -74,13 +74,13 @@
    "name": "outcome_data_quality",
    "level": "warn",
    "ok": true,
-   "detail": "no_data outcomes 19/4260 (0%)"
+   "detail": "no_data outcomes 19/4266 (0%)"
   },
   {
    "name": "peak_multiple_sane",
    "level": "warn",
    "ok": true,
-   "detail": "outcomes >100x: 78/4260 (1.8%) → candle glitch leaking into peaks"
+   "detail": "outcomes >100x: 78/4266 (1.8%) → candle glitch leaking into peaks"
   },
   {
    "name": "universe_clean",
