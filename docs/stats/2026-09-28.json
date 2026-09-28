@@ -1,43 +1,39 @@
 {
- "generated_at": "2026-09-28T21:37:15.025318+00:00",
+ "generated_at": "2026-09-28T22:16:13.027196+00:00",
  "counts": [
   {
-   "tokens": 6146,
-   "tokens_24h": 1101,
-   "deployers": 4505,
-   "deployers_traced": 3312,
-   "deployers_unknown_src": 512,
-   "edges": 6460,
-   "clusters": 3659,
-   "multi_token_clusters": 563,
-   "outcomes": 5026,
-   "rugged": 1160,
+   "tokens": 6168,
+   "tokens_24h": 1100,
+   "deployers": 4524,
+   "deployers_traced": 3325,
+   "deployers_unknown_src": 514,
+   "edges": 6486,
+   "clusters": 3676,
+   "multi_token_clusters": 564,
+   "outcomes": 5065,
+   "rugged": 1176,
    "tenx": 432,
-   "with_risk": 6146,
-   "signals": 1273,
-   "positions": 60,
+   "with_risk": 6168,
+   "signals": 1295,
+   "positions": 62,
    "hypotheses": 0
   }
  ],
  "risk_distribution": [
   {
    "top10_p50": 9.5,
-   "top10_p90": 58.9,
+   "top10_p90": 59.2,
    "insiders_avg": 0.0,
-   "lp_locked": 2628,
+   "lp_locked": 2634,
    "freeze_on": 5,
    "mint_on": 1,
-   "n": 6068
+   "n": 6090
   }
  ],
  "tokens_per_hour_24h": [
   {
-   "h": "2026-09-27 21:00",
-   "n": 20
-  },
-  {
    "h": "2026-09-27 22:00",
-   "n": 36
+   "n": 33
   },
   {
    "h": "2026-09-27 23:00",
@@ -129,7 +125,11 @@
   },
   {
    "h": "2026-09-28 21:00",
-   "n": 10
+   "n": 27
+  },
+  {
+   "h": "2026-09-28 22:00",
+   "n": 5
   }
  ],
  "top_deployers": [
@@ -183,18 +183,18 @@
    "last_t": "09-25 03:07"
   },
   {
+   "deployer": "HgzeyuDtzrssR9L5VZVCTqzVqYtuTKvr61HuH7Unwky7",
+   "n": 16,
+   "syms": "TRUMP,TRUMP,TRUMP,TRUMP,EARN,BARSTOOL,VAULT,VAULT,inu,moin,BOB,all/in,孙宇晨奖,FIM,TREND,Loomer",
+   "first_t": "09-26 21:17",
+   "last_t": "09-28 21:58"
+  },
+  {
    "deployer": "79m7B6fBPXMLHE4ouqKgt4L963fJuGthjyag4ezaSWzY",
    "n": 15,
    "syms": "币安中秋,币安中秋,币安中秋,币安中秋,币安中秋,币安中秋,币安中秋,SPCXUSD1,WIRED,本昌成佛,本昌成佛,币安赵骗子,本昌成佛,ROB,拼多多",
    "first_t": "09-25 15:28",
    "last_t": "09-28 05:07"
-  },
-  {
-   "deployer": "HgzeyuDtzrssR9L5VZVCTqzVqYtuTKvr61HuH7Unwky7",
-   "n": 15,
-   "syms": "TRUMP,TRUMP,TRUMP,TRUMP,EARN,BARSTOOL,VAULT,VAULT,inu,moin,BOB,all/in,孙宇晨奖,FIM,TREND",
-   "first_t": "09-26 21:17",
-   "last_t": "09-28 05:58"
   },
   {
    "deployer": "5whEE6vB9T7NJrB9bHLu67kiSet1DMvc2VQ9kmrdwb8e",
@@ -208,10 +208,10 @@
   {
    "cluster_id": "63410261d4772a3c",
    "tokens_total": 261,
-   "tokens_evaluated": 206,
+   "tokens_evaluated": 208,
    "tokens_rugged": 3,
    "tokens_10x": 0,
-   "score": 0.1938,
+   "score": 0.1919,
    "deployers": 96
   },
   {
@@ -244,19 +244,19 @@
   {
    "cluster_id": "c2baf4c70717868a",
    "tokens_total": 35,
-   "tokens_evaluated": 28,
-   "tokens_rugged": 17,
+   "tokens_evaluated": 29,
+   "tokens_rugged": 19,
    "tokens_10x": 0,
-   "score": 0.4032,
+   "score": 0.3594,
    "deployers": 35
   },
   {
    "cluster_id": "baca84838ef2f1b1",
    "tokens_total": 31,
-   "tokens_evaluated": 29,
+   "tokens_evaluated": 30,
    "tokens_rugged": 3,
    "tokens_10x": 1,
-   "score": 0.5735,
+   "score": 0.5571,
    "deployers": 1
   },
   {
@@ -299,47 +299,47 @@
  "outcomes_summary": [
   {
    "rug_reason": "dead",
-   "n": 2246,
+   "n": 2284,
    "p50_peak": 1.26,
-   "p90_peak": 6.16,
+   "p90_peak": 6.11,
    "max_peak": 844.45,
    "p50_entry": 1.0,
-   "p90_entry": 1.67,
+   "p90_entry": 1.68,
    "entry_10x": 9,
-   "v4": 2246
+   "v4": 2284
   },
   {
    "rug_reason": "none",
-   "n": 1589,
+   "n": 1574,
    "p50_peak": 1.0,
-   "p90_peak": 17.39,
+   "p90_peak": 17.42,
    "max_peak": 922.68,
-   "p50_entry": 1.11,
-   "p90_entry": 5.34,
+   "p50_entry": 1.1,
+   "p90_entry": 5.31,
    "entry_10x": 28,
-   "v4": 588
+   "v4": 596
   },
   {
    "rug_reason": "price_collapse",
-   "n": 1087,
+   "n": 1096,
    "p50_peak": 1.0,
-   "p90_peak": 3.91,
+   "p90_peak": 3.98,
    "max_peak": 713.03,
    "p50_entry": 1.0,
    "p90_entry": 2.47,
    "entry_10x": 8,
-   "v4": 930
+   "v4": 944
   },
   {
    "rug_reason": "lp_pull",
-   "n": 73,
-   "p50_peak": 1.06,
-   "p90_peak": 5.17,
+   "n": 80,
+   "p50_peak": 1.0,
+   "p90_peak": 5.15,
    "max_peak": 12.04,
    "p50_entry": 1.0,
-   "p90_entry": 4.01,
+   "p90_entry": 4.05,
    "entry_10x": 0,
-   "v4": 69
+   "v4": 77
   },
   {
    "rug_reason": "no_data",
@@ -356,20 +356,20 @@
  "outcome_by_cluster_size": [
   {
    "bucket": "2-3",
-   "n": 654,
-   "rug_rate": 0.197,
-   "p50_peak": 1.06
+   "n": 661,
+   "rug_rate": 0.195,
+   "p50_peak": 1.07
   },
   {
    "bucket": "4+",
-   "n": 1918,
-   "rug_rate": 0.13,
+   "n": 1930,
+   "rug_rate": 0.132,
    "p50_peak": 1.1
   },
   {
    "bucket": "single",
-   "n": 2454,
-   "rug_rate": 0.318,
+   "n": 2474,
+   "rug_rate": 0.32,
    "p50_peak": 1.14
   }
  ],
@@ -377,12 +377,12 @@
   {
    "src": "rugcheck",
    "verified": "-",
-   "n": 4915
+   "n": 4933
   },
   {
    "src": "rpc",
    "verified": "-",
-   "n": 737
+   "n": 741
   },
   {
    "src": "pre-fix",
@@ -403,7 +403,7 @@
  "unknown_funding_first_tx_kinds": [
   {
    "kind": "111111:transfer",
-   "n": 618
+   "n": 627
   },
   {
    "kind": "Comput:-",
@@ -411,11 +411,11 @@
   },
   {
    "kind": "111111:createAccount",
-   "n": 458
+   "n": 462
   },
   {
    "kind": "Tokenk:syncNative",
-   "n": 276
+   "n": 278
   },
   {
    "kind": "AToken:createIdempotent",
@@ -423,15 +423,15 @@
   },
   {
    "kind": "Tokenk:closeAccount",
-   "n": 267
+   "n": 269
   },
   {
    "kind": "Tokenk:initializeAccount3",
-   "n": 252
+   "n": 254
   },
   {
    "kind": "Tokenz:initializeMetadataPointer",
-   "n": 195
+   "n": 196
   },
   {
    "kind": "Tokenk:getAccountDataSize",
@@ -447,15 +447,15 @@
   },
   {
    "kind": "dbcij3:-",
-   "n": 63
+   "n": 64
   },
   {
    "kind": "111111:createAccountWithSeed",
-   "n": 60
+   "n": 61
   },
   {
    "kind": "Tokenz:initializeMint2",
-   "n": 35
+   "n": 36
   },
   {
    "kind": "Tokenz:getAccountDataSize",
@@ -473,15 +473,15 @@
  "funding_sources": [
   {
    "src": "wallet",
-   "n": 3169
+   "n": 3182
   },
   {
    "src": "hub",
-   "n": 679
+   "n": 682
   },
   {
    "src": "unknown",
-   "n": 512
+   "n": 514
   },
   {
    "src": "cex",
@@ -489,7 +489,7 @@
   },
   {
    "src": "untraced",
-   "n": 4
+   "n": 5
   }
  ],
  "paper_summary": [
@@ -505,12 +505,12 @@
   },
   {
    "mode": "paper_control",
-   "open": 1,
-   "closed": 39,
-   "mean_ret": 4.3979,
-   "stderr": 1.8354,
-   "win_rate": 0.59,
-   "pnl_sol": 34.30396,
+   "open": 2,
+   "closed": 40,
+   "mean_ret": 4.2978,
+   "stderr": 1.7917,
+   "win_rate": 0.6,
+   "pnl_sol": 34.38228,
    "first_opened": "2026-09-27 18:56:10.562552+00:00"
   }
  ],
@@ -530,8 +530,8 @@
   {
    "mode": "paper_control",
    "exit_reason": "dead_volume",
-   "n": 32,
-   "mean_ret": 5.449
+   "n": 33,
+   "mean_ret": 5.2957
   },
   {
    "mode": "paper_control",
@@ -544,17 +544,17 @@
   {
    "decision": "skip",
    "reason": "lineage_below",
-   "n": 722
+   "n": 721
   },
   {
    "decision": "reject",
    "reason": "low_liquidity",
-   "n": 173
+   "n": 172
   },
   {
    "decision": "reject",
    "reason": "concentrated",
-   "n": 159
+   "n": 160
   },
   {
    "decision": "enter",

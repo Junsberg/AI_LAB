@@ -1,21 +1,21 @@
 {
- "generated_at": "2026-09-28T21:37:26.724396+00:00",
+ "generated_at": "2026-09-28T22:16:26.834957+00:00",
  "status": "warn",
  "metrics": {
   "tokens_70m": 32,
-  "tokens_24h": 1101,
+  "tokens_24h": 1100,
   "risk_missing": 0,
-  "risk_eligible": 6131,
-  "top10_over90": 293,
-  "top10_n": 6068,
-  "deployers": 4505,
-  "traced": 3312,
-  "untraceable": 1191,
+  "risk_eligible": 6146,
+  "top10_over90": 297,
+  "top10_n": 6090,
+  "deployers": 4524,
+  "traced": 3325,
+  "untraceable": 1196,
   "trace_backlog": 0,
   "outcome_backlog": 0,
-  "outcomes": 5027,
+  "outcomes": 5065,
   "outcomes_no_data": 31,
-  "outcomes_over100x": 108,
+  "outcomes_over100x": 109,
   "backfill_pending": 0,
   "deployers_corrected": 81,
   "out_of_universe": 0,
@@ -44,19 +44,19 @@
    "name": "risk_coverage",
    "level": "warn",
    "ok": true,
-   "detail": "risk missing 0/6131 (0%)"
+   "detail": "risk missing 0/6146 (0%)"
   },
   {
    "name": "holder_concentration_sane",
    "level": "warn",
    "ok": true,
-   "detail": "top10>90%: 293/6068 (5%) → pool filter gap"
+   "detail": "top10>90%: 297/6090 (5%) → pool filter gap"
   },
   {
    "name": "trace_quality",
    "level": "warn",
    "ok": true,
-   "detail": "unknown+hub 1191/4505 (26%)"
+   "detail": "unknown+hub 1196/4524 (26%)"
   },
   {
    "name": "trace_backlog",
@@ -74,13 +74,13 @@
    "name": "outcome_data_quality",
    "level": "warn",
    "ok": true,
-   "detail": "no_data outcomes 31/5027 (1%)"
+   "detail": "no_data outcomes 31/5065 (1%)"
   },
   {
    "name": "peak_multiple_sane",
    "level": "warn",
    "ok": false,
-   "detail": "outcomes >100x: 108/5027 (2.1%) → candle glitch leaking into peaks"
+   "detail": "outcomes >100x: 109/5065 (2.2%) → candle glitch leaking into peaks"
   },
   {
    "name": "universe_clean",
