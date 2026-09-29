@@ -1,40 +1,36 @@
 {
- "generated_at": "2026-09-29T08:37:24.799036+00:00",
+ "generated_at": "2026-09-29T09:00:25.700476+00:00",
  "counts": [
   {
-   "tokens": 6700,
-   "tokens_24h": 1101,
-   "deployers": 4930,
+   "tokens": 6717,
+   "tokens_24h": 1090,
+   "deployers": 4942,
    "deployers_traced": 3597,
    "deployers_unknown_src": 563,
    "edges": 7028,
    "clusters": 3998,
    "multi_token_clusters": 612,
-   "outcomes": 5585,
-   "rugged": 1345,
+   "outcomes": 5595,
+   "rugged": 1348,
    "tenx": 403,
-   "with_risk": 6700,
-   "signals": 1875,
-   "positions": 93,
+   "with_risk": 6717,
+   "signals": 1893,
+   "positions": 94,
    "hypotheses": 0
   }
  ],
  "risk_distribution": [
   {
    "top10_p50": 9.2,
-   "top10_p90": 57.1,
+   "top10_p90": 57.0,
    "insiders_avg": 0.0,
-   "lp_locked": 2785,
+   "lp_locked": 2790,
    "freeze_on": 5,
    "mint_on": 1,
-   "n": 6622
+   "n": 6639
   }
  ],
  "tokens_per_hour_24h": [
-  {
-   "h": "2026-09-28 08:00",
-   "n": 28
-  },
   {
    "h": "2026-09-28 09:00",
    "n": 42
@@ -129,7 +125,7 @@
   },
   {
    "h": "2026-09-29 08:00",
-   "n": 27
+   "n": 44
   }
  ],
  "top_deployers": [
@@ -170,10 +166,10 @@
   },
   {
    "deployer": "BcV2En8ME5ksPPWp3s81UHRPZRoCWB6Cs5LST9HVycZd",
-   "n": 19,
-   "syms": "crimingfun,SLOPCORE,zmr,WALKR,BANK,BANK,BANK,SNARKSTR,AI,LEVERAGE,Commish,3310,r/opt,KIND,Bill,HCAT,HCAT,ber,CURVE",
+   "n": 20,
+   "syms": "crimingfun,SLOPCORE,zmr,WALKR,BANK,BANK,BANK,SNARKSTR,AI,LEVERAGE,Commish,3310,r/opt,KIND,Bill,HCAT,HCAT,ber,CURVE,アルト",
    "first_t": "09-27 23:17",
-   "last_t": "09-29 05:06"
+   "last_t": "09-29 08:38"
   },
   {
    "deployer": "E3jbmhG8VSfxJ8Ab2vgwjnDLY2Azk4sYCNvP4S9CD3yC",
@@ -299,76 +295,76 @@
  "outcomes_summary": [
   {
    "rug_reason": "dead",
-   "n": 2739,
+   "n": 2746,
    "p50_peak": 1.18,
-   "p90_peak": 4.25,
+   "p90_peak": 4.24,
    "max_peak": 844.45,
    "p50_entry": 1.0,
    "p90_entry": 1.62,
    "entry_10x": 9,
-   "v4": 2739
+   "v4": 2746
   },
   {
    "rug_reason": "none",
-   "n": 1472,
+   "n": 1473,
    "p50_peak": 1.0,
-   "p90_peak": 11.72,
+   "p90_peak": 11.71,
    "max_peak": 922.68,
    "p50_entry": 1.09,
    "p90_entry": 5.07,
    "entry_10x": 30,
-   "v4": 699
+   "v4": 700
   },
   {
    "rug_reason": "price_collapse",
-   "n": 1146,
-   "p50_peak": 1.0,
-   "p90_peak": 4.65,
+   "n": 1148,
+   "p50_peak": 1.01,
+   "p90_peak": 4.64,
    "max_peak": 713.03,
    "p50_entry": 1.0,
-   "p90_entry": 2.65,
+   "p90_entry": 2.64,
    "entry_10x": 13,
-   "v4": 1044
+   "v4": 1046
   },
   {
    "rug_reason": "lp_pull",
-   "n": 199,
+   "n": 200,
    "p50_peak": 1.0,
-   "p90_peak": 4.2,
+   "p90_peak": 4.18,
    "max_peak": 71.83,
    "p50_entry": 1.0,
-   "p90_entry": 2.81,
+   "p90_entry": 3.0,
    "entry_10x": 2,
-   "v4": 198
+   "v4": 199
   },
   {
    "rug_reason": "no_data",
-   "n": 29,
+   "n": 28,
    "p50_peak": null,
    "p90_peak": null,
    "max_peak": null,
    "p50_entry": null,
    "p90_entry": null,
    "entry_10x": 0,
-   "v4": 29
+   "v4": 28
   }
  ],
  "outcome_by_cluster_size": [
   {
    "bucket": "2-3",
-   "n": 719,
+   "n": 720,
    "rug_rate": 0.193,
    "p50_peak": 1.1
   },
   {
    "bucket": "4+",
-   "n": 2113,
+   "n": 2116,
    "rug_rate": 0.14,
    "p50_peak": 1.07
   },
   {
    "bucket": "single",
-   "n": 2753,
+   "n": 2759,
    "rug_rate": 0.331,
    "p50_peak": 1.13
   }
@@ -377,12 +373,12 @@
   {
    "src": "rugcheck",
    "verified": "-",
-   "n": 5406
+   "n": 5421
   },
   {
    "src": "rpc",
    "verified": "-",
-   "n": 800
+   "n": 802
   },
   {
    "src": "pre-fix",
@@ -486,6 +482,10 @@
   {
    "src": "cex",
    "n": 151
+  },
+  {
+   "src": "untraced",
+   "n": 12
   }
  ],
  "paper_summary": [
@@ -528,7 +528,7 @@
   {
    "strategy": "lineage_v1",
    "mode": "paper_control",
-   "open": 2,
+   "open": 3,
    "closed": 7,
    "mean_ret": -0.5104,
    "stderr": 0.0003,
@@ -615,55 +615,55 @@
    "params_version": 1,
    "decision": "skip",
    "reason": "lineage_below",
-   "n": 468
+   "n": 453
   },
   {
    "params_version": 1,
    "decision": "reject",
    "reason": "concentrated",
-   "n": 105
+   "n": 100
   },
   {
    "params_version": 1,
    "decision": "reject",
    "reason": "low_liquidity",
-   "n": 103
+   "n": 100
   },
   {
    "params_version": 1,
    "decision": "enter",
    "reason": "-",
-   "n": 32
+   "n": 31
   },
   {
    "params_version": 2,
    "decision": "reject",
    "reason": "low_liquidity",
-   "n": 306
+   "n": 317
   },
   {
    "params_version": 2,
    "decision": "reject",
    "reason": "first_launch",
-   "n": 66
+   "n": 67
   },
   {
    "params_version": 2,
    "decision": "reject",
    "reason": "concentrated",
-   "n": 42
+   "n": 44
+  },
+  {
+   "params_version": 2,
+   "decision": "skip",
+   "reason": "not_trading",
+   "n": 12
   },
   {
    "params_version": 2,
    "decision": "enter",
    "reason": "-",
    "n": 12
-  },
-  {
-   "params_version": 2,
-   "decision": "skip",
-   "reason": "not_trading",
-   "n": 9
   },
   {
    "params_version": 2,
@@ -676,6 +676,12 @@
    "decision": "skip",
    "reason": "collapsed",
    "n": 3
+  },
+  {
+   "params_version": 2,
+   "decision": "reject",
+   "reason": "liquidity_unknown",
+   "n": 1
   }
  ]
 }
