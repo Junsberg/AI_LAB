@@ -34,7 +34,7 @@ RETRY_MIN_S, RETRY_DEFAULT_S, RETRY_MAX_S = 5.0, 60.0, 180.0
 # unrecorded, pre-v4) version are re-evaluated once. Bump when classify() changes in a
 # way that alters stored values. (Replaced a wall-clock cutoff that had to be timed
 # against the outcomes schedule and was missed twice on 09-27.)
-RULES_VERSION = 4
+RULES_VERSION = 5  # v5: confirmed (two-candle) highs; see rules.py
 FIRST_DAY_S = 24 * 3600
 FULL_5M_MAX_H = 80  # 1000 five-minute candles = 83h; margin for the window edge
 

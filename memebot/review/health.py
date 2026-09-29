@@ -53,6 +53,8 @@ def run() -> dict:
               (select count(*) from wallet_edges where amount_sol > 10000) edge_huge,
               (select count(*) from tokens where created_at > now() or created_at < '2026-09-01') bad_timestamps,
               (select count(*) from wallet_edges where src = dst) self_edges,
+              (select count(*) from positions where closed_at > now() - interval '7 days'
+                 and pnl_sol / nullif(entry_sol, 0) > 10) paper_ret_over10x,
               (select coalesce(max(cnt),0) from (select cluster_id, count(*) cnt from wallets where cluster_id is not null group by 1) x) max_cluster_wallets,
               -- largest cluster that contains a hub wallet (degree >= 3). A relay chain
               -- (every wallet degree <= 2) is one operator passing SOL down a line of
@@ -93,6 +95,7 @@ def run() -> dict:
     chk("edge_amounts_sane", "warn", m["edge_huge"] > 3, f"funding edges > 10k SOL: {m['edge_huge']}")
     chk("timestamps_sane", "critical", m["bad_timestamps"] > 0, f"tokens with impossible created_at: {m['bad_timestamps']}")
     chk("no_self_edges", "critical", m["self_edges"] > 0, f"self edges: {m['self_edges']}")
+    chk("paper_ret_sane", "warn", m["paper_ret_over10x"] > 0, f"paper closes > +1000% in 7d: {m['paper_ret_over10x']} → candle glitch in fills?")
     chk("cluster_size_sane", "warn", m["max_hubbed_cluster_wallets"] > 40, f"largest hub-joined cluster = {m['max_hubbed_cluster_wallets']} wallets (exchange/service glue?); largest overall = {m['max_cluster_wallets']}")
 
     critical = [x for x in checks if x["level"] == "critical" and not x["ok"]]

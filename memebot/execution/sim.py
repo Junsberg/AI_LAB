@@ -4,9 +4,13 @@ Only price/volume exits are observable without a trade tape: hard stop, take-ini
 trailing stop, dead volume, plus a time horizon. Holder-drop, deployer-sell and KOL-sell
 exits are *not simulated* and are reported as such, never silently treated as "no exit".
 
-Fill conventions (conservative, and consistent with outcome rules v2):
+Fill conventions (conservative, and consistent with outcome rules v5):
   * prices come from candle bodies (open/close), never wicks — DEX wicks are glitches
   * entry = first candle starting at/after the entry time, at its body HIGH
+  * a high only counts once the next candle's body confirms it (min of the two):
+    09-28 lone 5-minute prints ~70x the real price made +3,400% "exits"
+  * a closing mark (dead volume / horizon) is min(last close, median of the last
+    three closes) — the price nobody traded after is not a price we could sell at
   * within one candle the adverse move is assumed first: stop checks run before
     take-profit, and the trailing stop uses the peak from *previous* candles
   * a stop fills at its level, or at the candle open when the candle opens through it
@@ -18,6 +22,7 @@ Fill conventions (conservative, and consistent with outcome rules v2):
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from statistics import median
 
 from memebot.config import ExitRules
 from memebot.outcomes.rules import Candle
@@ -68,8 +73,8 @@ def simulate(
     peak = entry
     stop_px = entry * (1 + hard_stop_pct / 100)
     take_px = entry * rules.take_initial_at_x
-    prev = first
     end_ts = first.ts + horizon_s
+    dead_s = rules.volume_dead_minutes * 60
 
     def sell(ts: int, reason: str, frac: float, px: float) -> None:
         nonlocal remaining, proceeds
@@ -78,13 +83,19 @@ def simulate(
         remaining -= frac
         t.fills.append((ts, reason, round(frac, 4), px))
 
-    for c in after[1:]:
+    def mark(i: int) -> float:
+        closes = [c.close for c in after[max(0, i - 2) : i + 1]]
+        return min(after[i].close, median(closes))
+
+    last = 0
+    for i in range(1, len(after)):
+        c, prev = after[i], after[i - 1]
         if c.ts > end_ts:
             break
-        if c.ts - prev.ts > rules.volume_dead_minutes * 60:
-            sell(prev.ts, "dead_volume", remaining, prev.close)
+        if c.ts - prev.ts > dead_s:
+            sell(prev.ts, "dead_volume", remaining, mark(i - 1))
             break
-        lo, hi = _lo(c), _hi(c)
+        lo = _lo(c)
         if lo <= stop_px:
             sell(c.ts, "hard_stop", remaining, min(stop_px, c.open))
             break
@@ -93,15 +104,16 @@ def simulate(
             if lo <= trail_px:
                 sell(c.ts, "trailing", remaining, min(trail_px, c.open))
                 break
-        if not recovered and hi >= take_px:
+        confirmed = min(_hi(prev), _hi(c))
+        if not recovered and confirmed >= take_px:
             sell(c.ts, "take_initial", rules.initial_recover_fraction, take_px)
             recovered = True
-        peak = max(peak, hi)
-        prev = c
+        peak = max(peak, confirmed)
+        last = i
     if remaining > 1e-9:
         until = min(end_ts, data_until_ts if data_until_ts is not None else end_ts)
-        dead = until - prev.ts > rules.volume_dead_minutes * 60
-        sell(prev.ts, "dead_volume" if dead else "horizon", remaining, prev.close)
+        dead = until - after[last].ts > dead_s
+        sell(after[last].ts, "dead_volume" if dead else "horizon", remaining, mark(last))
     t.exit_ts, t.exit_reason = t.fills[-1][0], t.fills[-1][1]
     t.ret = round(proceeds / (entry * (1 + cost)) - 1, 4)
     return t

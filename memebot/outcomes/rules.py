@@ -21,6 +21,13 @@ Rules v4 (2026-09-27), after the lineage replay picked tokens that had already s
   entry_multiple peak / price at the first candle >= ENTRY_DELAY_S after the first one:
                  the move a bot that sees the token one collect cycle late could catch.
                  None when nothing traded by then.
+
+Rules v5 (2026-09-29), after single 5-minute candles printed ~70x the real price
+right before trading stopped (paper control +410%, >100x outcomes 2.2%):
+  * a high counts only when the NEXT candle's body also reached it
+    (confirmed high = min(body_high[i], body_high[i+1])); a lone print is ignored
+  * base / entry price stay the v2 body high of their candle; a peak is never below
+    them (a token that only fell from its first candle has multiple 1.0)
 """
 from __future__ import annotations
 
@@ -46,6 +53,14 @@ def _body_high(c: Candle) -> float:
     return max(c.open, c.close)
 
 
+def confirmed_highs(candles: list[Candle]) -> list[float]:
+    """confirmed[i] = min(body_high[i], body_high[i+1]); a single candle confirms itself."""
+    bh = [_body_high(c) for c in candles]
+    if len(bh) < 2:
+        return bh
+    return [min(bh[i], bh[i + 1]) for i in range(len(bh) - 1)]
+
+
 @dataclass(frozen=True)
 class Outcome:
     peak_multiple: float | None
@@ -65,20 +80,23 @@ def classify(
     candles = [c for c in candles if c.volume_usd > 0 and c.open > 0 and c.close > 0]
     if not candles:
         return Outcome(None, None, False, "no_data", None)
-    base = max(candles[0].open, candles[0].close)
-    peak_c = max(candles, key=_body_high)
-    peak = _body_high(peak_c)
+    base = _body_high(candles[0])
+    conf = confirmed_highs(candles)
+    peak_i = max(range(len(conf)), key=conf.__getitem__)
+    peak_c, peak = candles[peak_i], conf[peak_i]
+    if peak < base:
+        peak_c, peak = candles[0], base
     last = price_now if price_now is not None else candles[-1].close
     peak_multiple = peak / base
     if peak_multiple > MAX_SANE_MULTIPLE:
         return Outcome(None, None, False, "no_data", None)
     dd = 1 - (last / peak if peak else 0)
 
-    entry_c = next((c for c in candles if c.ts >= candles[0].ts + ENTRY_DELAY_S), None)
+    entry_i = next((i for i, c in enumerate(candles) if c.ts >= candles[0].ts + ENTRY_DELAY_S), None)
     entry_multiple = None
-    if entry_c is not None:
-        after_peak = max(_body_high(c) for c in candles if c.ts >= entry_c.ts)
-        entry_multiple = round(after_peak / _body_high(entry_c), 4)
+    if entry_i is not None:
+        entry_px = _body_high(candles[entry_i])
+        entry_multiple = round(max([entry_px, *conf[entry_i:]]) / entry_px, 4)
 
     reason = "none"
     rugged = False

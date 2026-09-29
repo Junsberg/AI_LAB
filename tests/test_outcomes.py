@@ -49,21 +49,30 @@ def test_wick_glitch_does_not_make_peak_or_collapse():
 
 
 def test_first_open_glitch_uses_close_as_base():
-    candles = [c(1, 1e-12, 1.0, 1e-12, 1.0), c(2, 1.0, 3.0, 0.9, 2.5)]
+    candles = [c(0, 1e-12, 1.0, 1e-12, 1.0), c(3600, 1.0, 3.0, 0.9, 2.5), c(7200, 2.5, 2.6, 2.4, 2.5)]
     o = classify(candles, 20_000, 30_000)
     assert o.peak_multiple == 2.5
 
 
 def test_zero_volume_candles_are_ignored():
-    candles = [c(1, 1e-9, 1e-9, 1e-9, 1e-9, v=0.0), c(2, 1.0, 1.5, 0.9, 1.2), c(3, 1.2, 2.0, 1.0, 1.8)]
-    assert classify(candles, None, None).peak_multiple == 1.5
+    candles = [c(1, 1e-9, 1e-9, 1e-9, 1e-9, v=0.0), c(2, 1.0, 1.5, 0.9, 1.2), c(3, 1.2, 2.0, 1.0, 1.8),
+               c(4, 1.8, 1.9, 1.7, 1.8)]
+    assert classify(candles, None, None).peak_multiple == 1.8 / 1.2
     assert classify([c(1, 1.0, 1.0, 1.0, 1.0, v=0.0)], None, None).rug_reason == "no_data"
 
 
 def test_absurd_multiple_is_bad_data():
-    candles = [c(1, 1.0, 1.0, 1.0, 1.0), c(2, 1.0, 5000.0, 1.0, 5000.0)]
+    candles = [c(1, 1.0, 1.0, 1.0, 1.0), c(2, 1.0, 5000.0, 1.0, 5000.0), c(3, 5000.0, 5000.0, 5000.0, 5000.0)]
     o = classify(candles, None, None)
     assert o.rug_reason == "no_data" and o.peak_multiple is None
+
+
+def test_lone_print_is_not_a_peak_v5():
+    # 09-28: one 5m candle ~70x the real price right before trading stopped
+    live = [c(0, 1.0, 1.0, 1.0, 1.0), c(3600, 1.0, 1.1, 1.0, 1.1), c(7200, 1.1, 70.0, 1.1, 70.0)]
+    assert classify(live, None, None).peak_multiple == 1.1
+    mid = [c(0, 1.0, 1.0, 1.0, 1.0), c(3600, 1.0, 70.0, 1.0, 70.0), c(7200, 1.2, 1.2, 1.2, 1.2)]
+    assert classify(mid, None, None).peak_multiple == 1.2
 
 
 def test_drained_pool_zero_liquidity_is_lp_pull():
@@ -271,8 +280,8 @@ def test_rug_beats_dead_and_live_token_is_not_dead():
 
 def test_entry_multiple_excludes_the_launch_pump():
     # 1 → 10 in the first 5 minutes, then flat at 8-9: peak_multiple 10x, reachable ~1.1x
-    cs = [c(0, 1.0, 1.0, 1.0, 1.0), c(300, 1.0, 10.0, 1.0, 10.0), c(900, 8.0, 8.0, 8.0, 8.0),
-          c(4000, 8.0, 9.0, 8.0, 9.0)]
+    cs = [c(0, 1.0, 1.0, 1.0, 1.0), c(300, 1.0, 10.0, 1.0, 10.0), c(600, 10.0, 10.0, 10.0, 10.0),
+          c(900, 8.0, 8.0, 8.0, 8.0), c(4000, 8.0, 9.0, 8.0, 9.0), c(4300, 9.0, 9.0, 9.0, 9.0)]
     o = classify(cs, None, None)
     assert o.peak_multiple == 10.0 and o.entry_multiple == round(9.0 / 8.0, 4)
     assert classify([c(0, 1.0, 1.0, 1.0, 1.0)], None, None).entry_multiple is None

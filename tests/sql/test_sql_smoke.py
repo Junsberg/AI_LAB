@@ -241,7 +241,8 @@ def test_paper_runner_enters_manages_and_closes(monkeypatch):
     assert asyncio.run(pr.run(load_params()))["decided"] == {}  # decided once per mint
 
     # open path: half sold at 2x, still running → one take_initial fill, no close, no mark fill
-    candles[:] = [[start, 1.0, 1.0, 1.0, 1.0, 10], [start + 300, 1.0, 2.5, 1.0, 2.5, 10]]
+    candles[:] = [[start, 1.0, 1.0, 1.0, 1.0, 10], [start + 300, 1.0, 2.5, 1.0, 2.5, 10],
+                  [start + 600, 2.5, 2.6, 2.4, 2.5, 10]]  # 2.5 confirmed by the next body (v5)
     with conn() as c:
         c.execute("update positions set closed_at = null, exit_reason = null, pnl_sol = null where mint = 'PRMINT'")
         c.execute("delete from fills")
