@@ -1,21 +1,21 @@
 {
- "generated_at": "2026-09-29T20:37:24.081507+00:00",
+ "generated_at": "2026-09-29T21:01:20.110315+00:00",
  "counts": [
   {
-   "tokens": 7235,
-   "tokens_24h": 1113,
-   "deployers": 5328,
-   "deployers_traced": 3863,
-   "deployers_unknown_src": 608,
-   "edges": 7573,
-   "clusters": 4314,
-   "multi_token_clusters": 656,
-   "outcomes": 6113,
-   "rugged": 1521,
-   "tenx": 296,
-   "with_risk": 7235,
-   "signals": 2416,
-   "positions": 121,
+   "tokens": 7248,
+   "tokens_24h": 1112,
+   "deployers": 5340,
+   "deployers_traced": 3873,
+   "deployers_unknown_src": 609,
+   "edges": 7591,
+   "clusters": 4322,
+   "multi_token_clusters": 657,
+   "outcomes": 6128,
+   "rugged": 1526,
+   "tenx": 291,
+   "with_risk": 7248,
+   "signals": 2432,
+   "positions": 122,
    "hypotheses": 0
   }
  ],
@@ -24,17 +24,13 @@
    "top10_p50": 9.2,
    "top10_p90": 57.2,
    "insiders_avg": 0.0,
-   "lp_locked": 2981,
+   "lp_locked": 2988,
    "freeze_on": 5,
    "mint_on": 1,
-   "n": 7157
+   "n": 7170
   }
  ],
  "tokens_per_hour_24h": [
-  {
-   "h": "2026-09-28 20:00",
-   "n": 14
-  },
   {
    "h": "2026-09-28 21:00",
    "n": 27
@@ -129,7 +125,7 @@
   },
   {
    "h": "2026-09-29 20:00",
-   "n": 21
+   "n": 34
   }
  ],
  "top_deployers": [
@@ -207,21 +203,21 @@
  "top_clusters": [
   {
    "cluster_id": "63410261d4772a3c",
-   "tokens_total": 324,
-   "tokens_evaluated": 259,
+   "tokens_total": 325,
+   "tokens_evaluated": 260,
    "tokens_rugged": 4,
    "tokens_10x": 0,
-   "score": 0.1546,
+   "score": 0.1578,
    "deployers": 97
   },
   {
    "cluster_id": "f25e5b66cdc907c6",
-   "tokens_total": 71,
-   "tokens_evaluated": 56,
-   "tokens_rugged": 41,
+   "tokens_total": 72,
+   "tokens_evaluated": 57,
+   "tokens_rugged": 42,
    "tokens_10x": 0,
-   "score": 0.2797,
-   "deployers": 70
+   "score": 0.275,
+   "deployers": 71
   },
   {
    "cluster_id": "7bd23c96a96168b4",
@@ -243,12 +239,12 @@
   },
   {
    "cluster_id": "c2baf4c70717868a",
-   "tokens_total": 49,
+   "tokens_total": 50,
    "tokens_evaluated": 35,
    "tokens_rugged": 24,
    "tokens_10x": 0,
    "score": 0.3289,
-   "deployers": 49
+   "deployers": 50
   },
   {
    "cluster_id": "a8fbbcb2dcaeb532",
@@ -299,76 +295,76 @@
  "outcomes_summary": [
   {
    "rug_reason": "dead",
-   "n": 2989,
+   "n": 2995,
    "p50_peak": 1.13,
-   "p90_peak": 2.79,
+   "p90_peak": 2.77,
    "max_peak": 844.45,
    "p50_entry": 1.0,
    "p90_entry": 1.48,
    "entry_10x": 5,
-   "v4": 2989
+   "v4": 2995
   },
   {
    "rug_reason": "none",
-   "n": 1576,
+   "n": 1579,
    "p50_peak": 1.0,
-   "p90_peak": 7.26,
+   "p90_peak": 7.19,
    "max_peak": 633.43,
    "p50_entry": 1.06,
-   "p90_entry": 4.57,
+   "p90_entry": 4.56,
    "entry_10x": 25,
-   "v4": 803
+   "v4": 806
   },
   {
    "rug_reason": "price_collapse",
-   "n": 1193,
+   "n": 1194,
    "p50_peak": 1.0,
-   "p90_peak": 4.55,
+   "p90_peak": 4.6,
    "max_peak": 713.03,
    "p50_entry": 1.0,
-   "p90_entry": 2.59,
+   "p90_entry": 2.61,
    "entry_10x": 15,
-   "v4": 1091
+   "v4": 1092
   },
   {
    "rug_reason": "lp_pull",
-   "n": 328,
-   "p50_peak": 1.14,
-   "p90_peak": 6.76,
+   "n": 332,
+   "p50_peak": 1.15,
+   "p90_peak": 6.71,
    "max_peak": 801.83,
    "p50_entry": 1.0,
-   "p90_entry": 4.17,
+   "p90_entry": 4.27,
    "entry_10x": 10,
-   "v4": 327
+   "v4": 331
   },
   {
    "rug_reason": "no_data",
-   "n": 27,
+   "n": 28,
    "p50_peak": null,
    "p90_peak": null,
    "max_peak": null,
    "p50_entry": null,
    "p90_entry": null,
    "entry_10x": 0,
-   "v4": 27
+   "v4": 28
   }
  ],
  "outcome_by_cluster_size": [
   {
    "bucket": "2-3",
-   "n": 762,
-   "rug_rate": 0.199,
+   "n": 765,
+   "rug_rate": 0.2,
    "p50_peak": 1.09
   },
   {
    "bucket": "4+",
-   "n": 2276,
+   "n": 2281,
    "rug_rate": 0.148,
    "p50_peak": 1.03
   },
   {
    "bucket": "single",
-   "n": 3075,
+   "n": 3082,
    "rug_rate": 0.336,
    "p50_peak": 1.11
   }
@@ -377,12 +373,12 @@
   {
    "src": "rugcheck",
    "verified": "-",
-   "n": 5886
+   "n": 5898
   },
   {
    "src": "rpc",
    "verified": "-",
-   "n": 855
+   "n": 856
   },
   {
    "src": "pre-fix",
@@ -403,11 +399,11 @@
  "unknown_funding_first_tx_kinds": [
   {
    "kind": "111111:transfer",
-   "n": 845
+   "n": 846
   },
   {
    "kind": "111111:createAccount",
-   "n": 633
+   "n": 636
   },
   {
    "kind": "Comput:-",
@@ -415,15 +411,15 @@
   },
   {
    "kind": "Tokenk:syncNative",
-   "n": 361
+   "n": 362
   },
   {
    "kind": "Tokenk:closeAccount",
-   "n": 355
+   "n": 356
   },
   {
    "kind": "Tokenk:initializeAccount3",
-   "n": 337
+   "n": 338
   },
   {
    "kind": "AToken:createIdempotent",
@@ -431,7 +427,7 @@
   },
   {
    "kind": "Tokenz:initializeMetadataPointer",
-   "n": 259
+   "n": 260
   },
   {
    "kind": "Tokenk:getAccountDataSize",
@@ -447,19 +443,19 @@
   },
   {
    "kind": "111111:createAccountWithSeed",
-   "n": 84
+   "n": 85
   },
   {
    "kind": "dbcij3:-",
-   "n": 82
+   "n": 83
   },
   {
    "kind": "Tokenz:initializeMint2",
-   "n": 58
+   "n": 59
   },
   {
    "kind": "Tokenz:initializeAccount3",
-   "n": 34
+   "n": 35
   }
  ],
  "service_wallet_candidates": [
@@ -479,15 +475,15 @@
  "funding_sources": [
   {
    "src": "wallet",
-   "n": 3696
+   "n": 3706
   },
   {
    "src": "hub",
-   "n": 850
+   "n": 851
   },
   {
    "src": "unknown",
-   "n": 608
+   "n": 609
   },
   {
    "src": "cex",
@@ -526,7 +522,7 @@
   {
    "strategy": "lineage_v1",
    "mode": "paper",
-   "open": 5,
+   "open": 6,
    "closed": 29,
    "mean_ret": 0.1523,
    "stderr": 0.1207,
@@ -632,19 +628,19 @@
    "params_version": 1,
    "decision": "skip",
    "reason": "lineage_below",
-   "n": 114
+   "n": 107
   },
   {
    "params_version": 1,
    "decision": "reject",
    "reason": "concentrated",
-   "n": 31
+   "n": 29
   },
   {
    "params_version": 1,
    "decision": "reject",
    "reason": "low_liquidity",
-   "n": 27
+   "n": 24
   },
   {
    "params_version": 1,
@@ -656,19 +652,19 @@
    "params_version": 2,
    "decision": "reject",
    "reason": "low_liquidity",
-   "n": 632
+   "n": 643
   },
   {
    "params_version": 2,
    "decision": "reject",
    "reason": "first_launch",
-   "n": 154
+   "n": 156
   },
   {
    "params_version": 2,
    "decision": "reject",
    "reason": "concentrated",
-   "n": 109
+   "n": 111
   },
   {
    "params_version": 2,
@@ -680,7 +676,7 @@
    "params_version": 2,
    "decision": "enter",
    "reason": "-",
-   "n": 34
+   "n": 35
   },
   {
    "params_version": 2,

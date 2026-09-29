@@ -1,21 +1,21 @@
 {
- "generated_at": "2026-09-29T20:37:36.123369+00:00",
+ "generated_at": "2026-09-29T21:01:33.207229+00:00",
  "status": "warn",
  "metrics": {
   "tokens_70m": 39,
-  "tokens_24h": 1113,
+  "tokens_24h": 1112,
   "risk_missing": 0,
-  "risk_eligible": 7210,
+  "risk_eligible": 7230,
   "top10_over90": 357,
-  "top10_n": 7157,
-  "deployers": 5328,
-  "traced": 3863,
-  "untraceable": 1458,
+  "top10_n": 7170,
+  "deployers": 5340,
+  "traced": 3873,
+  "untraceable": 1460,
   "trace_backlog": 0,
   "outcome_backlog": 0,
-  "outcomes": 6113,
-  "outcomes_no_data": 27,
-  "outcomes_over100x": 62,
+  "outcomes": 6128,
+  "outcomes_no_data": 28,
+  "outcomes_over100x": 60,
   "backfill_pending": 0,
   "deployers_corrected": 81,
   "out_of_universe": 0,
@@ -26,7 +26,7 @@
   "self_edges": 0,
   "paper_ret_over10x": 5,
   "max_cluster_wallets": 100,
-  "max_hubbed_cluster_wallets": 78
+  "max_hubbed_cluster_wallets": 79
  },
  "checks": [
   {
@@ -45,19 +45,19 @@
    "name": "risk_coverage",
    "level": "warn",
    "ok": true,
-   "detail": "risk missing 0/7210 (0%)"
+   "detail": "risk missing 0/7230 (0%)"
   },
   {
    "name": "holder_concentration_sane",
    "level": "warn",
    "ok": true,
-   "detail": "top10>90%: 357/7157 (5%) → pool filter gap"
+   "detail": "top10>90%: 357/7170 (5%) → pool filter gap"
   },
   {
    "name": "trace_quality",
    "level": "warn",
    "ok": true,
-   "detail": "unknown+hub 1458/5328 (27%)"
+   "detail": "unknown+hub 1460/5340 (27%)"
   },
   {
    "name": "trace_backlog",
@@ -75,13 +75,13 @@
    "name": "outcome_data_quality",
    "level": "warn",
    "ok": true,
-   "detail": "no_data outcomes 27/6113 (0%)"
+   "detail": "no_data outcomes 28/6128 (0%)"
   },
   {
    "name": "peak_multiple_sane",
    "level": "warn",
    "ok": true,
-   "detail": "outcomes >100x: 62/6113 (1.0%) → candle glitch leaking into peaks"
+   "detail": "outcomes >100x: 60/6128 (1.0%) → candle glitch leaking into peaks"
   },
   {
    "name": "universe_clean",
@@ -129,7 +129,7 @@
    "name": "cluster_size_sane",
    "level": "warn",
    "ok": false,
-   "detail": "largest hub-joined cluster = 78 wallets (exchange/service glue?); largest overall = 100"
+   "detail": "largest hub-joined cluster = 79 wallets (exchange/service glue?); largest overall = 100"
   }
  ]
 }
