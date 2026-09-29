@@ -1,21 +1,21 @@
 {
- "generated_at": "2026-09-29T15:37:16.832847+00:00",
+ "generated_at": "2026-09-29T16:06:40.093045+00:00",
  "counts": [
   {
-   "tokens": 7056,
-   "tokens_24h": 1155,
-   "deployers": 5187,
-   "deployers_traced": 3770,
-   "deployers_unknown_src": 584,
-   "edges": 7375,
-   "clusters": 4189,
+   "tokens": 7075,
+   "tokens_24h": 1154,
+   "deployers": 5203,
+   "deployers_traced": 3785,
+   "deployers_unknown_src": 587,
+   "edges": 7404,
+   "clusters": 4214,
    "multi_token_clusters": 646,
-   "outcomes": 5893,
-   "rugged": 1449,
-   "tenx": 332,
-   "with_risk": 7056,
-   "signals": 2237,
-   "positions": 110,
+   "outcomes": 5909,
+   "rugged": 1458,
+   "tenx": 326,
+   "with_risk": 7075,
+   "signals": 2258,
+   "positions": 111,
    "hypotheses": 0
   }
  ],
@@ -24,20 +24,16 @@
    "top10_p50": 9.2,
    "top10_p90": 58.2,
    "insiders_avg": 0.0,
-   "lp_locked": 2897,
+   "lp_locked": 2907,
    "freeze_on": 5,
    "mint_on": 1,
-   "n": 6978
+   "n": 6997
   }
  ],
  "tokens_per_hour_24h": [
   {
-   "h": "2026-09-28 15:00",
-   "n": 17
-  },
-  {
    "h": "2026-09-28 16:00",
-   "n": 40
+   "n": 37
   },
   {
    "h": "2026-09-28 17:00",
@@ -129,7 +125,7 @@
   },
   {
    "h": "2026-09-29 15:00",
-   "n": 21
+   "n": 40
   }
  ],
  "top_deployers": [
@@ -163,10 +159,10 @@
   },
   {
    "deployer": "HgzeyuDtzrssR9L5VZVCTqzVqYtuTKvr61HuH7Unwky7",
-   "n": 25,
-   "syms": "TRUMP,TRUMP,TRUMP,TRUMP,EARN,BARSTOOL,VAULT,VAULT,inu,moin,BOB,all/in,孙宇晨奖,FIM,TREND,Loomer,Zubit,FOMO,ZSOL,done.fun,ber,AI,COCKROACH,FLOATR,PACKS",
+   "n": 26,
+   "syms": "TRUMP,TRUMP,TRUMP,TRUMP,EARN,BARSTOOL,VAULT,VAULT,inu,moin,BOB,all/in,孙宇晨奖,FIM,TREND,Loomer,Zubit,FOMO,ZSOL,done.fun,ber,AI,COCKROACH,FLOATR,PACKS,Liza",
    "first_t": "09-26 21:17",
-   "last_t": "09-29 15:18"
+   "last_t": "09-29 15:37"
   },
   {
    "deployer": "BcV2En8ME5ksPPWp3s81UHRPZRoCWB6Cs5LST9HVycZd",
@@ -225,7 +221,7 @@
   },
   {
    "cluster_id": "e138b28750810679",
-   "tokens_total": 50,
+   "tokens_total": 51,
    "tokens_evaluated": 44,
    "tokens_rugged": 10,
    "tokens_10x": 1,
@@ -244,10 +240,10 @@
   {
    "cluster_id": "c2baf4c70717868a",
    "tokens_total": 47,
-   "tokens_evaluated": 33,
+   "tokens_evaluated": 34,
    "tokens_rugged": 23,
    "tokens_10x": 0,
-   "score": 0.3194,
+   "score": 0.3378,
    "deployers": 47
   },
   {
@@ -260,6 +256,15 @@
    "deployers": 2
   },
   {
+   "cluster_id": "c510ff66baccc678",
+   "tokens_total": 32,
+   "tokens_evaluated": 20,
+   "tokens_rugged": 0,
+   "tokens_10x": 0,
+   "score": 0.0652,
+   "deployers": 5
+  },
+  {
    "cluster_id": "baca84838ef2f1b1",
    "tokens_total": 31,
    "tokens_evaluated": 31,
@@ -267,15 +272,6 @@
    "tokens_10x": 1,
    "score": 0.5417,
    "deployers": 1
-  },
-  {
-   "cluster_id": "c510ff66baccc678",
-   "tokens_total": 30,
-   "tokens_evaluated": 20,
-   "tokens_rugged": 0,
-   "tokens_10x": 0,
-   "score": 0.0652,
-   "deployers": 5
   },
   {
    "cluster_id": "e36e8bfcc9b9fa79",
@@ -299,47 +295,47 @@
  "outcomes_summary": [
   {
    "rug_reason": "dead",
-   "n": 2883,
+   "n": 2889,
    "p50_peak": 1.14,
-   "p90_peak": 3.15,
+   "p90_peak": 3.13,
    "max_peak": 844.45,
    "p50_entry": 1.0,
-   "p90_entry": 1.57,
+   "p90_entry": 1.56,
    "entry_10x": 7,
-   "v4": 2883
+   "v4": 2889
   },
   {
    "rug_reason": "none",
-   "n": 1534,
+   "n": 1536,
    "p50_peak": 1.0,
-   "p90_peak": 8.85,
+   "p90_peak": 8.63,
    "max_peak": 922.68,
    "p50_entry": 1.07,
    "p90_entry": 4.64,
    "entry_10x": 26,
-   "v4": 761
+   "v4": 763
   },
   {
    "rug_reason": "price_collapse",
-   "n": 1177,
+   "n": 1179,
    "p50_peak": 1.0,
-   "p90_peak": 4.5,
+   "p90_peak": 4.53,
    "max_peak": 713.03,
    "p50_entry": 1.0,
    "p90_entry": 2.55,
    "entry_10x": 13,
-   "v4": 1075
+   "v4": 1077
   },
   {
    "rug_reason": "lp_pull",
-   "n": 272,
+   "n": 279,
    "p50_peak": 1.14,
-   "p90_peak": 6.71,
+   "p90_peak": 6.76,
    "max_peak": 579.66,
    "p50_entry": 1.0,
-   "p90_entry": 4.52,
+   "p90_entry": 4.62,
    "entry_10x": 7,
-   "v4": 271
+   "v4": 278
   },
   {
    "rug_reason": "no_data",
@@ -357,19 +353,19 @@
   {
    "bucket": "2-3",
    "n": 749,
-   "rug_rate": 0.199,
+   "rug_rate": 0.2,
    "p50_peak": 1.09
   },
   {
    "bucket": "4+",
-   "n": 2203,
-   "rug_rate": 0.144,
+   "n": 2208,
+   "rug_rate": 0.145,
    "p50_peak": 1.04
   },
   {
    "bucket": "single",
-   "n": 2941,
-   "rug_rate": 0.334,
+   "n": 2953,
+   "rug_rate": 0.335,
    "p50_peak": 1.12
   }
  ],
@@ -377,12 +373,12 @@
   {
    "src": "rugcheck",
    "verified": "-",
-   "n": 5710
+   "n": 5727
   },
   {
    "src": "rpc",
    "verified": "-",
-   "n": 852
+   "n": 854
   },
   {
    "src": "pre-fix",
@@ -403,35 +399,35 @@
  "unknown_funding_first_tx_kinds": [
   {
    "kind": "111111:transfer",
-   "n": 807
+   "n": 809
   },
   {
    "kind": "111111:createAccount",
-   "n": 586
+   "n": 591
   },
   {
    "kind": "Comput:-",
-   "n": 557
+   "n": 561
   },
   {
    "kind": "Tokenk:syncNative",
-   "n": 344
+   "n": 345
   },
   {
    "kind": "Tokenk:closeAccount",
-   "n": 336
+   "n": 338
   },
   {
    "kind": "AToken:createIdempotent",
-   "n": 322
+   "n": 324
   },
   {
    "kind": "Tokenk:initializeAccount3",
-   "n": 319
+   "n": 320
   },
   {
    "kind": "Tokenz:initializeMetadataPointer",
-   "n": 243
+   "n": 245
   },
   {
    "kind": "Tokenk:getAccountDataSize",
@@ -443,23 +439,23 @@
   },
   {
    "kind": "6EF8rr:-",
-   "n": 124
+   "n": 128
   },
   {
    "kind": "111111:createAccountWithSeed",
-   "n": 74
+   "n": 76
   },
   {
    "kind": "dbcij3:-",
-   "n": 73
+   "n": 74
   },
   {
    "kind": "Tokenz:initializeMint2",
-   "n": 48
+   "n": 50
   },
   {
    "kind": "Tokenz:getAccountDataSize",
-   "n": 24
+   "n": 25
   }
  ],
  "service_wallet_candidates": [
@@ -470,38 +466,32 @@
    "avg_creator_pct": 17.4
   },
   {
-   "deployer": "BcV2En8ME5ksPPWp3s81UHRPZRoCWB6Cs5LST9HVycZd",
-   "n_tokens": 10,
-   "n_symbols": 8,
-   "avg_creator_pct": 1.69
-  },
-  {
    "deployer": "HgzeyuDtzrssR9L5VZVCTqzVqYtuTKvr61HuH7Unwky7",
-   "n_tokens": 10,
-   "n_symbols": 10,
-   "avg_creator_pct": 11.73
+   "n_tokens": 11,
+   "n_symbols": 11,
+   "avg_creator_pct": 15.03
   }
  ],
  "funding_sources": [
   {
    "src": "wallet",
-   "n": 3611
+   "n": 3624
   },
   {
    "src": "hub",
-   "n": 825
+   "n": 832
   },
   {
    "src": "unknown",
-   "n": 584
+   "n": 587
   },
   {
    "src": "cex",
-   "n": 157
+   "n": 159
   },
   {
    "src": "untraced",
-   "n": 10
+   "n": 1
   }
  ],
  "paper_summary": [
@@ -532,12 +522,12 @@
   {
    "strategy": "lineage_v1",
    "mode": "paper",
-   "open": 7,
-   "closed": 16,
-   "mean_ret": 0.0623,
-   "stderr": 0.1631,
-   "win_rate": 0.375,
-   "pnl_sol": 0.19936,
+   "open": 3,
+   "closed": 21,
+   "mean_ret": 0.1163,
+   "stderr": 0.1455,
+   "win_rate": 0.429,
+   "pnl_sol": 0.48864,
    "first_opened": "2026-09-29 01:43:18.068789+00:00",
    "max_ret": 2.0314
   },
@@ -594,15 +584,15 @@
    "strategy": "lineage_v1",
    "mode": "paper",
    "exit_reason": "dead_volume",
-   "n": 11,
-   "mean_ret": 0.2375
+   "n": 14,
+   "mean_ret": 0.3629
   },
   {
    "strategy": "lineage_v1",
    "mode": "paper",
    "exit_reason": "hard_stop",
-   "n": 4,
-   "mean_ret": -0.5106
+   "n": 6,
+   "mean_ret": -0.5107
   },
   {
    "strategy": "lineage_v1",
@@ -638,31 +628,31 @@
    "params_version": 1,
    "decision": "skip",
    "reason": "lineage_below",
-   "n": 261
+   "n": 245
   },
   {
    "params_version": 1,
    "decision": "reject",
    "reason": "low_liquidity",
-   "n": 67
+   "n": 66
   },
   {
    "params_version": 1,
    "decision": "reject",
    "reason": "concentrated",
-   "n": 56
+   "n": 52
   },
   {
    "params_version": 1,
    "decision": "enter",
    "reason": "-",
-   "n": 24
+   "n": 23
   },
   {
    "params_version": 2,
    "decision": "reject",
    "reason": "low_liquidity",
-   "n": 513
+   "n": 528
   },
   {
    "params_version": 2,
@@ -674,7 +664,7 @@
    "params_version": 2,
    "decision": "reject",
    "reason": "concentrated",
-   "n": 88
+   "n": 93
   },
   {
    "params_version": 2,
@@ -686,7 +676,7 @@
    "params_version": 2,
    "decision": "enter",
    "reason": "-",
-   "n": 23
+   "n": 24
   },
   {
    "params_version": 2,
