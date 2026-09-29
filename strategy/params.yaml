@@ -1,6 +1,6 @@
 # Single tuning surface. Every change = one hypothesis row in `hypotheses` table.
 # `risk` block is frozen: only the owner edits it by hand.
-version: 1
+version: 2
 
 risk:                      # FROZEN — hook blocks automated edits
   max_position_sol: 0.5
@@ -33,3 +33,12 @@ thresholds:
   # any replay was seen; change only through a propose-change hypothesis.
   lineage_min_score: 0.9
   lineage_min_evaluated: 10
+  # lineage_v1 (paper, 09-29, owner-approved): lineage only EXCLUDES (score below
+  # lineage_reject_below, or the cluster's first-ever token); entry needs the token
+  # still alive after launch. Fixed BEFORE any replay; change via propose-change.
+  strategy: lineage_v1
+  reject_first_launch: true
+  alive_decide_after_min: 30
+  alive_recent_candles: 3
+  alive_min_volume_usd_30m: 3000
+  alive_min_price_vs_peak: 0.5

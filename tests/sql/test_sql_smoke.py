@@ -178,7 +178,8 @@ def test_paper_replay_selects_point_in_time_cluster(monkeypatch):
 
     monkeypatch.setattr(pr, "_get", no_fetch)
     rep = asyncio.run(pr.run(load_params(), budget_s=1))
-    assert rep["entries_selected"] >= 1  # RPCAND: 12 evaluated, 0 rugged → score 13.5/15 = 0.9
+    assert rep["window"]["eligible"] >= 13  # 12 history tokens + RPCAND, all top10-clean
+    assert rep["strategy"] == "lineage_v1"
     with conn() as c:
         c.execute("delete from token_outcomes where mint like 'RP%%'")
         c.execute("delete from tokens where mint like 'RP%%'")
@@ -206,10 +207,10 @@ def test_paper_runner_enters_manages_and_closes(monkeypatch):
         c.execute("insert into wallets(address, cluster_id, tags) values ('PRDEP', 'PRC', '{deployer}') "
                   "on conflict (address) do update set cluster_id = 'PRC'")
         c.execute("insert into cluster_scores(cluster_id, tokens_total, tokens_evaluated, tokens_rugged, tokens_10x, "
-                  "score, updated_at) values ('PRC', 12, 12, 0, 0, 0.95, now()) on conflict (cluster_id) do update "
-                  "set score = 0.95, tokens_evaluated = 12")
+                  "score, updated_at) values ('PRC', 12, 12, 0, 0, 0.6, now()) on conflict (cluster_id) do update "
+                  "set score = 0.6, tokens_evaluated = 12, tokens_total = 12")
         c.execute("insert into tokens(mint, deployer, launch_platform, created_at, pool_address, meta) "
-                  "values ('PRMINT', 'PRDEP', 'pumpfun', now(), 'PRPOOL', %s::jsonb)",
+                  "values ('PRMINT', 'PRDEP', 'pumpfun', now() - interval '35 minutes', 'PRPOOL', %s::jsonb)",
                   (json.dumps({"seen_at": now.isoformat(), "risk": {"top10_pct": 10.0}}),))
         c.commit()
 
@@ -218,7 +219,8 @@ def test_paper_runner_enters_manages_and_closes(monkeypatch):
                 for p in pools}
 
     start = int(now.timestamp()) // 300 * 300
-    candles = [[start, 1.0, 1.0, 1.0, 1.0, 10], [start + 300, 1.0, 1.0, 0.3, 0.3, 10]]  # hard stop
+    history = [[start - k * 300, 1.0, 1.0, 1.0, 1.0, 1500] for k in range(6, 0, -1)]  # alive at +35 min
+    candles = history + [[start, 1.0, 1.0, 1.0, 1.0, 10], [start + 300, 1.0, 1.0, 0.3, 0.3, 10]]  # hard stop
 
     async def fake_get(client, url, params, deadline):
         return httpx.Response(200, json={"data": {"attributes": {"ohlcv_list": candles}}},

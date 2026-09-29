@@ -1,10 +1,13 @@
-"""lineage_v0 paper runner — every 10 minutes from Actions (paper.yml).
+"""Paper runner (strategy from params: lineage_v1 since 09-29) — every 10 minutes.
 
-1. Decide every freshly collected token once (one `signals` row per mint and params
-   version): enter when its deployer cluster scores >= lineage_min_score over
-   >= lineage_min_evaluated evaluated tokens and the gates pass. A deterministic 5%
-   of the gate-passing tokens that lineage does NOT select open `paper_control`
-   positions: same exits, same fills — the baseline the strategy must beat.
+1. Decide every token once, between launch + alive_decide_after_min and +60 min
+   (one `signals` row per mint and params version): gates (top10, liquidity) →
+   lineage EXCLUSION (bad cluster, a cluster's first-ever token) → alive trigger
+   (signals/alive.py, 5-minute candles closed before now). A deterministic 5% of the
+   gate-passing tokens also open `paper_control` positions, whatever the strategy
+   decided: same exits, same fills — the unfiltered baseline the strategy must beat.
+   (lineage_v0, cluster score >= 0.9, selected tokens that had already stopped
+   trading; 09-27 replay, 09-28 review.)
 2. Re-simulate every open position from its entry on 5-minute candles
    (execution/sim.py, the same code as the replay report) and close it when an exit
    fires or the horizon ends. Stateless: the candles, not stored state, decide.
@@ -35,15 +38,16 @@ from memebot.outcomes.evaluate import (
     _parse_ohlcv,
     _pools,
 )
+from memebot.signals.alive import alive
 
 log = structlog.get_logger()
-STRATEGY = "lineage_v0"
 HORIZON_S = 24 * 3600  # same as the replay report
 FEE_PCT = 1.0  # DEX fee + priority fee, per side
 CONTROL_EVERY = 20  # 1 in 20 gate-passing, non-selected tokens → control (5%)
 CONTROL_MAX_OPEN = 10
 CONTROL_SIZE_SOL = 0.2
-CANDIDATE_WINDOW = timedelta(minutes=60)  # wait this long for a rugcheck snapshot
+DECIDE_WINDOW = timedelta(minutes=60)  # decide between launch+30min and launch+90min
+RISK_WAIT = timedelta(minutes=60)  # after launch, wait this long for a rugcheck snapshot
 RECHECK_AFTER = timedelta(minutes=30)  # candle refresh cadence per open position
 NO_FILL_AFTER_S = 3600
 RUN_BUDGET_S = 7 * 60  # workflow timeout is 9 min
@@ -67,23 +71,22 @@ def cost_pct(size_sol: float, liq_sol: float) -> float:
     return FEE_PCT + 100 * size_sol / (liq_sol + size_sol)
 
 
-def position_size(score: float, p: Params) -> float:
-    """40% of max at the threshold → 100% at score 1.0 (the scorer's sizing curve)."""
-    t = p.thresholds.lineage_min_score
-    frac = 0.4 + 0.6 * (score - t) / max(1e-9, 1.0 - t)
-    return round(p.risk.max_position_sol * min(1.0, max(0.4, frac)), 4)
+def position_size(p: Params) -> float:
+    """lineage_v1 has no confidence score to scale by: the minimum of the old curve
+    (40% of the frozen max) until paper results justify more."""
+    return round(p.risk.max_position_sol * 0.4, 4)
 
 
 def is_control(mint: str) -> bool:
     return int(hashlib.sha256(mint.encode()).hexdigest()[:8], 16) % CONTROL_EVERY == 0
 
 
-def decide(row: dict, attrs: dict, p: Params, open_strategy: int, day_pnl: float) -> tuple[str, str | None]:
-    """→ (decision, reason). decision: enter | control | skip | reject | wait."""
-    th, r = p.thresholds, p.risk
+def gate(row: dict, attrs: dict, p: Params) -> tuple[str, str | None]:
+    """Cheap gates, no candle call. → (pass | wait | reject, reason)."""
+    th = p.thresholds
     top10 = ((row["meta"].get("risk") or {}).get("top10_pct"))
     if top10 is None:
-        return ("wait", "risk_pending") if row["age"] < CANDIDATE_WINDOW else ("reject", "risk_unknown")
+        return ("wait", "risk_pending") if row["age"] < RISK_WAIT else ("reject", "risk_unknown")
     if float(top10) > th.max_top10_holder_pct:
         return "reject", "concentrated"
     liq = liquidity_sol(attrs)
@@ -91,31 +94,59 @@ def decide(row: dict, attrs: dict, p: Params, open_strategy: int, day_pnl: float
         return "reject", "liquidity_unknown"
     if liq < th.min_liquidity_sol:
         return "reject", "low_liquidity"
-    selected = (row["score"] is not None and row["evaluated"] >= th.lineage_min_evaluated
-                and row["score"] >= th.lineage_min_score)
-    if not selected:
-        return ("control", None) if is_control(row["mint"]) else ("skip", "lineage_below")
-    if open_strategy >= r.max_open_positions:
-        return "skip", "max_positions"
-    if day_pnl <= -r.max_daily_loss_sol:
-        return "skip", "daily_loss_cap"
-    return "enter", None
+    return "pass", None
+
+
+def lineage_excluded(row: dict, p: Params) -> str | None:
+    """Lineage only excludes (09-29): a bad cluster, or a cluster's first-ever token
+    (first launches rug 32% vs 13% for 4+ token clusters, review 09-29)."""
+    th = p.thresholds
+    if row["score"] is not None and row["score"] < th.lineage_reject_below:
+        return "bad_lineage"
+    if th.reject_first_launch and (row["tokens_total"] or 0) <= 1:
+        return "first_launch"
+    return None
+
+
+def decide(row: dict, attrs: dict, candles: list | None, p: Params, now_ts: int,
+           open_strategy: int, day_pnl: float) -> tuple[str, str | None, dict]:
+    """→ (enter | skip | reject | wait, reason, alive metrics). `candles` is None when
+    the caller skipped the candle call because an earlier step already decided."""
+    g, why = gate(row, attrs, p)
+    if g != "pass":
+        return g, why, {}
+    excl = lineage_excluded(row, p)
+    if excl:
+        return "reject", excl, {}
+    ok, why, m = alive(candles or [], now_ts, p.thresholds)
+    if not ok:
+        return "skip", why, m
+    if open_strategy >= p.risk.max_open_positions:
+        return "skip", "max_positions", m
+    if day_pnl <= -p.risk.max_daily_loss_sol:
+        return "skip", "daily_loss_cap", m
+    return "enter", None, m
 
 
 def _candidates(p: Params) -> list[dict]:
+    """Tokens whose pool is between alive_decide_after_min and +60 min old, undecided
+    for this params version."""
+    after = p.thresholds.alive_decide_after_min * 60
     with conn() as c:
         rows = c.execute(
-            """select t.mint, t.pool_address, t.meta, now() - (t.meta->>'seen_at')::timestamptz as age,
-                      cs.score, coalesce(cs.tokens_evaluated, 0) as evaluated, w.cluster_id
+            """select t.mint, t.pool_address, t.meta, t.created_at, now() - t.created_at as age,
+                      cs.score, coalesce(cs.tokens_total, 0) as tokens_total,
+                      coalesce(cs.tokens_evaluated, 0) as evaluated, w.cluster_id
                from tokens t
                left join wallets w on w.address = t.deployer
                left join cluster_scores cs on cs.cluster_id = w.cluster_id
-               where t.meta ? 'seen_at' and t.pool_address is not null
-                 and (t.meta->>'seen_at')::timestamptz > now() - %s * interval '1 second'
+               where t.pool_address is not null
+                 and t.created_at <= now() - %s * interval '1 second'
+                 and t.created_at > now() - %s * interval '1 second'
                  and coalesce(t.meta->>'deployer_kind','') <> 'structural'
                  and not exists (select 1 from signals s where s.mint = t.mint and s.params_version = %s)
-               order by t.meta->>'seen_at'""",
-            (CANDIDATE_WINDOW.total_seconds() * 2, p.version),
+               order by t.created_at""",
+            (after, after + DECIDE_WINDOW.total_seconds(), p.version),
         ).fetchall()
     out = []
     for r in rows:
@@ -138,36 +169,47 @@ def _book() -> tuple[int, int, float]:
     return int(r["open_s"]), int(r["open_c"]), float(r["day_pnl"])
 
 
-def _record(row: dict, attrs: dict, decision: str, reason: str | None, p: Params, now: datetime) -> None:
+def _record(row: dict, attrs: dict, decision: str, reason: str | None, metrics: dict,
+            control: bool, p: Params, now: datetime) -> None:
+    """One signals row per mint; a strategy position when entered, and independently a
+    control position for the deterministic 5% of gate-passers (the unfiltered baseline)."""
     liq = liquidity_sol(attrs)
-    snap = {"strategy": STRATEGY, "cluster_id": row["cluster_id"], "cluster_score": row["score"],
-            "cluster_evaluated": row["evaluated"], "liquidity_sol": liq,
+    snap = {"strategy": p.thresholds.strategy, "cluster_id": row["cluster_id"], "cluster_score": row["score"],
+            "cluster_tokens": row["tokens_total"], "cluster_evaluated": row["evaluated"], "liquidity_sol": liq,
             "top10_pct": (row["meta"].get("risk") or {}).get("top10_pct"),
-            "price_usd": attrs.get("base_token_price_usd"), "control": decision == "control",
+            "price_usd": attrs.get("base_token_price_usd"), "control": control, "alive": metrics,
             "gates_unapplied": ["max_bundle_pct"], "exits_not_simulated": list(NOT_SIMULATED)}
+    modes = (["paper"] if decision == "enter" else []) + (["paper_control"] if control else [])
     with conn() as c:
         sig = c.execute(
             """insert into signals(mint, params_version, lineage_score, total_score, decision, reject_reason, snapshot)
                values (%s, %s, %s, %s, %s, %s, %s::jsonb)
                on conflict (mint, params_version) do nothing returning id""",
-            (row["mint"], p.version, row["score"], row["score"] or 0,
-             "enter" if decision in ("enter", "control") else decision, reason, json.dumps(snap)),
+            (row["mint"], p.version, row["score"], row["score"] or 0, decision, reason, json.dumps(snap)),
         ).fetchone()
-        if sig and decision in ("enter", "control"):
-            size = position_size(row["score"], p) if decision == "enter" else CONTROL_SIZE_SOL
-            price = float(attrs.get("base_token_price_usd") or 0)
-            cpct = cost_pct(size, liq)
-            entry_candle = int(now.timestamp()) // 300 * 300
+        for mode in modes if sig else []:
+            size = position_size(p) if mode == "paper" else CONTROL_SIZE_SOL
             c.execute(
                 """insert into positions(mint, signal_id, mode, opened_at, entry_sol, entry_price,
                                          size_tokens, remaining_tokens, meta)
                    values (%s, %s, %s, %s, %s, %s, 0, 0, %s::jsonb)
                    on conflict do nothing""",
-                (row["mint"], sig["id"], "paper" if decision == "enter" else "paper_control", now, size, price,
-                 json.dumps({"pool": row["pool_address"], "entry_candle_ts": entry_candle, "cost_pct": cpct,
-                             "strategy": STRATEGY, "provisional_price": True})),
+                (row["mint"], sig["id"], mode, now, size, float(attrs.get("base_token_price_usd") or 0),
+                 json.dumps({"pool": row["pool_address"], "entry_candle_ts": int(now.timestamp()) // 300 * 300,
+                             "cost_pct": cost_pct(size, liq), "strategy": p.thresholds.strategy,
+                             "provisional_price": True})),
             )
         c.commit()
+
+
+async def _candles(client: httpx.AsyncClient, pool: str, since_ts: int, now_ts: int, deadline: float) -> list:
+    q = {"aggregate": 5, "limit": min(1000, (now_ts - since_ts) // 300 + 4)}
+    r = await _get(client, f"{GT}/networks/solana/pools/{pool}/ohlcv/minute", q, deadline)
+    await asyncio.sleep(GT_SLEEP)
+    if r.status_code == 404:
+        return []
+    r.raise_for_status()
+    return _parse_ohlcv(r.json())
 
 
 def _open_positions() -> list[dict]:
@@ -231,6 +273,7 @@ def _apply(pos: dict, trade, now: datetime) -> str:
 async def run(p: Params | None = None, budget_s: float = RUN_BUDGET_S) -> dict:
     p = p or load_params()
     now = datetime.now(timezone.utc)
+    now_ts = int(now.timestamp())
     deadline = time.monotonic() + budget_s
     stats = {"decided": {}, "positions": {}}
     async with httpx.AsyncClient(timeout=30, headers={"Accept": "application/json"}) as client:
@@ -244,25 +287,21 @@ async def run(p: Params | None = None, budget_s: float = RUN_BUDGET_S) -> dict:
                     if row["pool_address"] not in attrs:
                         continue  # lookup failed; next run retries while the window lasts
                     a = attrs[row["pool_address"]]
-                    decision, reason = decide(row, a, p, open_s, day_pnl)
-                    if decision == "control" and open_c >= CONTROL_MAX_OPEN:
-                        decision, reason = "skip", "control_full"
+                    g, _ = gate(row, a, p)
+                    control = g == "pass" and is_control(row["mint"]) and open_c < CONTROL_MAX_OPEN
+                    candles = None
+                    if g == "pass" and not lineage_excluded(row, p):
+                        launch = int(row["created_at"].timestamp())
+                        candles = await _candles(client, row["pool_address"], launch, now_ts, deadline)
+                    decision, reason, m = decide(row, a, candles, p, now_ts, open_s, day_pnl)
                     stats["decided"][decision] = stats["decided"].get(decision, 0) + 1
                     if decision == "wait":
                         continue
-                    _record(row, a, decision, reason, p, now)
+                    _record(row, a, decision, reason, m, control, p, now)
                     open_s += decision == "enter"
-                    open_c += decision == "control"
+                    open_c += control
             for pos in _open_positions():
-                age = int(now.timestamp()) - pos["meta"]["entry_candle_ts"]
-                q = {"aggregate": 5, "limit": min(1000, age // 300 + 4)}
-                r = await _get(client, f"{GT}/networks/solana/pools/{pos['meta']['pool']}/ohlcv/minute", q, deadline)
-                await asyncio.sleep(GT_SLEEP)
-                if r.status_code == 404:
-                    candles = []
-                else:
-                    r.raise_for_status()
-                    candles = _parse_ohlcv(r.json())
+                candles = await _candles(client, pos["meta"]["pool"], pos["meta"]["entry_candle_ts"], now_ts, deadline)
                 trade = simulate(candles, pos["meta"]["entry_candle_ts"], p.exits, p.risk.hard_stop_pct,
                                  pos["meta"]["cost_pct"], HORIZON_S, data_until_ts=int(now.timestamp()))
                 state = _apply(pos, trade, now)

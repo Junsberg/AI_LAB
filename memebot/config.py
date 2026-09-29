@@ -66,6 +66,12 @@ class Thresholds(BaseModel):
     max_bundle_pct: float = 20.0
     lineage_min_score: float = 0.9  # lineage_v0 paper entry: cluster score at entry time
     lineage_min_evaluated: int = 10  # ... over at least this many evaluated tokens
+    strategy: str = "lineage_v0"
+    reject_first_launch: bool = False  # lineage_v1: skip a cluster's first-ever token
+    alive_decide_after_min: int = 30
+    alive_recent_candles: int = 3
+    alive_min_volume_usd_30m: float = 3000.0
+    alive_min_price_vs_peak: float = 0.5
 
 
 class Params(BaseModel):

@@ -19,15 +19,14 @@ def test_point_in_time_uses_only_tokens_knowable_24h_earlier():
     assert pit["x"] == (0, 0, 0)
 
 
-def test_entry_clock_prefers_seen_at():
-    assert pr.entry_clock(T0, {"seen_at": (T0 + timedelta(minutes=7)).isoformat()}) == int(T0.timestamp()) + 420
-    assert pr.entry_clock(T0, {}) == int(T0.timestamp()) + pr.SEEN_FALLBACK_S
-    assert pr.entry_clock(T0, {"seen_at": "junk"}) == int(T0.timestamp()) + pr.SEEN_FALLBACK_S
-
-
 def test_summarize():
     s = pr.summarize([{"ret": 1.0, "exit_reason": "trailing"}, {"ret": -0.5, "exit_reason": "hard_stop"},
                       {"ret": None, "exit_reason": "no_entry"}])
     assert s["n"] == 2 and s["mean_ret"] == 0.25 and s["win_rate"] == 0.5
     assert s["exit_reasons"] == {"trailing": 1, "hard_stop": 1, "no_entry": 1}
     assert pr.summarize([]) == {"n": 0}
+
+
+def test_prior_launches_counts_only_earlier_cluster_tokens():
+    rows = [row("a", "C", 0), row("b", "C", 5), row("c", "C", 9), row("x", "OTHER", 1)]
+    assert pr.prior_launches(rows) == {"a": 0, "b": 1, "c": 2, "x": 0}
