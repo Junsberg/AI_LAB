@@ -1,21 +1,21 @@
 {
- "generated_at": "2026-09-29T09:00:38.195661+00:00",
+ "generated_at": "2026-09-29T09:37:41.567563+00:00",
  "status": "warn",
  "metrics": {
-  "tokens_70m": 52,
-  "tokens_24h": 1090,
+  "tokens_70m": 64,
+  "tokens_24h": 1103,
   "risk_missing": 0,
-  "risk_eligible": 6691,
-  "top10_over90": 329,
-  "top10_n": 6639,
-  "deployers": 4942,
-  "traced": 3597,
-  "untraceable": 1335,
+  "risk_eligible": 6723,
+  "top10_over90": 333,
+  "top10_n": 6683,
+  "deployers": 4974,
+  "traced": 3621,
+  "untraceable": 1343,
   "trace_backlog": 0,
   "outcome_backlog": 0,
-  "outcomes": 5595,
+  "outcomes": 5654,
   "outcomes_no_data": 28,
-  "outcomes_over100x": 92,
+  "outcomes_over100x": 94,
   "backfill_pending": 0,
   "deployers_corrected": 81,
   "out_of_universe": 0,
@@ -26,38 +26,38 @@
   "self_edges": 0,
   "paper_ret_over10x": 5,
   "max_cluster_wallets": 100,
-  "max_hubbed_cluster_wallets": 73
+  "max_hubbed_cluster_wallets": 74
  },
  "checks": [
   {
    "name": "collect_alive",
    "level": "critical",
    "ok": true,
-   "detail": "tokens last 70m = 52"
+   "detail": "tokens last 70m = 64"
   },
   {
    "name": "collect_flood",
    "level": "warn",
    "ok": true,
-   "detail": "tokens last 70m = 52 (>150 suggests bonding-stage leak)"
+   "detail": "tokens last 70m = 64 (>150 suggests bonding-stage leak)"
   },
   {
    "name": "risk_coverage",
    "level": "warn",
    "ok": true,
-   "detail": "risk missing 0/6691 (0%)"
+   "detail": "risk missing 0/6723 (0%)"
   },
   {
    "name": "holder_concentration_sane",
    "level": "warn",
    "ok": true,
-   "detail": "top10>90%: 329/6639 (5%) → pool filter gap"
+   "detail": "top10>90%: 333/6683 (5%) → pool filter gap"
   },
   {
    "name": "trace_quality",
    "level": "warn",
    "ok": true,
-   "detail": "unknown+hub 1335/4942 (27%)"
+   "detail": "unknown+hub 1343/4974 (27%)"
   },
   {
    "name": "trace_backlog",
@@ -75,13 +75,13 @@
    "name": "outcome_data_quality",
    "level": "warn",
    "ok": true,
-   "detail": "no_data outcomes 28/5595 (1%)"
+   "detail": "no_data outcomes 28/5654 (0%)"
   },
   {
    "name": "peak_multiple_sane",
    "level": "warn",
    "ok": true,
-   "detail": "outcomes >100x: 92/5595 (1.6%) → candle glitch leaking into peaks"
+   "detail": "outcomes >100x: 94/5654 (1.7%) → candle glitch leaking into peaks"
   },
   {
    "name": "universe_clean",
@@ -129,7 +129,7 @@
    "name": "cluster_size_sane",
    "level": "warn",
    "ok": false,
-   "detail": "largest hub-joined cluster = 73 wallets (exchange/service glue?); largest overall = 100"
+   "detail": "largest hub-joined cluster = 74 wallets (exchange/service glue?); largest overall = 100"
   }
  ]
 }

@@ -1,39 +1,39 @@
 {
- "generated_at": "2026-09-29T09:00:25.700476+00:00",
+ "generated_at": "2026-09-29T09:37:28.952597+00:00",
  "counts": [
   {
-   "tokens": 6717,
-   "tokens_24h": 1090,
-   "deployers": 4942,
-   "deployers_traced": 3597,
-   "deployers_unknown_src": 563,
-   "edges": 7028,
-   "clusters": 3998,
-   "multi_token_clusters": 612,
-   "outcomes": 5595,
-   "rugged": 1348,
-   "tenx": 403,
-   "with_risk": 6717,
-   "signals": 1893,
-   "positions": 94,
+   "tokens": 6761,
+   "tokens_24h": 1104,
+   "deployers": 4974,
+   "deployers_traced": 3621,
+   "deployers_unknown_src": 565,
+   "edges": 7075,
+   "clusters": 4021,
+   "multi_token_clusters": 616,
+   "outcomes": 5652,
+   "rugged": 1364,
+   "tenx": 404,
+   "with_risk": 6761,
+   "signals": 1936,
+   "positions": 95,
    "hypotheses": 0
   }
  ],
  "risk_distribution": [
   {
    "top10_p50": 9.2,
-   "top10_p90": 57.0,
+   "top10_p90": 57.7,
    "insiders_avg": 0.0,
-   "lp_locked": 2790,
+   "lp_locked": 2799,
    "freeze_on": 5,
    "mint_on": 1,
-   "n": 6639
+   "n": 6683
   }
  ],
  "tokens_per_hour_24h": [
   {
    "h": "2026-09-28 09:00",
-   "n": 42
+   "n": 12
   },
   {
    "h": "2026-09-28 10:00",
@@ -125,7 +125,11 @@
   },
   {
    "h": "2026-09-29 08:00",
-   "n": 44
+   "n": 52
+  },
+  {
+   "h": "2026-09-29 09:00",
+   "n": 36
   }
  ],
  "top_deployers": [
@@ -203,29 +207,29 @@
  "top_clusters": [
   {
    "cluster_id": "63410261d4772a3c",
-   "tokens_total": 289,
-   "tokens_evaluated": 235,
+   "tokens_total": 292,
+   "tokens_evaluated": 239,
    "tokens_rugged": 4,
    "tokens_10x": 0,
-   "score": 0.145,
+   "score": 0.1426,
    "deployers": 97
   },
   {
    "cluster_id": "f25e5b66cdc907c6",
-   "tokens_total": 66,
-   "tokens_evaluated": 54,
+   "tokens_total": 67,
+   "tokens_evaluated": 55,
    "tokens_rugged": 40,
    "tokens_10x": 0,
-   "score": 0.2719,
-   "deployers": 65
+   "score": 0.2845,
+   "deployers": 66
   },
   {
    "cluster_id": "e138b28750810679",
    "tokens_total": 49,
-   "tokens_evaluated": 40,
+   "tokens_evaluated": 42,
    "tokens_rugged": 9,
    "tokens_10x": 1,
-   "score": 0.2778,
+   "score": 0.266,
    "deployers": 1
   },
   {
@@ -239,12 +243,12 @@
   },
   {
    "cluster_id": "c2baf4c70717868a",
-   "tokens_total": 43,
+   "tokens_total": 44,
    "tokens_evaluated": 31,
    "tokens_rugged": 21,
    "tokens_10x": 0,
    "score": 0.3382,
-   "deployers": 43
+   "deployers": 44
   },
   {
    "cluster_id": "baca84838ef2f1b1",
@@ -268,7 +272,7 @@
    "cluster_id": "a8fbbcb2dcaeb532",
    "tokens_total": 29,
    "tokens_evaluated": 27,
-   "tokens_rugged": 0,
+   "tokens_rugged": 1,
    "tokens_10x": 2,
    "score": 0.3971,
    "deployers": 1
@@ -295,47 +299,47 @@
  "outcomes_summary": [
   {
    "rug_reason": "dead",
-   "n": 2746,
-   "p50_peak": 1.18,
-   "p90_peak": 4.24,
+   "n": 2783,
+   "p50_peak": 1.17,
+   "p90_peak": 4.2,
    "max_peak": 844.45,
    "p50_entry": 1.0,
-   "p90_entry": 1.62,
-   "entry_10x": 9,
-   "v4": 2746
+   "p90_entry": 1.63,
+   "entry_10x": 8,
+   "v4": 2783
   },
   {
    "rug_reason": "none",
-   "n": 1473,
+   "n": 1478,
    "p50_peak": 1.0,
-   "p90_peak": 11.71,
+   "p90_peak": 11.68,
    "max_peak": 922.68,
-   "p50_entry": 1.09,
-   "p90_entry": 5.07,
-   "entry_10x": 30,
-   "v4": 700
+   "p50_entry": 1.08,
+   "p90_entry": 5.03,
+   "entry_10x": 29,
+   "v4": 705
   },
   {
    "rug_reason": "price_collapse",
-   "n": 1148,
-   "p50_peak": 1.01,
-   "p90_peak": 4.64,
+   "n": 1152,
+   "p50_peak": 1.0,
+   "p90_peak": 4.61,
    "max_peak": 713.03,
    "p50_entry": 1.0,
-   "p90_entry": 2.64,
+   "p90_entry": 2.63,
    "entry_10x": 13,
-   "v4": 1046
+   "v4": 1050
   },
   {
    "rug_reason": "lp_pull",
-   "n": 200,
-   "p50_peak": 1.0,
-   "p90_peak": 4.18,
-   "max_peak": 71.83,
+   "n": 212,
+   "p50_peak": 1.08,
+   "p90_peak": 4.33,
+   "max_peak": 554.59,
    "p50_entry": 1.0,
-   "p90_entry": 3.0,
+   "p90_entry": 3.07,
    "entry_10x": 2,
-   "v4": 199
+   "v4": 211
   },
   {
    "rug_reason": "no_data",
@@ -352,19 +356,19 @@
  "outcome_by_cluster_size": [
   {
    "bucket": "2-3",
-   "n": 720,
-   "rug_rate": 0.193,
+   "n": 726,
+   "rug_rate": 0.191,
    "p50_peak": 1.1
   },
   {
    "bucket": "4+",
-   "n": 2116,
-   "rug_rate": 0.14,
-   "p50_peak": 1.07
+   "n": 2130,
+   "rug_rate": 0.141,
+   "p50_peak": 1.06
   },
   {
    "bucket": "single",
-   "n": 2759,
+   "n": 2797,
    "rug_rate": 0.331,
    "p50_peak": 1.13
   }
@@ -373,12 +377,12 @@
   {
    "src": "rugcheck",
    "verified": "-",
-   "n": 5421
+   "n": 5451
   },
   {
    "src": "rpc",
    "verified": "-",
-   "n": 802
+   "n": 816
   },
   {
    "src": "pre-fix",
@@ -399,54 +403,54 @@
  "unknown_funding_first_tx_kinds": [
   {
    "kind": "111111:transfer",
-   "n": 787
+   "n": 789
   },
   {
    "kind": "111111:createAccount",
-   "n": 544
+   "n": 547
   },
   {
    "kind": "Comput:-",
-   "n": 530
+   "n": 535
   },
   {
    "kind": "Tokenk:syncNative",
-   "n": 324
+   "n": 326
   },
   {
    "kind": "Tokenk:closeAccount",
-   "n": 316
+   "n": 318
   },
   {
    "kind": "AToken:createIdempotent",
-   "n": 301
+   "n": 303
   },
   {
    "kind": "Tokenk:initializeAccount3",
-   "n": 299
+   "n": 301
   },
   {
    "kind": "Tokenz:initializeMetadataPointer",
-   "n": 226
+   "n": 228
   },
   {
    "kind": "Tokenk:getAccountDataSize",
-   "n": 186
+   "n": 187
   },
   {
    "kind": "Tokenk:initializeImmutableOwner",
-   "n": 185
+   "n": 186
   },
   {
    "kind": "6EF8rr:-",
    "n": 114
   },
   {
-   "kind": "dbcij3:-",
-   "n": 69
+   "kind": "111111:createAccountWithSeed",
+   "n": 70
   },
   {
-   "kind": "111111:createAccountWithSeed",
+   "kind": "dbcij3:-",
    "n": 69
   },
   {
@@ -460,6 +464,12 @@
  ],
  "service_wallet_candidates": [
   {
+   "deployer": "EEH6Fi6rHAUsrTfnSLxB8PiwM1x1pE9sVLDKERSgA2AL",
+   "n_tokens": 14,
+   "n_symbols": 13,
+   "avg_creator_pct": 19.88
+  },
+  {
    "deployer": "BcV2En8ME5ksPPWp3s81UHRPZRoCWB6Cs5LST9HVycZd",
    "n_tokens": 10,
    "n_symbols": 9,
@@ -469,15 +479,15 @@
  "funding_sources": [
   {
    "src": "wallet",
-   "n": 3444
+   "n": 3468
   },
   {
    "src": "hub",
-   "n": 772
+   "n": 778
   },
   {
    "src": "unknown",
-   "n": 563
+   "n": 565
   },
   {
    "src": "cex",
@@ -516,12 +526,12 @@
   {
    "strategy": "lineage_v1",
    "mode": "paper",
-   "open": 1,
-   "closed": 11,
-   "mean_ret": 0.1036,
-   "stderr": 0.2226,
-   "win_rate": 0.364,
-   "pnl_sol": 0.22794,
+   "open": 0,
+   "closed": 12,
+   "mean_ret": 0.1102,
+   "stderr": 0.2033,
+   "win_rate": 0.417,
+   "pnl_sol": 0.26438,
    "first_opened": "2026-09-29 01:43:18.068789+00:00",
    "max_ret": 2.0314
   },
@@ -529,11 +539,11 @@
    "strategy": "lineage_v1",
    "mode": "paper_control",
    "open": 3,
-   "closed": 7,
-   "mean_ret": -0.5104,
-   "stderr": 0.0003,
+   "closed": 8,
+   "mean_ret": -0.5107,
+   "stderr": 0.0004,
    "win_rate": 0.0,
-   "pnl_sol": -0.30624,
+   "pnl_sol": -0.40858,
    "first_opened": "2026-09-29 01:33:24.755568+00:00",
    "max_ret": 0.0
   }
@@ -578,8 +588,8 @@
    "strategy": "lineage_v1",
    "mode": "paper",
    "exit_reason": "dead_volume",
-   "n": 7,
-   "mean_ret": 0.3207
+   "n": 8,
+   "mean_ret": 0.3034
   },
   {
    "strategy": "lineage_v1",
@@ -606,8 +616,8 @@
    "strategy": "lineage_v1",
    "mode": "paper_control",
    "exit_reason": "hard_stop",
-   "n": 3,
-   "mean_ret": -0.5104
+   "n": 4,
+   "mean_ret": -0.5107
   }
  ],
  "paper_decisions_24h": [
@@ -615,49 +625,49 @@
    "params_version": 1,
    "decision": "skip",
    "reason": "lineage_below",
-   "n": 453
+   "n": 429
   },
   {
    "params_version": 1,
    "decision": "reject",
    "reason": "concentrated",
-   "n": 100
+   "n": 98
   },
   {
    "params_version": 1,
    "decision": "reject",
    "reason": "low_liquidity",
-   "n": 100
+   "n": 93
   },
   {
    "params_version": 1,
    "decision": "enter",
    "reason": "-",
-   "n": 31
+   "n": 30
   },
   {
    "params_version": 2,
    "decision": "reject",
    "reason": "low_liquidity",
-   "n": 317
+   "n": 345
   },
   {
    "params_version": 2,
    "decision": "reject",
    "reason": "first_launch",
-   "n": 67
+   "n": 72
   },
   {
    "params_version": 2,
    "decision": "reject",
    "reason": "concentrated",
-   "n": 44
+   "n": 52
   },
   {
    "params_version": 2,
    "decision": "skip",
    "reason": "not_trading",
-   "n": 12
+   "n": 13
   },
   {
    "params_version": 2,
@@ -669,7 +679,7 @@
    "params_version": 2,
    "decision": "reject",
    "reason": "bad_lineage",
-   "n": 7
+   "n": 8
   },
   {
    "params_version": 2,
