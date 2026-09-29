@@ -1,43 +1,39 @@
 {
- "generated_at": "2026-09-29T06:37:15.814076+00:00",
+ "generated_at": "2026-09-29T07:37:15.433941+00:00",
  "counts": [
   {
-   "tokens": 6603,
-   "tokens_24h": 1106,
-   "deployers": 4851,
-   "deployers_traced": 3528,
-   "deployers_unknown_src": 559,
-   "edges": 6887,
-   "clusters": 3929,
-   "multi_token_clusters": 600,
-   "outcomes": 5471,
-   "rugged": 1305,
-   "tenx": 406,
-   "with_risk": 6603,
-   "signals": 1780,
-   "positions": 89,
+   "tokens": 6654,
+   "tokens_24h": 1096,
+   "deployers": 4895,
+   "deployers_traced": 3557,
+   "deployers_unknown_src": 560,
+   "edges": 6938,
+   "clusters": 3959,
+   "multi_token_clusters": 602,
+   "outcomes": 5542,
+   "rugged": 1331,
+   "tenx": 405,
+   "with_risk": 6654,
+   "signals": 1824,
+   "positions": 93,
    "hypotheses": 0
   }
  ],
  "risk_distribution": [
   {
-   "top10_p50": 9.3,
-   "top10_p90": 57.3,
+   "top10_p50": 9.2,
+   "top10_p90": 57.2,
    "insiders_avg": 0.0,
-   "lp_locked": 2764,
+   "lp_locked": 2776,
    "freeze_on": 5,
    "mint_on": 1,
-   "n": 6525
+   "n": 6576
   }
  ],
  "tokens_per_hour_24h": [
   {
-   "h": "2026-09-28 06:00",
-   "n": 34
-  },
-  {
    "h": "2026-09-28 07:00",
-   "n": 42
+   "n": 15
   },
   {
    "h": "2026-09-28 08:00",
@@ -129,7 +125,11 @@
   },
   {
    "h": "2026-09-29 06:00",
-   "n": 25
+   "n": 44
+  },
+  {
+   "h": "2026-09-29 07:00",
+   "n": 32
   }
  ],
  "top_deployers": [
@@ -207,11 +207,11 @@
  "top_clusters": [
   {
    "cluster_id": "63410261d4772a3c",
-   "tokens_total": 281,
-   "tokens_evaluated": 231,
+   "tokens_total": 284,
+   "tokens_evaluated": 234,
    "tokens_rugged": 3,
    "tokens_10x": 0,
-   "score": 0.1389,
+   "score": 0.1456,
    "deployers": 97
   },
   {
@@ -235,20 +235,20 @@
   {
    "cluster_id": "7bd23c96a96168b4",
    "tokens_total": 47,
-   "tokens_evaluated": 41,
+   "tokens_evaluated": 42,
    "tokens_rugged": 2,
    "tokens_10x": 1,
-   "score": 0.3804,
+   "score": 0.3723,
    "deployers": 5
   },
   {
    "cluster_id": "c2baf4c70717868a",
-   "tokens_total": 41,
+   "tokens_total": 42,
    "tokens_evaluated": 31,
    "tokens_rugged": 21,
    "tokens_10x": 0,
    "score": 0.3382,
-   "deployers": 41
+   "deployers": 42
   },
   {
    "cluster_id": "baca84838ef2f1b1",
@@ -260,15 +260,6 @@
    "deployers": 1
   },
   {
-   "cluster_id": "a8fbbcb2dcaeb532",
-   "tokens_total": 29,
-   "tokens_evaluated": 27,
-   "tokens_rugged": 0,
-   "tokens_10x": 2,
-   "score": 0.3971,
-   "deployers": 1
-  },
-  {
    "cluster_id": "e36e8bfcc9b9fa79",
    "tokens_total": 29,
    "tokens_evaluated": 29,
@@ -276,6 +267,15 @@
    "tokens_10x": 0,
    "score": 0.0469,
    "deployers": 8
+  },
+  {
+   "cluster_id": "a8fbbcb2dcaeb532",
+   "tokens_total": 29,
+   "tokens_evaluated": 27,
+   "tokens_rugged": 0,
+   "tokens_10x": 2,
+   "score": 0.3971,
+   "deployers": 1
   },
   {
    "cluster_id": "331297bc4e47d236",
@@ -289,87 +289,87 @@
   {
    "cluster_id": "84972152f476882b",
    "tokens_total": 28,
-   "tokens_evaluated": 27,
+   "tokens_evaluated": 28,
    "tokens_rugged": 0,
    "tokens_10x": 0,
-   "score": 0.05,
+   "score": 0.0484,
    "deployers": 5
   }
  ],
  "outcomes_summary": [
   {
    "rug_reason": "dead",
-   "n": 2678,
-   "p50_peak": 1.2,
-   "p90_peak": 4.52,
+   "n": 2714,
+   "p50_peak": 1.19,
+   "p90_peak": 4.29,
    "max_peak": 844.45,
    "p50_entry": 1.0,
-   "p90_entry": 1.61,
+   "p90_entry": 1.62,
    "entry_10x": 10,
-   "v4": 2678
+   "v4": 2714
   },
   {
    "rug_reason": "none",
-   "n": 1458,
+   "n": 1468,
    "p50_peak": 1.0,
    "p90_peak": 11.74,
    "max_peak": 922.68,
-   "p50_entry": 1.09,
-   "p90_entry": 5.13,
+   "p50_entry": 1.1,
+   "p90_entry": 5.09,
    "entry_10x": 30,
-   "v4": 685
+   "v4": 695
   },
   {
    "rug_reason": "price_collapse",
-   "n": 1135,
-   "p50_peak": 1.0,
-   "p90_peak": 4.6,
+   "n": 1140,
+   "p50_peak": 1.01,
+   "p90_peak": 4.63,
    "max_peak": 713.03,
    "p50_entry": 1.0,
-   "p90_entry": 2.65,
-   "entry_10x": 12,
-   "v4": 1033
+   "p90_entry": 2.66,
+   "entry_10x": 13,
+   "v4": 1038
   },
   {
    "rug_reason": "lp_pull",
-   "n": 170,
-   "p50_peak": 1.11,
-   "p90_peak": 4.37,
+   "n": 191,
+   "p50_peak": 1.04,
+   "p90_peak": 4.35,
    "max_peak": 71.83,
    "p50_entry": 1.0,
-   "p90_entry": 3.0,
+   "p90_entry": 2.98,
    "entry_10x": 2,
-   "v4": 169
+   "v4": 190
   },
   {
    "rug_reason": "no_data",
-   "n": 30,
+   "n": 29,
    "p50_peak": null,
    "p90_peak": null,
    "max_peak": null,
    "p50_entry": null,
    "p90_entry": null,
    "entry_10x": 0,
-   "v4": 30
+   "v4": 29
   }
  ],
  "outcome_by_cluster_size": [
   {
    "bucket": "2-3",
-   "n": 708,
+   "n": 715,
    "rug_rate": 0.194,
    "p50_peak": 1.11
   },
   {
    "bucket": "4+",
-   "n": 2081,
-   "rug_rate": 0.14,
+   "n": 2102,
+   "rug_rate": 0.139,
    "p50_peak": 1.08
   },
   {
    "bucket": "single",
-   "n": 2683,
-   "rug_rate": 0.327,
+   "n": 2725,
+   "rug_rate": 0.33,
    "p50_peak": 1.14
   }
  ],
@@ -377,12 +377,12 @@
   {
    "src": "rugcheck",
    "verified": "-",
-   "n": 5325
+   "n": 5370
   },
   {
    "src": "rpc",
    "verified": "-",
-   "n": 784
+   "n": 790
   },
   {
    "src": "pre-fix",
@@ -403,43 +403,43 @@
  "unknown_funding_first_tx_kinds": [
   {
    "kind": "111111:transfer",
-   "n": 783
+   "n": 784
   },
   {
    "kind": "111111:createAccount",
-   "n": 534
+   "n": 536
   },
   {
    "kind": "Comput:-",
-   "n": 526
+   "n": 528
   },
   {
    "kind": "Tokenk:syncNative",
-   "n": 320
+   "n": 321
   },
   {
    "kind": "Tokenk:closeAccount",
-   "n": 312
+   "n": 313
   },
   {
    "kind": "AToken:createIdempotent",
-   "n": 299
+   "n": 300
   },
   {
    "kind": "Tokenk:initializeAccount3",
-   "n": 295
+   "n": 296
   },
   {
    "kind": "Tokenz:initializeMetadataPointer",
-   "n": 222
+   "n": 223
   },
   {
    "kind": "Tokenk:getAccountDataSize",
-   "n": 184
+   "n": 185
   },
   {
    "kind": "Tokenk:initializeImmutableOwner",
-   "n": 183
+   "n": 184
   },
   {
    "kind": "6EF8rr:-",
@@ -473,23 +473,23 @@
  "funding_sources": [
   {
    "src": "wallet",
-   "n": 3377
+   "n": 3404
   },
   {
    "src": "hub",
-   "n": 754
+   "n": 764
   },
   {
    "src": "unknown",
-   "n": 559
+   "n": 560
   },
   {
    "src": "cex",
-   "n": 149
+   "n": 151
   },
   {
    "src": "untraced",
-   "n": 12
+   "n": 16
   }
  ],
  "paper_summary": [
@@ -521,18 +521,18 @@
    "strategy": "lineage_v1",
    "mode": "paper",
    "open": 3,
-   "closed": 7,
-   "mean_ret": -0.0652,
-   "stderr": 0.1748,
-   "win_rate": 0.429,
-   "pnl_sol": -0.09126,
+   "closed": 9,
+   "mean_ret": 0.1358,
+   "stderr": 0.2738,
+   "win_rate": 0.444,
+   "pnl_sol": 0.24452,
    "first_opened": "2026-09-29 01:43:18.068789+00:00",
-   "max_ret": 0.5851
+   "max_ret": 2.0314
   },
   {
    "strategy": "lineage_v1",
    "mode": "paper_control",
-   "open": 1,
+   "open": 3,
    "closed": 6,
    "mean_ret": -0.5104,
    "stderr": 0.0003,
@@ -581,16 +581,16 @@
   {
    "strategy": "lineage_v1",
    "mode": "paper",
-   "exit_reason": "hard_stop",
-   "n": 3,
-   "mean_ret": -0.5104
+   "exit_reason": "dead_volume",
+   "n": 5,
+   "mean_ret": 0.4655
   },
   {
    "strategy": "lineage_v1",
    "mode": "paper",
-   "exit_reason": "dead_volume",
+   "exit_reason": "hard_stop",
    "n": 3,
-   "mean_ret": 0.2162
+   "mean_ret": -0.5104
   },
   {
    "strategy": "lineage_v1",
@@ -619,49 +619,49 @@
    "params_version": 1,
    "decision": "skip",
    "reason": "lineage_below",
-   "n": 536
+   "n": 492
   },
   {
    "params_version": 1,
    "decision": "reject",
    "reason": "low_liquidity",
-   "n": 119
+   "n": 111
   },
   {
    "params_version": 1,
    "decision": "reject",
    "reason": "concentrated",
-   "n": 117
+   "n": 109
   },
   {
    "params_version": 1,
    "decision": "enter",
    "reason": "-",
-   "n": 39
+   "n": 34
   },
   {
    "params_version": 2,
    "decision": "reject",
    "reason": "low_liquidity",
-   "n": 233
+   "n": 265
   },
   {
    "params_version": 2,
    "decision": "reject",
    "reason": "first_launch",
-   "n": 55
+   "n": 60
   },
   {
    "params_version": 2,
    "decision": "reject",
    "reason": "concentrated",
-   "n": 34
+   "n": 38
   },
   {
    "params_version": 2,
    "decision": "enter",
    "reason": "-",
-   "n": 10
+   "n": 12
   },
   {
    "params_version": 2,
@@ -679,7 +679,7 @@
    "params_version": 2,
    "decision": "skip",
    "reason": "collapsed",
-   "n": 2
+   "n": 3
   }
  ]
 }
