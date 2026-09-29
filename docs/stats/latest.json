@@ -1,43 +1,39 @@
 {
- "generated_at": "2026-09-29T13:37:19.856352+00:00",
+ "generated_at": "2026-09-29T14:37:16.549423+00:00",
  "counts": [
   {
-   "tokens": 6971,
-   "tokens_24h": 1141,
-   "deployers": 5126,
-   "deployers_traced": 3731,
-   "deployers_unknown_src": 579,
-   "edges": 7294,
-   "clusters": 4136,
-   "multi_token_clusters": 639,
-   "outcomes": 5824,
-   "rugged": 1422,
-   "tenx": 336,
-   "with_risk": 6971,
-   "signals": 2148,
-   "positions": 103,
+   "tokens": 7017,
+   "tokens_24h": 1153,
+   "deployers": 5160,
+   "deployers_traced": 3752,
+   "deployers_unknown_src": 580,
+   "edges": 7339,
+   "clusters": 4163,
+   "multi_token_clusters": 643,
+   "outcomes": 5864,
+   "rugged": 1438,
+   "tenx": 337,
+   "with_risk": 7017,
+   "signals": 2192,
+   "positions": 108,
    "hypotheses": 0
   }
  ],
  "risk_distribution": [
   {
    "top10_p50": 9.2,
-   "top10_p90": 57.9,
+   "top10_p90": 57.5,
    "insiders_avg": 0.0,
-   "lp_locked": 2870,
+   "lp_locked": 2883,
    "freeze_on": 5,
    "mint_on": 1,
-   "n": 6893
+   "n": 6939
   }
  ],
  "tokens_per_hour_24h": [
   {
-   "h": "2026-09-28 13:00",
-   "n": 19
-  },
-  {
    "h": "2026-09-28 14:00",
-   "n": 33
+   "n": 18
   },
   {
    "h": "2026-09-28 15:00",
@@ -129,7 +125,11 @@
   },
   {
    "h": "2026-09-29 13:00",
-   "n": 25
+   "n": 44
+  },
+  {
+   "h": "2026-09-29 14:00",
+   "n": 27
   }
  ],
  "top_deployers": [
@@ -162,18 +162,18 @@
    "last_t": "09-29 05:35"
   },
   {
+   "deployer": "HgzeyuDtzrssR9L5VZVCTqzVqYtuTKvr61HuH7Unwky7",
+   "n": 23,
+   "syms": "TRUMP,TRUMP,TRUMP,TRUMP,EARN,BARSTOOL,VAULT,VAULT,inu,moin,BOB,all/in,孙宇晨奖,FIM,TREND,Loomer,Zubit,FOMO,ZSOL,done.fun,ber,AI,COCKROACH",
+   "first_t": "09-26 21:17",
+   "last_t": "09-29 14:27"
+  },
+  {
    "deployer": "BcV2En8ME5ksPPWp3s81UHRPZRoCWB6Cs5LST9HVycZd",
    "n": 22,
    "syms": "crimingfun,SLOPCORE,zmr,WALKR,BANK,BANK,BANK,SNARKSTR,AI,LEVERAGE,Commish,3310,r/opt,KIND,Bill,HCAT,HCAT,ber,CURVE,アルト,rock,rock",
    "first_t": "09-27 23:17",
    "last_t": "09-29 11:33"
-  },
-  {
-   "deployer": "HgzeyuDtzrssR9L5VZVCTqzVqYtuTKvr61HuH7Unwky7",
-   "n": 21,
-   "syms": "TRUMP,TRUMP,TRUMP,TRUMP,EARN,BARSTOOL,VAULT,VAULT,inu,moin,BOB,all/in,孙宇晨奖,FIM,TREND,Loomer,Zubit,FOMO,ZSOL,done.fun,ber",
-   "first_t": "09-26 21:17",
-   "last_t": "09-29 03:54"
   },
   {
    "deployer": "BAGSB9TpGrZxQbEsrEznv5jXXdwyP6AXerN8aVRiAmcv",
@@ -207,34 +207,34 @@
  "top_clusters": [
   {
    "cluster_id": "63410261d4772a3c",
-   "tokens_total": 306,
-   "tokens_evaluated": 249,
+   "tokens_total": 309,
+   "tokens_evaluated": 251,
    "tokens_rugged": 4,
    "tokens_10x": 0,
-   "score": 0.1567,
+   "score": 0.1555,
    "deployers": 97
   },
   {
    "cluster_id": "f25e5b66cdc907c6",
    "tokens_total": 70,
-   "tokens_evaluated": 55,
-   "tokens_rugged": 40,
+   "tokens_evaluated": 56,
+   "tokens_rugged": 41,
    "tokens_10x": 0,
-   "score": 0.2845,
+   "score": 0.2797,
    "deployers": 69
   },
   {
    "cluster_id": "e138b28750810679",
-   "tokens_total": 49,
+   "tokens_total": 50,
    "tokens_evaluated": 43,
    "tokens_rugged": 10,
    "tokens_10x": 1,
    "score": 0.2604,
-   "deployers": 1
+   "deployers": 2
   },
   {
    "cluster_id": "7bd23c96a96168b4",
-   "tokens_total": 48,
+   "tokens_total": 49,
    "tokens_evaluated": 42,
    "tokens_rugged": 2,
    "tokens_10x": 1,
@@ -252,7 +252,7 @@
   },
   {
    "cluster_id": "a8fbbcb2dcaeb532",
-   "tokens_total": 33,
+   "tokens_total": 34,
    "tokens_evaluated": 27,
    "tokens_rugged": 1,
    "tokens_10x": 1,
@@ -265,7 +265,7 @@
    "tokens_evaluated": 31,
    "tokens_rugged": 5,
    "tokens_10x": 1,
-   "score": 0.5139,
+   "score": 0.5417,
    "deployers": 1
   },
   {
@@ -278,6 +278,15 @@
    "deployers": 8
   },
   {
+   "cluster_id": "c510ff66baccc678",
+   "tokens_total": 28,
+   "tokens_evaluated": 20,
+   "tokens_rugged": 0,
+   "tokens_10x": 0,
+   "score": 0.0652,
+   "deployers": 5
+  },
+  {
    "cluster_id": "84972152f476882b",
    "tokens_total": 28,
    "tokens_evaluated": 28,
@@ -285,91 +294,82 @@
    "tokens_10x": 0,
    "score": 0.0484,
    "deployers": 5
-  },
-  {
-   "cluster_id": "331297bc4e47d236",
-   "tokens_total": 28,
-   "tokens_evaluated": 28,
-   "tokens_rugged": 0,
-   "tokens_10x": 0,
-   "score": 0.0484,
-   "deployers": 3
   }
  ],
  "outcomes_summary": [
   {
    "rug_reason": "dead",
-   "n": 2864,
+   "n": 2874,
    "p50_peak": 1.15,
-   "p90_peak": 3.21,
+   "p90_peak": 3.19,
    "max_peak": 844.45,
    "p50_entry": 1.0,
    "p90_entry": 1.57,
    "entry_10x": 7,
-   "v4": 2864
+   "v4": 2874
   },
   {
    "rug_reason": "none",
-   "n": 1510,
+   "n": 1525,
    "p50_peak": 1.0,
-   "p90_peak": 8.9,
+   "p90_peak": 8.84,
    "max_peak": 922.68,
    "p50_entry": 1.07,
-   "p90_entry": 4.88,
+   "p90_entry": 4.64,
    "entry_10x": 26,
-   "v4": 737
+   "v4": 752
   },
   {
    "rug_reason": "price_collapse",
-   "n": 1168,
+   "n": 1173,
    "p50_peak": 1.0,
-   "p90_peak": 4.54,
+   "p90_peak": 4.52,
    "max_peak": 713.03,
    "p50_entry": 1.0,
-   "p90_entry": 2.59,
+   "p90_entry": 2.56,
    "entry_10x": 13,
-   "v4": 1066
+   "v4": 1071
   },
   {
    "rug_reason": "lp_pull",
-   "n": 254,
+   "n": 265,
    "p50_peak": 1.11,
-   "p90_peak": 6.63,
+   "p90_peak": 6.79,
    "max_peak": 579.66,
    "p50_entry": 1.0,
-   "p90_entry": 4.11,
+   "p90_entry": 4.16,
    "entry_10x": 7,
-   "v4": 253
+   "v4": 264
   },
   {
    "rug_reason": "no_data",
-   "n": 28,
+   "n": 27,
    "p50_peak": null,
    "p90_peak": null,
    "max_peak": null,
    "p50_entry": null,
    "p90_entry": null,
    "entry_10x": 0,
-   "v4": 28
+   "v4": 27
   }
  ],
  "outcome_by_cluster_size": [
   {
    "bucket": "2-3",
-   "n": 741,
+   "n": 749,
    "rug_rate": 0.196,
    "p50_peak": 1.09
   },
   {
    "bucket": "4+",
-   "n": 2183,
-   "rug_rate": 0.143,
-   "p50_peak": 1.05
+   "n": 2192,
+   "rug_rate": 0.145,
+   "p50_peak": 1.04
   },
   {
    "bucket": "single",
-   "n": 2900,
-   "rug_rate": 0.332,
+   "n": 2923,
+   "rug_rate": 0.333,
    "p50_peak": 1.12
   }
  ],
@@ -377,12 +377,12 @@
   {
    "src": "rugcheck",
    "verified": "-",
-   "n": 5634
+   "n": 5679
   },
   {
    "src": "rpc",
    "verified": "-",
-   "n": 843
+   "n": 844
   },
   {
    "src": "pre-fix",
@@ -403,11 +403,11 @@
  "unknown_funding_first_tx_kinds": [
   {
    "kind": "111111:transfer",
-   "n": 802
+   "n": 803
   },
   {
    "kind": "111111:createAccount",
-   "n": 576
+   "n": 577
   },
   {
    "kind": "Comput:-",
@@ -415,19 +415,19 @@
   },
   {
    "kind": "Tokenk:syncNative",
-   "n": 339
+   "n": 340
   },
   {
    "kind": "Tokenk:closeAccount",
-   "n": 331
+   "n": 332
   },
   {
    "kind": "AToken:createIdempotent",
-   "n": 317
+   "n": 319
   },
   {
    "kind": "Tokenk:initializeAccount3",
-   "n": 314
+   "n": 315
   },
   {
    "kind": "Tokenz:initializeMetadataPointer",
@@ -435,15 +435,15 @@
   },
   {
    "kind": "Tokenk:getAccountDataSize",
-   "n": 197
+   "n": 198
   },
   {
    "kind": "Tokenk:initializeImmutableOwner",
-   "n": 196
+   "n": 197
   },
   {
    "kind": "6EF8rr:-",
-   "n": 122
+   "n": 124
   },
   {
    "kind": "111111:createAccountWithSeed",
@@ -471,23 +471,23 @@
   },
   {
    "deployer": "BcV2En8ME5ksPPWp3s81UHRPZRoCWB6Cs5LST9HVycZd",
-   "n_tokens": 11,
-   "n_symbols": 9,
-   "avg_creator_pct": 1.53
+   "n_tokens": 10,
+   "n_symbols": 8,
+   "avg_creator_pct": 1.69
   }
  ],
  "funding_sources": [
   {
    "src": "wallet",
-   "n": 3575
+   "n": 3596
   },
   {
    "src": "hub",
-   "n": 807
+   "n": 816
   },
   {
    "src": "unknown",
-   "n": 579
+   "n": 580
   },
   {
    "src": "cex",
@@ -495,7 +495,7 @@
   },
   {
    "src": "untraced",
-   "n": 11
+   "n": 14
   }
  ],
  "paper_summary": [
@@ -526,26 +526,26 @@
   {
    "strategy": "lineage_v1",
    "mode": "paper",
-   "open": 1,
-   "closed": 15,
-   "mean_ret": 0.0241,
-   "stderr": 0.1695,
-   "win_rate": 0.333,
-   "pnl_sol": 0.07216,
+   "open": 5,
+   "closed": 16,
+   "mean_ret": 0.0623,
+   "stderr": 0.1631,
+   "win_rate": 0.375,
+   "pnl_sol": 0.19936,
    "first_opened": "2026-09-29 01:43:18.068789+00:00",
    "max_ret": 2.0314
   },
   {
    "strategy": "lineage_v1",
    "mode": "paper_control",
-   "open": 2,
-   "closed": 13,
-   "mean_ret": -0.4687,
-   "stderr": 0.1596,
-   "win_rate": 0.167,
-   "pnl_sol": -0.56238,
+   "open": 1,
+   "closed": 14,
+   "mean_ret": 0.0538,
+   "stderr": 0.5395,
+   "win_rate": 0.286,
+   "pnl_sol": 0.07526,
    "first_opened": "2026-09-29 01:33:24.755568+00:00",
-   "max_ret": 0.225
+   "max_ret": 3.1882
   }
  ],
  "paper_exit_reasons": [
@@ -588,8 +588,8 @@
    "strategy": "lineage_v1",
    "mode": "paper",
    "exit_reason": "dead_volume",
-   "n": 10,
-   "mean_ret": 0.1977
+   "n": 11,
+   "mean_ret": 0.2375
   },
   {
    "strategy": "lineage_v1",
@@ -618,6 +618,13 @@
    "exit_reason": "hard_stop",
    "n": 6,
    "mean_ret": -0.4687
+  },
+  {
+   "strategy": "lineage_v1",
+   "mode": "paper_control",
+   "exit_reason": "dead_volume",
+   "n": 1,
+   "mean_ret": 3.1882
   }
  ],
  "paper_decisions_24h": [
@@ -625,43 +632,43 @@
    "params_version": 1,
    "decision": "skip",
    "reason": "lineage_below",
-   "n": 315
+   "n": 285
   },
   {
    "params_version": 1,
    "decision": "reject",
    "reason": "low_liquidity",
-   "n": 71
+   "n": 68
   },
   {
    "params_version": 1,
    "decision": "reject",
    "reason": "concentrated",
-   "n": 68
+   "n": 62
   },
   {
    "params_version": 1,
    "decision": "enter",
    "reason": "-",
-   "n": 25
+   "n": 24
   },
   {
    "params_version": 2,
    "decision": "reject",
    "reason": "low_liquidity",
-   "n": 455
+   "n": 483
   },
   {
    "params_version": 2,
    "decision": "reject",
    "reason": "first_launch",
-   "n": 117
+   "n": 122
   },
   {
    "params_version": 2,
    "decision": "reject",
    "reason": "concentrated",
-   "n": 79
+   "n": 83
   },
   {
    "params_version": 2,
@@ -673,19 +680,19 @@
    "params_version": 2,
    "decision": "enter",
    "reason": "-",
-   "n": 16
+   "n": 21
   },
   {
    "params_version": 2,
    "decision": "reject",
    "reason": "bad_lineage",
-   "n": 11
+   "n": 12
   },
   {
    "params_version": 2,
    "decision": "skip",
    "reason": "collapsed",
-   "n": 4
+   "n": 5
   },
   {
    "params_version": 2,
