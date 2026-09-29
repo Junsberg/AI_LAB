@@ -1,40 +1,36 @@
 {
- "generated_at": "2026-09-29T00:37:18.053761+00:00",
+ "generated_at": "2026-09-29T01:05:17.729885+00:00",
  "counts": [
   {
-   "tokens": 6270,
-   "tokens_24h": 1104,
-   "deployers": 4604,
-   "deployers_traced": 3368,
+   "tokens": 6303,
+   "tokens_24h": 1111,
+   "deployers": 4629,
+   "deployers_traced": 3369,
    "deployers_unknown_src": 528,
    "edges": 6565,
    "clusters": 3735,
    "multi_token_clusters": 569,
-   "outcomes": 5151,
-   "rugged": 1204,
-   "tenx": 445,
-   "with_risk": 6270,
-   "signals": 1397,
-   "positions": 70,
+   "outcomes": 5166,
+   "rugged": 1211,
+   "tenx": 447,
+   "with_risk": 6303,
+   "signals": 1430,
+   "positions": 72,
    "hypotheses": 0
   }
  ],
  "risk_distribution": [
   {
    "top10_p50": 9.4,
-   "top10_p90": 59.2,
+   "top10_p90": 59.4,
    "insiders_avg": 0.0,
-   "lp_locked": 2673,
+   "lp_locked": 2681,
    "freeze_on": 5,
    "mint_on": 1,
-   "n": 6192
+   "n": 6225
   }
  ],
  "tokens_per_hour_24h": [
-  {
-   "h": "2026-09-28 00:00",
-   "n": 26
-  },
   {
    "h": "2026-09-28 01:00",
    "n": 57
@@ -129,7 +125,7 @@
   },
   {
    "h": "2026-09-29 00:00",
-   "n": 18
+   "n": 51
   }
  ],
  "top_deployers": [
@@ -212,7 +208,7 @@
    "tokens_rugged": 3,
    "tokens_10x": 0,
    "score": 0.1512,
-   "deployers": 96
+   "deployers": 97
   },
   {
    "cluster_id": "f25e5b66cdc907c6",
@@ -299,47 +295,47 @@
  "outcomes_summary": [
   {
    "rug_reason": "dead",
-   "n": 2460,
+   "n": 2498,
    "p50_peak": 1.26,
-   "p90_peak": 6.09,
+   "p90_peak": 6.16,
    "max_peak": 844.45,
    "p50_entry": 1.0,
    "p90_entry": 1.66,
-   "entry_10x": 9,
-   "v4": 2460
+   "entry_10x": 10,
+   "v4": 2498
   },
   {
    "rug_reason": "none",
-   "n": 1453,
+   "n": 1423,
    "p50_peak": 1.0,
-   "p90_peak": 23.18,
+   "p90_peak": 21.06,
    "max_peak": 922.68,
-   "p50_entry": 1.09,
-   "p90_entry": 5.36,
+   "p50_entry": 1.08,
+   "p90_entry": 5.29,
    "entry_10x": 31,
-   "v4": 636
+   "v4": 650
   },
   {
    "rug_reason": "price_collapse",
-   "n": 1105,
+   "n": 1107,
    "p50_peak": 1.0,
-   "p90_peak": 4.53,
+   "p90_peak": 4.58,
    "max_peak": 713.03,
    "p50_entry": 1.0,
    "p90_entry": 2.6,
    "entry_10x": 10,
-   "v4": 996
+   "v4": 1005
   },
   {
    "rug_reason": "lp_pull",
-   "n": 99,
+   "n": 104,
    "p50_peak": 1.0,
-   "p90_peak": 4.72,
+   "p90_peak": 4.53,
    "max_peak": 12.04,
    "p50_entry": 1.0,
-   "p90_entry": 3.69,
+   "p90_entry": 3.25,
    "entry_10x": 1,
-   "v4": 98
+   "v4": 103
   },
   {
    "rug_reason": "no_data",
@@ -350,26 +346,26 @@
    "p50_entry": null,
    "p90_entry": null,
    "entry_10x": 0,
-   "v4": 32
+   "v4": 34
   }
  ],
  "outcome_by_cluster_size": [
   {
    "bucket": "2-3",
-   "n": 678,
+   "n": 680,
    "rug_rate": 0.193,
-   "p50_peak": 1.14
+   "p50_peak": 1.15
   },
   {
    "bucket": "4+",
-   "n": 1962,
-   "rug_rate": 0.136,
-   "p50_peak": 1.13
+   "n": 1967,
+   "rug_rate": 0.137,
+   "p50_peak": 1.14
   },
   {
    "bucket": "single",
-   "n": 2511,
-   "rug_rate": 0.321,
+   "n": 2519,
+   "rug_rate": 0.322,
    "p50_peak": 1.17
   }
  ],
@@ -377,12 +373,12 @@
   {
    "src": "rugcheck",
    "verified": "-",
-   "n": 5024
+   "n": 5054
   },
   {
    "src": "rpc",
    "verified": "-",
-   "n": 752
+   "n": 755
   },
   {
    "src": "pre-fix",
@@ -473,7 +469,7 @@
  "funding_sources": [
   {
    "src": "wallet",
-   "n": 3223
+   "n": 3224
   },
   {
    "src": "hub",
@@ -489,11 +485,12 @@
   },
   {
    "src": "untraced",
-   "n": 13
+   "n": 37
   }
  ],
  "paper_summary": [
   {
+   "strategy": "lineage_v0",
    "mode": "paper",
    "open": 1,
    "closed": 21,
@@ -501,45 +498,53 @@
    "stderr": 0.1469,
    "win_rate": 0.1,
    "pnl_sol": 0.08060813,
-   "first_opened": "2026-09-27 18:56:10.562552+00:00"
+   "first_opened": "2026-09-27 18:56:10.562552+00:00",
+   "max_ret": 2.6149
   },
   {
+   "strategy": "lineage_v0",
    "mode": "paper_control",
-   "open": 3,
-   "closed": 45,
-   "mean_ret": 3.8055,
-   "stderr": 1.6043,
-   "win_rate": 0.578,
-   "pnl_sol": 34.24928,
-   "first_opened": "2026-09-27 18:56:10.562552+00:00"
+   "open": 4,
+   "closed": 46,
+   "mean_ret": 3.7266,
+   "stderr": 1.571,
+   "win_rate": 0.587,
+   "pnl_sol": 34.28442,
+   "first_opened": "2026-09-27 18:56:10.562552+00:00",
+   "max_ret": 35.111
   }
  ],
  "paper_exit_reasons": [
   {
+   "strategy": "lineage_v0",
    "mode": "paper",
    "exit_reason": "dead_volume",
    "n": 19,
    "mean_ret": 0.0777
   },
   {
+   "strategy": "lineage_v0",
    "mode": "paper",
    "exit_reason": "hard_stop",
    "n": 1,
    "mean_ret": -0.5176
   },
   {
+   "strategy": "lineage_v0",
    "mode": "paper",
    "exit_reason": "no_fill",
    "n": 1,
    "mean_ret": 0.0
   },
   {
+   "strategy": "lineage_v0",
    "mode": "paper_control",
    "exit_reason": "dead_volume",
-   "n": 37,
-   "mean_ret": 4.7317
+   "n": 38,
+   "mean_ret": 4.6118
   },
   {
+   "strategy": "lineage_v0",
    "mode": "paper_control",
    "exit_reason": "hard_stop",
    "n": 8,
@@ -548,24 +553,28 @@
  ],
  "paper_decisions_24h": [
   {
+   "params_version": 1,
    "decision": "skip",
    "reason": "lineage_below",
-   "n": 725
+   "n": 730
   },
   {
-   "decision": "reject",
-   "reason": "concentrated",
-   "n": 166
-  },
-  {
+   "params_version": 1,
    "decision": "reject",
    "reason": "low_liquidity",
-   "n": 166
+   "n": 169
   },
   {
+   "params_version": 1,
+   "decision": "reject",
+   "reason": "concentrated",
+   "n": 164
+  },
+  {
+   "params_version": 1,
    "decision": "enter",
    "reason": "-",
-   "n": 47
+   "n": 48
   }
  ]
 }
