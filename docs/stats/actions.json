@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-09-29T19:37:40Z",
+ "generated_at": "2026-09-29T20:37:36Z",
  "window_h": 24,
  "runs": 418,
  "by_workflow": {
@@ -17,12 +17,12 @@
   },
   "paper": {
    "workflow_dispatch:success": 144,
-   "schedule:success": 5,
+   "schedule:success": 4,
    "push:success": 1
   },
   "collect": {
    "workflow_dispatch:success": 144,
-   "schedule:success": 4,
+   "schedule:success": 5,
    "push:success": 1
   },
   "enrich": {
