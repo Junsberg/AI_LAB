@@ -1,19 +1,19 @@
 {
- "generated_at": "2026-09-30T02:37:32.215720+00:00",
+ "generated_at": "2026-09-30T03:17:40.452767+00:00",
  "status": "warn",
  "metrics": {
-  "tokens_70m": 45,
-  "tokens_24h": 1092,
+  "tokens_70m": 54,
+  "tokens_24h": 1089,
   "risk_missing": 0,
-  "risk_eligible": 7471,
-  "top10_over90": 364,
-  "top10_n": 7418,
-  "deployers": 5525,
+  "risk_eligible": 7501,
+  "top10_over90": 365,
+  "top10_n": 7451,
+  "deployers": 5545,
   "traced": 3990,
   "untraceable": 1525,
   "trace_backlog": 0,
   "outcome_backlog": 0,
-  "outcomes": 6376,
+  "outcomes": 6424,
   "outcomes_no_data": 28,
   "outcomes_over100x": 48,
   "backfill_pending": 0,
@@ -24,7 +24,7 @@
   "edge_huge": 1,
   "bad_timestamps": 0,
   "self_edges": 0,
-  "paper_ret_over10x": 5,
+  "paper_ret_over10x": 0,
   "max_cluster_wallets": 100,
   "max_hubbed_cluster_wallets": 79
  },
@@ -33,31 +33,31 @@
    "name": "collect_alive",
    "level": "critical",
    "ok": true,
-   "detail": "tokens last 70m = 45"
+   "detail": "tokens last 70m = 54"
   },
   {
    "name": "collect_flood",
    "level": "warn",
    "ok": true,
-   "detail": "tokens last 70m = 45 (>150 suggests bonding-stage leak)"
+   "detail": "tokens last 70m = 54 (>150 suggests bonding-stage leak)"
   },
   {
    "name": "risk_coverage",
    "level": "warn",
    "ok": true,
-   "detail": "risk missing 0/7471 (0%)"
+   "detail": "risk missing 0/7501 (0%)"
   },
   {
    "name": "holder_concentration_sane",
    "level": "warn",
    "ok": true,
-   "detail": "top10>90%: 364/7418 (5%) → pool filter gap"
+   "detail": "top10>90%: 365/7451 (5%) → pool filter gap"
   },
   {
    "name": "trace_quality",
    "level": "warn",
    "ok": true,
-   "detail": "unknown+hub 1525/5525 (28%)"
+   "detail": "unknown+hub 1525/5545 (28%)"
   },
   {
    "name": "trace_backlog",
@@ -75,13 +75,13 @@
    "name": "outcome_data_quality",
    "level": "warn",
    "ok": true,
-   "detail": "no_data outcomes 28/6376 (0%)"
+   "detail": "no_data outcomes 28/6424 (0%)"
   },
   {
    "name": "peak_multiple_sane",
    "level": "warn",
    "ok": true,
-   "detail": "outcomes >100x: 48/6376 (0.8%) → candle glitch leaking into peaks"
+   "detail": "outcomes >100x: 48/6424 (0.7%) → candle glitch leaking into peaks"
   },
   {
    "name": "universe_clean",
@@ -122,8 +122,8 @@
   {
    "name": "paper_ret_sane",
    "level": "warn",
-   "ok": false,
-   "detail": "paper closes > +1000% in 7d: 5 → candle glitch in fills?"
+   "ok": true,
+   "detail": "paper closes > +1000% in 7d: 0 → candle glitch in fills?"
   },
   {
    "name": "cluster_size_sane",
