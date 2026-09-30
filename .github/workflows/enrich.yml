@@ -1,8 +1,9 @@
 name: enrich
 
 on:
-  schedule:
-    - cron: "17 * * * *"   # hourly, offset from collect
+  # PAUSED 09-30 (owner): schedule off. Resume = uncomment + re-activate pg_cron (HANDOFF).
+  # schedule:
+  #   - cron: "17 * * * *"   # hourly, offset from collect
   workflow_dispatch:
   push:
     branches: [main]

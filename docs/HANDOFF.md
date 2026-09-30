@@ -1,5 +1,16 @@
 # HANDOFF — 새 세션이 이어받기 위한 현재 상태
 
+> ## ⏸ 일시 중단 (2026-09-30, 소유자 결정)
+> 소유자가 다른 프로젝트에 집중하기 위해 **전체 자동화를 중단**. 재개 여부는 소유자가 결정.
+> - 중단 시점 상태: v1 페이퍼 전략 청산 38건 평균 +39%±15%(1.5일, 표본 부족), 새 대조군(alive·계보 제외) 막 시작, 결과 규칙 v5 재평가 ~31%. 실매매 기능 없음(가상 매매만).
+> - 중단 직전 판단(09-30): 10월 실매매로 의미 있는 수익을 낼 근거 부족 — 페이퍼 체결 낙관(거래 끊김 청산 +66%가 진입 시 유동성으로 비용 계산), 리플레이는 +1%±25%, 실거래 비용(MEV·실패·지연) 미반영, 전략 용량이 수십 SOL 수준. 재개 시 첫 작업 권장: **Jupiter 견적(서명 없음)으로 페이퍼 체결가 괴리 측정**.
+> - 멈춘 것 (모두 **삭제 아님, 비활성화** — 데이터·코드·DB 그대로):
+>   1. Supabase pg_cron 5개(`gh_collect`, `gh_enrich`, `gh_stats`, `gh_outcomes`, `gh_paper`) → `active=false`
+>   2. GitHub 워크플로 `schedule:` 백업 cron 5개 주석 처리(collect/enrich/outcomes/stats/paper). `workflow_dispatch`는 남아 있어 수동 실행 가능
+>   3. Claude 루틴 2개(데일리 리뷰 `trig_019pL9K6JZfS8RGoivWSCW52`, 6h 점검 `trig_0129bbVmvb9fETsSuTmhnbBf`) → disabled
+> - 재개 절차: ① Supabase `select cron.alter_job(jobid, active := true) from cron.job where jobname like 'gh_%';` ② 워크플로 5개 `schedule:` 주석 해제 후 브랜치→CI→main ③ 루틴 2개 enable(루틴 프롬프트의 작업 브랜치명 `claude/typesafe-jev-pricing-4tueat`는 현재 브랜치로 갱신 필요) ④ 중단 기간 동안 토큰 결과 평가가 비므로 첫날 outcome_backlog 경고는 정상.
+> - 열린 포지션은 중단 시점 상태로 멈춤(재개 시 paper 러너가 캔들로 다시 계산).
+
 > 새 채팅에서 "docs/HANDOFF.md 읽고 이어서" 로 시작. 이 문서는 상태가 바뀔 때마다 갱신.
 
 ## 문서 지도

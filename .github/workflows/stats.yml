@@ -1,8 +1,9 @@
 name: stats
 
 on:
-  schedule:
-    - cron: "37 * * * *"   # hourly, after enrich
+  # PAUSED 09-30 (owner): schedule off. Resume = uncomment + re-activate pg_cron (HANDOFF).
+  # schedule:
+  #   - cron: "37 * * * *"   # hourly, after enrich
   workflow_dispatch:
   push:
     branches: [main]

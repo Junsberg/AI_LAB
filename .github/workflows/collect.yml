@@ -1,8 +1,9 @@
 name: collect
 
 on:
-  schedule:
-    - cron: "*/10 * * * *"   # public repo: Actions minutes are unlimited
+  # PAUSED 09-30 (owner): schedule off. Resume = uncomment + re-activate pg_cron (HANDOFF).
+  # schedule:
+  #   - cron: "*/10 * * * *"   # public repo: Actions minutes are unlimited
   workflow_dispatch:
   push:
     branches: [main]

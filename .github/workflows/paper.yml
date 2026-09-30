@@ -3,8 +3,9 @@ name: paper
 # lineage_v0 paper runner. Primary trigger: Supabase pg_cron → workflow_dispatch every
 # 10 minutes (like collect); the GitHub schedule below is the backup.
 on:
-  schedule:
-    - cron: "3-59/10 * * * *"
+  # PAUSED 09-30 (owner): schedule off. Resume = uncomment + re-activate pg_cron (HANDOFF).
+  # schedule:
+  #   - cron: "3-59/10 * * * *"
   workflow_dispatch:
   push:
     branches: [main]
