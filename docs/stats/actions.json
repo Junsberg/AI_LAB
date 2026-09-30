@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-09-30T04:37:27Z",
+ "generated_at": "2026-09-30T05:38:07Z",
  "window_h": 24,
  "runs": 415,
  "by_workflow": {
@@ -29,11 +29,11 @@
    "push:success": 1,
    "schedule:success": 4
   },
-  "replay": {
-   "push:success": 1
-  },
   "ci": {
    "push:success": 5
+  },
+  "replay": {
+   "push:success": 1
   }
  },
  "failures": []
