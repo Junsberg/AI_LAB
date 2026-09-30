@@ -53,7 +53,10 @@ def run() -> dict:
               (select count(*) from wallet_edges where amount_sol > 10000) edge_huge,
               (select count(*) from tokens where created_at > now() or created_at < '2026-09-01') bad_timestamps,
               (select count(*) from wallet_edges where src = dst) self_edges,
+              -- sim v5 (confirmed highs) went live with lineage_v1; v0 closes carry the
+              -- old lone-print glitch and would mask new ones until they age out
               (select count(*) from positions where closed_at > now() - interval '7 days'
+                 and coalesce(meta->>'strategy', '') <> 'lineage_v0'
                  and pnl_sol / nullif(entry_sol, 0) > 10) paper_ret_over10x,
               (select coalesce(max(cnt),0) from (select cluster_id, count(*) cnt from wallets where cluster_id is not null group by 1) x) max_cluster_wallets,
               -- largest cluster that contains a hub wallet (degree >= 3). A relay chain

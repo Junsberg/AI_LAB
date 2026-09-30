@@ -52,7 +52,11 @@ def test_unknown_cluster_is_not_excluded_but_first_launch_is():
     assert pr.lineage_excluded(row(score=None, tokens_total=0), P) == "first_launch"
 
 
-def test_control_is_deterministic_and_about_5pct():
-    assert pr.is_control("abc") == pr.is_control("abc")
-    share = sum(pr.is_control(f"x{i}") for i in range(20000)) / 20000
-    assert 0.04 < share < 0.06
+def test_control_is_alive_tokens_that_lineage_excluded():
+    ok, m = pr.control_pick("first_launch", live(), P, NOW, 0)
+    assert ok and m["recent_slots_traded"] == 3
+    assert pr.control_pick("bad_lineage", live(), P, NOW, 0)[0]
+    assert not pr.control_pick("first_launch", [], P, NOW, 0)[0]  # excluded but not alive
+    assert not pr.control_pick(None, live(), P, NOW, 0)[0]  # the strategy's own entries
+    assert not pr.control_pick("low_liquidity", live(), P, NOW, 0)[0]  # failed a shared gate
+    assert not pr.control_pick("first_launch", live(), P, NOW, pr.CONTROL_MAX_OPEN)[0]

@@ -106,7 +106,7 @@ QUERIES: dict[str, str] = {
     """,
     # lineage_v0 paper book: strategy (paper) vs control (paper_control), return on cost
     "paper_summary": """
-        select coalesce(meta->>'strategy', '?') strategy, mode,
+        select coalesce(meta->>'strategy', '?') strategy, mode, coalesce(meta->>'control_kind', '-') control_kind,
                count(*) filter (where closed_at is null) open, count(closed_at) closed,
                round(avg(pnl_sol / nullif(entry_sol, 0)) filter (where closed_at is not null
                      and exit_reason <> 'no_fill'), 4) mean_ret,
@@ -120,13 +120,13 @@ QUERIES: dict[str, str] = {
                coalesce(sum(pnl_sol) filter (where closed_at is not null), 0) pnl_sol,
                min(opened_at) first_opened
                , max(pnl_sol / nullif(entry_sol, 0)) filter (where closed_at is not null) max_ret
-        from positions where mode in ('paper', 'paper_control') group by 1, 2 order by 1, 2
+        from positions where mode in ('paper', 'paper_control') group by 1, 2, 3 order by 1, 2, 3
     """,
     "paper_exit_reasons": """
-        select coalesce(meta->>'strategy', '?') strategy, mode, exit_reason, count(*) n,
-               round(avg(pnl_sol / nullif(entry_sol, 0)), 4) mean_ret
+        select coalesce(meta->>'strategy', '?') strategy, mode, coalesce(meta->>'control_kind', '-') control_kind,
+               exit_reason, count(*) n, round(avg(pnl_sol / nullif(entry_sol, 0)), 4) mean_ret
         from positions where closed_at is not null and mode in ('paper', 'paper_control')
-        group by 1, 2, 3 order by 1, 2, 4 desc
+        group by 1, 2, 3, 4 order by 1, 2, 3, 5 desc
     """,
     "paper_decisions_24h": """
         select params_version, decision, coalesce(reject_reason, '-') reason, count(*) n

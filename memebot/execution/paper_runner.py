@@ -3,9 +3,10 @@
 1. Decide every token once, between launch + alive_decide_after_min and +60 min
    (one `signals` row per mint and params version): gates (top10, liquidity) →
    lineage EXCLUSION (bad cluster, a cluster's first-ever token) → alive trigger
-   (signals/alive.py, 5-minute candles closed before now). A deterministic 5% of the
-   gate-passing tokens also open `paper_control` positions, whatever the strategy
-   decided: same exits, same fills — the unfiltered baseline the strategy must beat.
+   (signals/alive.py, 5-minute candles closed before now). Tokens that pass every
+   gate and are alive but were EXCLUDED by lineage open `paper_control` positions
+   (control_pick): same size, exits and fills — strategy − control = the lineage
+   filter's value.
    (lineage_v0, cluster score >= 0.9, selected tokens that had already stopped
    trading; 09-27 replay, 09-28 review.)
 2. Re-simulate every open position from its entry on 5-minute candles
@@ -18,7 +19,6 @@ max position size, daily realised loss, hard stop. Nothing here can place a real
 from __future__ import annotations
 
 import asyncio
-import hashlib
 import json
 import time
 from datetime import datetime, timedelta, timezone
@@ -43,9 +43,9 @@ from memebot.signals.alive import alive
 log = structlog.get_logger()
 HORIZON_S = 24 * 3600  # same as the replay report
 FEE_PCT = 1.0  # DEX fee + priority fee, per side
-CONTROL_EVERY = 20  # 1 in 20 gate-passing, non-selected tokens → control (5%)
-CONTROL_MAX_OPEN = 10
-CONTROL_SIZE_SOL = 0.2
+LINEAGE_REASONS = ("bad_lineage", "first_launch")
+CONTROL_MAX_OPEN = 20
+CONTROL_KIND = "alive_lineage_excluded"  # positions.meta.control_kind since 09-30
 DECIDE_WINDOW = timedelta(minutes=60)  # decide between launch+30min and launch+90min
 RISK_WAIT = timedelta(minutes=60)  # after launch, wait this long for a rugcheck snapshot
 RECHECK_AFTER = timedelta(minutes=30)  # candle refresh cadence per open position
@@ -77,8 +77,16 @@ def position_size(p: Params) -> float:
     return round(p.risk.max_position_sol * 0.4, 4)
 
 
-def is_control(mint: str) -> bool:
-    return int(hashlib.sha256(mint.encode()).hexdigest()[:8], 16) % CONTROL_EVERY == 0
+def control_pick(reason: str | None, candles: list | None, p: Params, now_ts: int,
+                 open_control: int) -> tuple[bool, dict]:
+    """Control = the tokens lineage EXCLUDED that are otherwise exactly what the strategy
+    buys (same gates, alive at the same moment, same size and exits). Strategy − control
+    then measures the lineage filter alone. (Until 09-30 the control was a random 5% of
+    gate-passers; half never traded after entry, so it measured "alive", not lineage.)"""
+    if reason not in LINEAGE_REASONS or candles is None or open_control >= CONTROL_MAX_OPEN:
+        return False, {}
+    ok, _, m = alive(candles, now_ts, p.thresholds)
+    return ok, m
 
 
 def gate(row: dict, attrs: dict, p: Params) -> tuple[str, str | None]:
@@ -171,8 +179,8 @@ def _book() -> tuple[int, int, float]:
 
 def _record(row: dict, attrs: dict, decision: str, reason: str | None, metrics: dict,
             control: bool, p: Params, now: datetime) -> None:
-    """One signals row per mint; a strategy position when entered, and independently a
-    control position for the deterministic 5% of gate-passers (the unfiltered baseline)."""
+    """One signals row per mint; a strategy position when entered, or a control position
+    when lineage excluded an otherwise-buyable token (control_pick)."""
     liq = liquidity_sol(attrs)
     snap = {"strategy": p.thresholds.strategy, "cluster_id": row["cluster_id"], "cluster_score": row["score"],
             "cluster_tokens": row["tokens_total"], "cluster_evaluated": row["evaluated"], "liquidity_sol": liq,
@@ -188,7 +196,7 @@ def _record(row: dict, attrs: dict, decision: str, reason: str | None, metrics: 
             (row["mint"], p.version, row["score"], row["score"] or 0, decision, reason, json.dumps(snap)),
         ).fetchone()
         for mode in modes if sig else []:
-            size = position_size(p) if mode == "paper" else CONTROL_SIZE_SOL
+            size = position_size(p)  # control uses the strategy's size: same costs, comparable returns
             c.execute(
                 """insert into positions(mint, signal_id, mode, opened_at, entry_sol, entry_price,
                                          size_tokens, remaining_tokens, meta)
@@ -197,7 +205,8 @@ def _record(row: dict, attrs: dict, decision: str, reason: str | None, metrics: 
                 (row["mint"], sig["id"], mode, now, size, float(attrs.get("base_token_price_usd") or 0),
                  json.dumps({"pool": row["pool_address"], "entry_candle_ts": int(now.timestamp()) // 300 * 300,
                              "cost_pct": cost_pct(size, liq), "strategy": p.thresholds.strategy,
-                             "provisional_price": True})),
+                             "provisional_price": True}
+                            | ({"control_kind": CONTROL_KIND} if mode == "paper_control" else {}))),
             )
         c.commit()
 
@@ -288,12 +297,13 @@ async def run(p: Params | None = None, budget_s: float = RUN_BUDGET_S) -> dict:
                         continue  # lookup failed; next run retries while the window lasts
                     a = attrs[row["pool_address"]]
                     g, _ = gate(row, a, p)
-                    control = g == "pass" and is_control(row["mint"]) and open_c < CONTROL_MAX_OPEN
                     candles = None
-                    if g == "pass" and not lineage_excluded(row, p):
+                    if g == "pass":
                         launch = int(row["created_at"].timestamp())
                         candles = await _candles(client, row["pool_address"], launch, now_ts, deadline)
                     decision, reason, m = decide(row, a, candles, p, now_ts, open_s, day_pnl)
+                    control, cm = control_pick(reason, candles, p, now_ts, open_c)
+                    m = m or cm
                     stats["decided"][decision] = stats["decided"].get(decision, 0) + 1
                     if decision == "wait":
                         continue

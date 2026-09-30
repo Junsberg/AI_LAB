@@ -148,7 +148,7 @@ async def run(params: Params, horizon_h: int = 24, budget_s: float = 40 * 60) ->
     sample = random.Random(SEED).sample(eligible, min(SAMPLE_MAX, len(eligible)))
 
     deadline = time.monotonic() + budget_s
-    done: dict[str, list] = {"strategy": [], "control": []}
+    done: dict[str, list] = {"strategy": [], "control": [], "excluded_alive": []}
     reasons: dict[str, int] = {}
     async with httpx.AsyncClient(timeout=30, headers={"Accept": "application/json"}) as client:
         try:
@@ -180,6 +180,8 @@ async def run(params: Params, horizon_h: int = 24, budget_s: float = 40 * 60) ->
                 done["control"].append(rec)
                 if why is None:
                     done["strategy"].append(rec)
+                elif ok and row["lineage_excluded"]:
+                    done["excluded_alive"].append(rec)  # the paper runner's control since 09-30
                 if time.monotonic() >= deadline:
                     raise BudgetExhausted
         except BudgetExhausted:
@@ -199,8 +201,9 @@ async def run(params: Params, horizon_h: int = 24, budget_s: float = 40 * 60) ->
         "exits_not_simulated": list(NOT_SIMULATED),
         "gates_unapplied": ["min_liquidity_sol (no SOL/USD at decision time)", "max_bundle_pct (no bundle data)"],
         "known_bias": ["cluster membership is current, not point-in-time",
-                       "control = every sampled gate-passer (strategy is a subset of it)"],
-        "summary": {"strategy": summarize(done["strategy"]), "control": summarize(done["control"])},
+                       "control = every sampled gate-passer (strategy is a subset of it)",
+                       "excluded_alive = alive but lineage-excluded (the paper control since 09-30)"],
+        "summary": {k: summarize(v) for k, v in done.items()},
         "trades": done,
     }
 
