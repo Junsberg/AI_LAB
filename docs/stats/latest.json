@@ -1,10 +1,10 @@
 {
- "generated_at": "2026-09-30T00:37:15.436499+00:00",
+ "generated_at": "2026-09-30T00:45:51.503850+00:00",
  "counts": [
   {
-   "tokens": 7408,
-   "tokens_24h": 1128,
-   "deployers": 5456,
+   "tokens": 7415,
+   "tokens_24h": 1131,
+   "deployers": 5461,
    "deployers_traced": 3953,
    "deployers_unknown_src": 627,
    "edges": 7762,
@@ -12,28 +12,28 @@
    "multi_token_clusters": 671,
    "outcomes": 6263,
    "rugged": 1560,
-   "tenx": 268,
-   "with_risk": 7408,
-   "signals": 2593,
-   "positions": 127,
+   "tenx": 266,
+   "with_risk": 7415,
+   "signals": 2595,
+   "positions": 128,
    "hypotheses": 0
   }
  ],
  "risk_distribution": [
   {
    "top10_p50": 9.2,
-   "top10_p90": 56.8,
+   "top10_p90": 56.6,
    "insiders_avg": 0.0,
-   "lp_locked": 3054,
+   "lp_locked": 3055,
    "freeze_on": 6,
    "mint_on": 1,
-   "n": 7330
+   "n": 7337
   }
  ],
  "tokens_per_hour_24h": [
   {
    "h": "2026-09-29 00:00",
-   "n": 23
+   "n": 19
   },
   {
    "h": "2026-09-29 01:00",
@@ -129,7 +129,7 @@
   },
   {
    "h": "2026-09-30 00:00",
-   "n": 22
+   "n": 29
   }
  ],
  "top_deployers": [
@@ -142,10 +142,10 @@
   },
   {
    "deployer": "HgzeyuDtzrssR9L5VZVCTqzVqYtuTKvr61HuH7Unwky7",
-   "n": 32,
-   "syms": "TRUMP,TRUMP,TRUMP,TRUMP,EARN,BARSTOOL,VAULT,VAULT,inu,moin,BOB,all/in,孙宇晨奖,FIM,TREND,Loomer,Zubit,FOMO,ZSOL,done.fun,ber,AI,COCKROACH,FLOATR,PACKS,Liza,OpenSI,♾️,SI,SI,SI,SI",
+   "n": 33,
+   "syms": "TRUMP,TRUMP,TRUMP,TRUMP,EARN,BARSTOOL,VAULT,VAULT,inu,moin,BOB,all/in,孙宇晨奖,FIM,TREND,Loomer,Zubit,FOMO,ZSOL,done.fun,ber,AI,COCKROACH,FLOATR,PACKS,Liza,OpenSI,♾️,SI,SI,SI,SI,NUTFLEX",
    "first_t": "09-26 21:17",
-   "last_t": "09-29 23:49"
+   "last_t": "09-30 00:37"
   },
   {
    "deployer": "9baMg22GMZzsp68rvmrUAVP6ZdrrmJnTcndwy4QudsMT",
@@ -299,25 +299,25 @@
  "outcomes_summary": [
   {
    "rug_reason": "dead",
-   "n": 3062,
+   "n": 3058,
    "p50_peak": 1.12,
-   "p90_peak": 2.54,
+   "p90_peak": 2.53,
    "max_peak": 844.45,
    "p50_entry": 1.0,
    "p90_entry": 1.47,
    "entry_10x": 4,
-   "v4": 3062
+   "v4": 3058
   },
   {
    "rug_reason": "none",
-   "n": 1612,
+   "n": 1616,
    "p50_peak": 1.0,
-   "p90_peak": 6.9,
+   "p90_peak": 6.85,
    "max_peak": 633.43,
    "p50_entry": 1.05,
-   "p90_entry": 4.49,
+   "p90_entry": 4.48,
    "entry_10x": 23,
-   "v4": 839
+   "v4": 843
   },
   {
    "rug_reason": "price_collapse",
@@ -358,7 +358,7 @@
    "bucket": "2-3",
    "n": 777,
    "rug_rate": 0.203,
-   "p50_peak": 1.09
+   "p50_peak": 1.08
   },
   {
    "bucket": "4+",
@@ -377,7 +377,7 @@
   {
    "src": "rugcheck",
    "verified": "-",
-   "n": 6055
+   "n": 6062
   },
   {
    "src": "rpc",
@@ -471,9 +471,9 @@
   },
   {
    "deployer": "HgzeyuDtzrssR9L5VZVCTqzVqYtuTKvr61HuH7Unwky7",
-   "n_tokens": 14,
-   "n_symbols": 11,
-   "avg_creator_pct": 15.8
+   "n_tokens": 15,
+   "n_symbols": 12,
+   "avg_creator_pct": 14.75
   }
  ],
  "funding_sources": [
@@ -495,7 +495,7 @@
   },
   {
    "src": "untraced",
-   "n": 2
+   "n": 7
   }
  ],
  "paper_summary": [
@@ -526,7 +526,7 @@
   {
    "strategy": "lineage_v1",
    "mode": "paper",
-   "open": 5,
+   "open": 6,
    "closed": 33,
    "mean_ret": 0.3126,
    "stderr": 0.1495,
@@ -632,19 +632,13 @@
    "params_version": 1,
    "decision": "skip",
    "reason": "lineage_below",
-   "n": 21
+   "n": 16
   },
   {
    "params_version": 1,
    "decision": "reject",
    "reason": "concentrated",
-   "n": 6
-  },
-  {
-   "params_version": 1,
-   "decision": "reject",
-   "reason": "low_liquidity",
-   "n": 4
+   "n": 3
   },
   {
    "params_version": 1,
@@ -653,10 +647,16 @@
    "n": 2
   },
   {
+   "params_version": 1,
+   "decision": "reject",
+   "reason": "low_liquidity",
+   "n": 2
+  },
+  {
    "params_version": 2,
    "decision": "reject",
    "reason": "low_liquidity",
-   "n": 753
+   "n": 754
   },
   {
    "params_version": 2,
@@ -680,7 +680,7 @@
    "params_version": 2,
    "decision": "enter",
    "reason": "-",
-   "n": 38
+   "n": 39
   },
   {
    "params_version": 2,
