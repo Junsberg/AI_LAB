@@ -1,39 +1,39 @@
 {
- "generated_at": "2026-09-30T03:17:40Z",
+ "generated_at": "2026-09-30T03:37:34Z",
  "window_h": 24,
  "runs": 416,
  "by_workflow": {
-  "collect": {
-   "push:in_progress": 1,
-   "workflow_dispatch:success": 144,
-   "schedule:success": 5
-  },
-  "enrich": {
-   "push:pending": 1,
+  "stats": {
    "workflow_dispatch:in_progress": 1,
+   "push:success": 1,
    "workflow_dispatch:success": 23,
    "schedule:success": 4
-  },
-  "replay": {
-   "push:in_progress": 1
-  },
-  "paper": {
-   "push:in_progress": 1,
-   "workflow_dispatch:success": 144,
-   "schedule:success": 5
-  },
-  "stats": {
-   "push:in_progress": 1,
-   "workflow_dispatch:success": 24,
-   "schedule:success": 4
-  },
-  "ci": {
-   "push:success": 5
   },
   "outcomes": {
    "workflow_dispatch:in_progress": 1,
    "workflow_dispatch:success": 47,
    "schedule:success": 4
+  },
+  "paper": {
+   "workflow_dispatch:success": 144,
+   "push:success": 1,
+   "schedule:success": 5
+  },
+  "collect": {
+   "workflow_dispatch:success": 144,
+   "push:success": 1,
+   "schedule:success": 5
+  },
+  "replay": {
+   "push:in_progress": 1
+  },
+  "enrich": {
+   "push:success": 1,
+   "workflow_dispatch:success": 24,
+   "schedule:success": 4
+  },
+  "ci": {
+   "push:success": 5
   }
  },
  "failures": []
