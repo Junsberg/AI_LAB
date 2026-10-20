@@ -875,10 +875,10 @@ $('theme').addEventListener('click', () => {
   root.dataset.theme = dark ? 'light' : 'dark'; lsSet('btc-theme', root.dataset.theme);
   if (S) renderAll();
 });
-let hiddenAt = 0;
+let hiddenAt = document.hidden ? Date.now() : 0;   // 0 = we have not seen the page hidden yet (never treat that as a long absence)
 document.addEventListener('visibilitychange', () => {
   if (document.hidden) { hiddenAt = Date.now(); return; }
-  const away = Date.now() - hiddenAt;
+  const away = hiddenAt ? Date.now() - hiddenAt : 0;
   if (away > 30 * 60e3) return location.reload();          // pick up a newer build (OKX / Coinbase CVD, new code)
   if (away > 20e3) loadTF(state.fallback ? (retryTf || '15m') : state.tf, { fresh: state.fallback });   // the socket may have slept: top up the gap (full reload only from the fallback)
   if (!ws || ws.readyState > 1) connect();
