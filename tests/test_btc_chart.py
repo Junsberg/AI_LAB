@@ -127,3 +127,73 @@ def test_publish_keeps_a_single_force_pushed_commit(tmp_path):
     shown = subprocess.run(["git", "--git-dir", str(remote), "show", "gh-pages:index.html"],
                            capture_output=True, text=True, check=True).stdout
     assert shown == "v3"
+
+
+# ---- the page re-implements the pure maths in JS; keep it identical to the Python versions ----
+import json
+import random
+import shutil
+from pathlib import Path
+
+NODE = shutil.which("node")
+
+
+def _run_js(snippet: str):
+    html = (Path(__file__).parent.parent / "btc_chart" / "template.html").read_text(encoding="utf-8")
+    pure = html.split("/*PURE*/")[1].split("/*END PURE*/")[0]
+    # script goes via stdin: a 400-candle JSON blows the Windows command-line length limit
+    res = subprocess.run(
+        [NODE, "-"], input=pure + "\n" + snippet, capture_output=True, text=True, encoding="utf-8", timeout=30
+    )
+    assert res.returncode == 0, res.stderr
+    return json.loads(res.stdout)
+
+
+def _candles(n, tf_ms, seed=7):
+    rnd, px, out = random.Random(seed), 80000.0, []
+    for i in range(n):
+        o = px
+        c = o + rnd.uniform(-400, 400)
+        hi, lo = max(o, c) + rnd.uniform(0, 250), min(o, c) - rnd.uniform(0, 250)
+        out.append(Candle(i * tf_ms, o, hi, lo, c, 1000.0, 400.0))
+        px = c
+    return out
+
+
+@pytest.mark.skipif(NODE is None, reason="node not installed")
+def test_js_ema_matches_python():
+    closes = [c.close for c in _candles(300, HOUR)]
+    got = _run_js(f"console.log(JSON.stringify(ema({json.dumps(closes)}, 50)))")
+    want = ema(closes, 50)
+    assert got[:49] == [None] * 49
+    assert all(g == pytest.approx(w) for g, w in zip(got[49:], want[49:]))
+
+
+@pytest.mark.skipif(NODE is None, reason="node not installed")
+def test_js_fvgs_match_python():
+    cs = _candles(400, 4 * HOUR)
+    now = cs[-1].t + 4 * HOUR - 1  # the last candle is still forming
+    rows = [[c.t, c.open, c.high, c.low, c.close] for c in cs]
+    got = _run_js(f"console.log(JSON.stringify(findFvgs({json.dumps(rows)}, '4H', {4 * HOUR}, {now})))")
+    want = [z._asdict() for z in find_fvgs(cs, "4H", 4 * HOUR, now)]
+    assert len(want) > 0
+    assert [(g["kind"], g["t"]) for g in got] == [(w["kind"], w["t"]) for w in want]
+    assert all(g["lo"] == pytest.approx(w["lo"]) and g["hi"] == pytest.approx(w["hi"]) for g, w in zip(got, want))
+    near_js = _run_js(
+        f"const z = findFvgs({json.dumps(rows)}, '4H', {4 * HOUR}, {now}); console.log(JSON.stringify(nearestZones(z, 80000, 6)))"
+    )
+    assert [z["t"] for z in near_js] == [z.t for z in nearest(find_fvgs(cs, "4H", 4 * HOUR, now), 80000, 6)]
+
+
+@pytest.mark.skipif(NODE is None, reason="node not installed")
+def test_js_cumsum_rebase_and_aggregation():
+    out = _run_js(
+        "const cum = cumSum([null, 1, 2, null, -4]);"
+        "const hrs = new Map([[0, 1], [3600000, 2], [7200000, 3], [10800000, 4], [14400000, 10]]);"  # hour 4 starts a new 4h bucket
+        "console.log(JSON.stringify({cum, rb: rebase(cum, 3), agg: [...aggregateHourly(hrs, 4 * 3600000)],"
+        " cl: [...aggregateCloses(new Map([[0, 5], [3600000, 6], [14400000, 7]]), 4 * 3600000)]}))"
+    )
+    assert out["cum"] == [None, 1, 3, 3, -1]
+    assert out["rb"] == [None, -2, 0, 0, -4]  # re-based so index 3 - 1 == 0 (value at i0-1 = 3)
+    assert out["agg"] == [[0, 10], [14400000, 10]]  # first bucket complete (4 hours); second is the forming one
+    assert out["cl"] == [[0, 6], [14400000, 7]]

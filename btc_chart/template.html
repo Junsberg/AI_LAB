@@ -139,18 +139,38 @@
     .kpis { margin: 16px 0 0; padding: 2px 2px 6px; grid-auto-flow: row; grid-template-columns: repeat(auto-fit, minmax(124px, 1fr)); overflow: visible; }
     #main { height: 600px; }
   }
+
+  /* timeframe + live */
+  .tfrow { margin: 10px 0 2px; }
+  .seg.tf { display: flex; width: 100%; padding: 3px; border-radius: 12px; }
+  .seg.tf button { flex: 1; font-size: 13.5px; padding: 8px 0; border-radius: 10px; }
+  .seg.tf button:disabled { opacity: .35; cursor: default; }
+  .seg button.on { color: var(--fg); background: var(--card); box-shadow: 0 1px 3px rgba(0,0,0,.12); }
+  #emaall { padding: 4px 12px; }
+  #emaall.on { color: var(--fg); border-color: var(--fg2); }
+  .wrap { position: relative; }
+  .ld { position: absolute; inset: 0; display: grid; place-items: center; color: var(--mute); font-size: 13px;
+    background: color-mix(in srgb, var(--card) 70%, transparent); border-radius: 12px; z-index: 5; }
+  .ld[hidden], .none[hidden], .cvd[hidden], .banner[hidden] { display: none; }
+  .banner { margin-top: 8px; cursor: pointer; padding: 9px 12px; border-radius: 12px; font-size: 12.5px; color: var(--fg2);
+    background: color-mix(in srgb, var(--s4) 16%, transparent); border: 1px solid color-mix(in srgb, var(--s4) 40%, transparent); }
+  .price.tu { animation: tu .7s ease-out; } .price.td { animation: td .7s ease-out; }
+  @keyframes tu { from { color: var(--up); } to { color: var(--fg); } }
+  @keyframes td { from { color: var(--down); } to { color: var(--fg); } }
+  .live-ok .live { animation: pulse 1.6s infinite; }
+  @keyframes pulse { 50% { box-shadow: 0 0 0 6px color-mix(in srgb, var(--up) 0%, transparent); } }
 </style>
 </head>
 <body data-tab="chart">
 <div class="page">
   <header>
     <div class="top">
-      <div class="brand"><span class="logo">₿</span>BTC<small>· 1H · Binance 현물</small></div>
+      <div class="brand"><span class="logo">₿</span>BTC<small>· Binance 현물</small></div>
       <div class="spacer"></div>
-      <div class="stamp" id="stamp"><span class="live"></span><span id="ago"></span></div>
+      <div class="stamp" id="stamp"><span class="live"></span><span id="ago">연결 중…</span></div>
       <button class="icon" id="theme" aria-label="라이트/다크 전환" title="라이트/다크 전환"></button>
     </div>
-    <div class="pxrow"><div class="price" id="px"></div><span class="pill" id="chg"></span></div>
+    <div class="pxrow"><div class="price" id="px">–</div><span class="pill" id="chg"></span></div>
     <div class="kpis" id="kpis"></div>
   </header>
 
@@ -164,8 +184,10 @@
     <div class="col">
       <section class="card" data-sec="chart">
         <div class="chead"><div><h2>가격 · EMA · FVG</h2><div class="sub" id="hint"></div></div></div>
-        <div class="tools"><div class="seg" id="ranges"></div><div id="emachips" style="display:contents"></div></div>
-        <div id="main"></div>
+        <div class="tfrow"><div class="seg tf" id="tfs"></div></div>
+        <div class="tools"><div class="seg" id="counts"></div><div id="emarow" style="display:contents"></div></div>
+        <div class="wrap"><div id="main"></div><div class="ld" id="ld">불러오는 중…</div></div>
+        <div class="banner" id="banner" hidden></div>
       </section>
       <section class="card" data-sec="fvg">
         <div class="chead"><div><h2>FVG 맵</h2><div class="sub">4H · 1D, 아직 채워지지 않은 구간</div></div></div>
@@ -177,17 +199,113 @@
 </div>
 <script>/*__ECHARTS__*/</script>
 <script>
-const D = /*__DATA__*/null;
-const HOUR = 3600e3, n = D.candles.length, t0 = D.candles[0][0];
+const D = /*__DATA__*/null;   // build snapshot: OKX / Coinbase CVD (hourly) and the offline fallback
+
+/*PURE*/
+const HOUR = 3600e3;
+const TFS = { '15m': 15 * 60e3, '1h': HOUR, '4h': 4 * HOUR, '1d': 24 * HOUR };
+
+/** EMA seeded with the SMA of the first n values; null until then (same as indicators.ema). */
+function ema(values, n) {
+  const out = new Array(values.length).fill(null);
+  if (values.length < n) return out;
+  let prev = 0;
+  for (let i = 0; i < n; i++) prev += values[i];
+  prev /= n; out[n - 1] = prev;
+  const k = 2 / (n + 1);
+  for (let i = n; i < values.length; i++) { prev = values[i] * k + prev * (1 - k); out[i] = prev; }
+  return out;
+}
+
+/** Unfilled 3-candle fair value gaps (same rules as indicators.find_fvgs). Candle = [t, o, h, l, c, ...]. */
+function findFvgs(c, tf, tfMs, nowMs, minGap = 0.0005) {
+  const zones = [];
+  for (let i = 2; i < c.length; i++) {
+    if (c[i][0] + tfMs > nowMs) break;
+    const a = c[i - 2], mid = c[i - 1], x = c[i];
+    let kind, lo, hi;
+    if (x[3] > a[2]) { kind = 'bull'; lo = a[2]; hi = x[3]; }
+    else if (x[2] < a[3]) { kind = 'bear'; lo = x[2]; hi = a[3]; }
+    else continue;
+    if ((hi - lo) / x[4] < minGap) continue;
+    let filled = false;
+    for (let j = i + 1; j < c.length; j++) {
+      const l = c[j];
+      if (kind === 'bull') { if (l[3] <= lo) { filled = true; break; } hi = Math.min(hi, l[3]); }
+      else { if (l[2] >= hi) { filled = true; break; } lo = Math.max(lo, l[2]); }
+    }
+    if (!filled) zones.push({ kind, tf, t: mid[0], lo, hi });
+  }
+  return zones;
+}
+
+/** The n zones closest to price, returned oldest first (same as indicators.nearest). */
+function nearestZones(zones, price, n) {
+  const dist = z => (z.lo <= price && price <= z.hi) ? 0 : Math.min(Math.abs(z.lo - price), Math.abs(z.hi - price));
+  return zones.slice().sort((a, b) => dist(a) - dist(b)).slice(0, n).sort((a, b) => a.t - b.t);
+}
+
+/** Running sum; null until the first non-null delta. */
+function cumSum(deltas) {
+  let s = 0, started = false;
+  return deltas.map(v => { if (v != null) { started = true; s += v; } return started ? s : null; });
+}
+/** Make a cumulative series start at 0 at index i0. */
+function rebase(cum, i0) {
+  const b = i0 > 0 && cum[i0 - 1] != null ? cum[i0 - 1] : 0;
+  return cum.map(v => v == null ? null : v - b);
+}
+/** Values of a time-keyed Map at each candle open time (null where missing). */
+function alignMap(map, times) { return times.map(t => map.has(t) ? map.get(t) : null); }
+/** Merge rows into an existing candle array by open time (replace or append, keeps sorted). */
+function mergeRows(old, rows) {
+  const m = new Map(old.map(r => [r[0], r]));
+  for (const r of rows) m.set(r[0], r);
+  return [...m.values()].sort((a, b) => a[0] - b[0]);
+}
+/**
+ * Sum hourly deltas ({hourOpenMs: delta}) into tfMs buckets. A bucket that is not fully covered is
+ * dropped unless it holds the newest hour (the still-forming one).
+ */
+function aggregateHourly(hourMap, tfMs) {
+  const per = tfMs / HOUR, sums = new Map(), cnt = new Map();
+  let newest = -Infinity;
+  for (const [t, v] of hourMap) {
+    const b = Math.floor(t / tfMs) * tfMs;
+    sums.set(b, (sums.get(b) || 0) + v); cnt.set(b, (cnt.get(b) || 0) + 1); newest = Math.max(newest, t);
+  }
+  const out = new Map();
+  for (const [b, s] of sums) if (cnt.get(b) === per || b + tfMs > newest) out.set(b, s);
+  return out;
+}
+/** Close of the last 1h candle in each tfMs bucket ({openMs: close}); incomplete past buckets are kept (close is the same). */
+function aggregateCloses(closesByHour, tfMs) {
+  const out = new Map(), last = new Map();
+  for (const [t, c] of [...closesByHour].sort((a, b) => a[0] - b[0])) {
+    const b = Math.floor(t / tfMs) * tfMs;
+    if (!last.has(b) || t >= last.get(b)) { last.set(b, t); out.set(b, c); }
+  }
+  return out;
+}
+/** (price/ref - 1) * 100 at each time where both exist. */
+function premiumPct(priceMap, refByTime, times) {
+  return times.map(t => (priceMap.has(t) && refByTime.get(t)) ? (priceMap.get(t) / refByTime.get(t) - 1) * 100 : null);
+}
+/*END PURE*/
+
 const FONT = '-apple-system, "Segoe UI", "Apple SD Gothic Neo", "Malgun Gothic", "Noto Sans KR", sans-serif';
+const EMA_PERIODS = [20, 50, 100, 200];
 const EMA_VARS = { 20: '--e20', 50: '--e50', 100: '--e100', 200: '--e200' };
 const css = k => getComputedStyle(document.documentElement).getPropertyValue(k).trim();
 const pad2 = v => String(v).padStart(2, '0');
 const coarse = matchMedia('(pointer: coarse)').matches;
 const $ = id => document.getElementById(id);
-function fmtT(ms) {
+const lsGet = (k, d) => { try { const v = localStorage.getItem(k); return v == null ? d : v; } catch (e) { return d; } };
+const lsSet = (k, v) => { try { localStorage.setItem(k, v); } catch (e) {} };
+function fmtT(ms, tf) {
   const d = new Date(ms + D.utc_offset * HOUR);
-  return `${pad2(d.getUTCMonth() + 1)}/${pad2(d.getUTCDate())} ${pad2(d.getUTCHours())}:00`;
+  return tf === '1d' ? `${pad2(d.getUTCMonth() + 1)}/${pad2(d.getUTCDate())}`
+    : `${pad2(d.getUTCMonth() + 1)}/${pad2(d.getUTCDate())} ${pad2(d.getUTCHours())}:${pad2(d.getUTCMinutes())}`;
 }
 function fmtBig(v, dec = 2) {
   const a = Math.abs(v), s = v < 0 ? '-' : '';
@@ -202,249 +320,579 @@ const esc = s => String(s).replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', 
 const sgn = (v, f) => (v > 0 ? '+' : v < 0 ? '−' : '') + f(Math.abs(v));
 const arrow = v => v > 0 ? '▲' : v < 0 ? '▼' : '–';
 const dir = v => v > 0 ? 'up' : v < 0 ? 'down' : 'flat';
-const labels = D.candles.map(c => fmtT(c[0]));
-const last = D.candles[n - 1][4], lastUp = last >= D.candles[n - 1][1];
-const PANELS = D.cvd.concat(D.extra || []);
-const isCvd = p => D.cvd.includes(p);
-const lastVal = p => { for (let i = n - 1; i >= 0; i--) if (p.values[i] != null) return [i, p.values[i]]; return [-1, null]; };
-const ago24 = p => p.values[Math.max(0, n - 25)];     // value 24 bars back (index n-25 vs n-1 = 24h)
-const fmtPanel = (p, v, dec) => p.fmt === 'pct' ? (v > 0 ? '+' : v < 0 ? '−' : '') + Math.abs(v).toFixed(3) + '%' : fmtBig(v, dec);
+const lastOf = a => { for (let i = a.length - 1; i >= 0; i--) if (a[i] != null) return a[i]; return null; };
+const anyVal = a => a && a.some(v => v != null);
 
-/* ---------- hero ---------- */
-const ref = D.candles[Math.max(0, n - 25)][4], chg = (last / ref - 1) * 100;
-$('px').innerHTML = fmtP(last) + '<small>USDT</small>';
-$('chg').className = 'pill ' + dir(chg);
-$('chg').textContent = `${arrow(chg)} ${Math.abs(chg).toFixed(2)}% · 24h`;
-const day = D.candles.slice(-24), hi24 = Math.max(...day.map(c => c[2])), lo24 = Math.min(...day.map(c => c[3]));
-
-function kpi(k, v, d, cls) { return `<div class="kpi"><span class="k">${k}</span><b>${v}</b>${d ? `<span class="d ${cls || ''}">${d}</span>` : ''}</div>`; }
-(function () {
-  const rows = [kpi('24h 고가', fmtP0(hi24), `${sgn((hi24 / last - 1) * 100, v => v.toFixed(2))}%`, 'flat'),
-                kpi('24h 저가', fmtP0(lo24), `${sgn((lo24 / last - 1) * 100, v => v.toFixed(2))}%`, 'flat')];
-  for (const p of D.extra || []) {
-    if (!p.values) continue;
-    const [, v] = lastVal(p);
-    if (p.fmt === 'pct') rows.push(kpi(p.title, fmtPanel(p, v), 'Coinbase − Binance', 'flat'));
-    else { const a = ago24(p), c = a ? (v / a - 1) * 100 : 0;
-      rows.push(kpi('OI · Binance 선물', '$' + fmtBig(v, 2), `${arrow(c)} ${Math.abs(c).toFixed(2)}% · 24h`, dir(c))); }
-  }
-  for (const p of D.cvd) if (p.values) { const [, v] = lastVal(p), a = ago24(p) ?? 0, c = v - a;
-    rows.push(kpi(p.title.replace(' CVD', '') + ' 24h', sgn(c, x => fmtBig(x, 1)), `${arrow(c)} ${c >= 0 ? '순매수' : '순매도'}`, dir(c))); }
-  $('kpis').innerHTML = rows.join('');
-})();
-
-/* "n분 전" — also flags a build that has gone stale (PC off) */
-const builtAt = D.generated_ms || null, loadedAt = Date.now();
-function tickAgo() {
-  const el = $('ago');
-  if (!builtAt) { el.textContent = `${D.generated} ${D.tz}`; return; }
-  const m = Math.max(0, Math.round((Date.now() - builtAt) / 60000));
-  el.textContent = m < 1 ? '방금 갱신' : m < 60 ? `${m}분 전 갱신` : m < 1440 ? `${Math.floor(m / 60)}시간 전 갱신` : `${Math.floor(m / 1440)}일 전 갱신`;
-  $('stamp').classList.toggle('stale', m > 90);
-  $('stamp').title = `${D.generated} ${D.tz}` + (m > 90 ? ' — 오래된 데이터 (PC가 꺼져 있었을 수 있어요)' : '');
+/* ---------- data sources (browser talks to the exchanges directly; no server) ---------- */
+const BN = 'https://data-api.binance.vision', FAPI = 'https://fapi.binance.com', CB = 'https://api.exchange.coinbase.com';
+async function getJSON(url) {
+  const r = await fetch(url);
+  if (!r.ok) throw new Error(`HTTP ${r.status}`);
+  return r.json();
 }
-tickAgo(); setInterval(tickAgo, 30000);
-document.addEventListener('visibilitychange', () => {   // coming back to a stale tab: pick up the newest publish
-  if (document.visibilityState === 'visible' && Date.now() - loadedAt > 10 * 60000) location.reload();
-});
+/** Kline rows -> [t, o, h, l, c, quoteVol, takerBuyQuote] */
+const toK = rows => rows.map(r => [r[0], +r[1], +r[2], +r[3], +r[4], +r[7], +r[10]]);
+const spotK = (tf, limit) => getJSON(`${BN}/api/v3/klines?symbol=BTCUSDT&interval=${tf}&limit=${limit}`).then(toK);
+const futK = (tf, limit) => getJSON(`${FAPI}/fapi/v1/klines?symbol=BTCUSDT&interval=${tf}&limit=${limit}`).then(toK);
+const oiHist = (tf, limit) => getJSON(`${FAPI}/futures/data/openInterestHist?symbol=BTCUSDT&period=${tf}&limit=${limit}`)
+  .then(rows => rows.map(r => [+r.timestamp, +r.sumOpenInterestValue]));
+/** Coinbase BTC-USD closes -> Map(openMs -> close). 4h is built from 1h (Coinbase has no 4h). */
+async function cbCloses(tf, pages, recent = false) {
+  const gran = { '15m': 900, '1h': 3600, '4h': 3600, '1d': 86400 }[tf];
+  let end = Date.now(), map = new Map();
+  if (recent) {   // just the newest few bars (used by the 20 s live refresh)
+    const from = new Date(end - (tf === '4h' ? 6 : 4) * gran * 1000).toISOString();
+    for (const r of await getJSON(`${CB}/products/BTC-USD/candles?granularity=${gran}&start=${from}&end=${new Date(end).toISOString()}`)) map.set(r[0] * 1000, +r[4]);
+    return tf === '4h' ? aggregateCloses(map, TFS['4h']) : map;
+  }
+  for (let p = 0; p < pages; p++) {
+    const start = end - 300 * gran * 1000;
+    const q = p === 0 && pages === 1 ? '' : `&start=${new Date(start).toISOString()}&end=${new Date(end).toISOString()}`;
+    const rows = await getJSON(`${CB}/products/BTC-USD/candles?granularity=${gran}${q}`);
+    for (const r of rows) map.set(r[0] * 1000, +r[4]);
+    end = start;
+  }
+  return tf === '4h' ? aggregateCloses(map, TFS['4h']) : map;
+}
 
-/* ---------- state & layout ---------- */
+/* ---------- state ---------- */
+const store = {};   // per timeframe: { tf, K, fut, oi, cb, loadedAt }
+let S = null;       // dataset on screen
+let HTF = { '4h': [], '1d': [] }, fvgZones = [];
+let tick = null;    // latest 24h ticker { c, o, h, l }
+const state = {
+  tf: ['15m', '1h', '4h', '1d'].includes(lsGet('btc-tf', '15m')) ? lsGet('btc-tf', '15m') : '15m',
+  count: +lsGet('btc-count', 0) || (innerWidth < 720 ? 120 : 240),
+  i0: 0, i1: 0,
+  ema: (() => { try { return { 20: 1, 50: 1, 100: 1, 200: 1, ...JSON.parse(lsGet('btc-ema', '{}')) }; } catch (e) { return { 20: 1, 50: 1, 100: 1, 200: 1 }; } })(),
+  fallback: false,
+};
+
+/* ---------- derived series ---------- */
+function computeEma(S) { S.ema = {}; const closes = S.K.map(c => c[4]); for (const p of EMA_PERIODS) S.ema[p] = ema(closes, p); }
+function computeLabels(S) { S.labels = S.K.map(c => fmtT(c[0], S.tf)); S.times = S.K.map(c => c[0]); }
+
+const PANEL_DEFS = [
+  { key: 'binance_spot', title: 'Binance 현물 CVD', color: 's1', kind: 'cvd' },
+  { key: 'binance_fut', title: 'Binance 선물 CVD', color: 's2', kind: 'cvd' },
+  { key: 'coinbase', title: 'Coinbase 현물 CVD', color: 's3', kind: 'cvd', fromBuild: true },
+  { key: 'okx', title: 'OKX 선물 CVD', color: 's4', kind: 'cvd', fromBuild: true },
+  { key: 'binance_oi', title: 'Binance 선물 미결제약정', color: 's5', kind: 'level', sub: '시점 값 · USD' },
+  { key: 'cb_premium', title: 'Coinbase 프리미엄', color: 's3', kind: 'pct', sub: 'Coinbase(USD) − Binance(USDT) 종가 %' },
+];
+/** Hourly deltas from the build snapshot (it stores cumulative values aligned to D.candles). */
+function buildDeltas(key) {
+  const p = D.cvd.find(x => x.key === key);
+  if (!p || !p.values) return null;
+  const m = new Map(); let prev = 0;
+  p.values.forEach((v, i) => { if (v != null) { m.set(D.candles[i][0], v - prev); prev = v; } });
+  return m;
+}
+/** Per-candle raw series for every panel on the current timeframe. */
+function buildPanelData(S) {
+  const times = S.times, tfMs = TFS[S.tf], out = {};
+  out.binance_spot = { deltas: S.K.map(c => 2 * c[6] - c[5]) };
+  out.binance_fut = S.fut ? { deltas: alignMap(new Map(S.fut.map(c => [c[0], 2 * c[6] - c[5]])), times) } : { note: S.err.fut || '불러오는 중…' };
+  for (const key of ['coinbase', 'okx']) {
+    const hm = buildDeltas(key);
+    if (!hm) { out[key] = { note: (D.cvd.find(x => x.key === key) || {}).error || '데이터 없음' }; continue; }
+    if (tfMs > 4 * HOUR || tfMs < HOUR) { out[key] = { note: '1H · 4H 봉에서만 볼 수 있어요 (빌드 데이터 기준)' }; continue; }
+    out[key] = { deltas: alignMap(tfMs === HOUR ? hm : aggregateHourly(hm, tfMs), times) };
+  }
+  out.binance_oi = S.oi ? { values: alignMap(new Map(S.oi), times) } : { note: S.err.oi || '불러오는 중…' };
+  out.cb_premium = S.cb ? { values: premiumPct(S.cb, new Map(S.K.map(c => [c[0], c[4]])), times) } : { note: S.err.cb || '불러오는 중…' };
+  return out;
+}
+
+/* ---------- chart objects ---------- */
 const GROUP = 'btc';
-const state = { i0: Math.max(0, n - (innerWidth < 720 ? Math.min(48, n) : n)), i1: n - 1, ema: { 20: 1, 50: 1, 100: 1, 200: 1 } };
-$('hint').textContent = coarse ? '핀치: 확대/축소 · 좌우로 밀어 이동 · 길게 눌러 값 보기' : '휠: 확대/축소 · 드래그: 이동';
-
-$('panels').innerHTML = PANELS.map((p, k) => {
-  const c = `var(--${p.color})`;
-  if (!p.values) return `<section class="card pan" style="--c:${c}"><div class="chead"><div class="l"><span class="swatch"></span><h2>${esc(p.title)}</h2></div></div><div class="none">데이터 없음 — ${esc((p.error || '').slice(0, 120))}</div></section>`;
-  const [, v] = lastVal(p);
-  let big, d = '', sub;
-  if (isCvd(p)) { const ch = v - (ago24(p) ?? 0); big = sgn(ch, x => fmtBig(x, 1)); d = `<span class="d ${dir(ch)}">${arrow(ch)} ${ch >= 0 ? '순매수' : '순매도'} · 24h</span>`; sub = `누적 · 창 시작=0 (현재 ${fmtBig(v, 1)})`; }
-  else if (p.fmt === 'pct') { big = fmtPanel(p, v); sub = p.sub; }
-  else { big = '$' + fmtBig(v, 2); const a = ago24(p), ch = a ? (v / a - 1) * 100 : 0; d = `<span class="d ${dir(ch)}">${arrow(ch)} ${Math.abs(ch).toFixed(2)}% · 24h</span>`; sub = p.sub; }
-  return `<section class="card pan" style="--c:${c}"><div class="chead"><div class="l"><span class="swatch"></span><div><h2>${esc(p.title)}</h2><div class="sub">${esc(sub)}</div></div></div>` +
-    `<div class="pval"><b>${big}</b>${d}</div></div><div class="cvd" id="c-${p.key}"></div></section>`;
-}).join('');
-
 const main = echarts.init($('main'));
 main.group = GROUP;
-const cvdCharts = {};
-for (const p of PANELS) if (p.values) { const c = echarts.init($('c-' + p.key)); c.group = GROUP; cvdCharts[p.key] = c; }
+const P = {};   // panel key -> { def, card, charts, data }
+$('panels').innerHTML = PANEL_DEFS.map(d => `<section class="card pan" id="p-${d.key}" style="--c:var(--${d.color})">
+  <div class="chead"><div class="l"><span class="swatch"></span><div><h2>${esc(d.title)}</h2><div class="sub" id="ps-${d.key}"></div></div></div>
+  <div class="pval" id="pv-${d.key}"></div></div><div class="cvd" id="c-${d.key}"></div><div class="none" id="pn-${d.key}" hidden></div></section>`).join('');
+for (const d of PANEL_DEFS) { const c = echarts.init($('c-' + d.key)); c.group = GROUP; P[d.key] = { def: d, chart: c, data: {} }; }
 echarts.connect(GROUP);
 
-const ranges = [24, 48, 72].filter(r => r < n).concat([n]);
-$('ranges').innerHTML = ranges.map(r => `<button data-r="${r}">${r === n && n > 72 ? '전체' : r + 'H'}</button>`).join('');
-$('emachips').innerHTML = Object.keys(EMA_VARS).map(k => `<button class="chip on" data-ema="${k}" style="--c:var(${EMA_VARS[k]})"><i></i>EMA ${k}</button>`).join('');
-function markRange() {
+$('tfs').innerHTML = Object.keys(TFS).map(t => `<button data-tf="${t}">${t === '1d' ? '1D' : t === '1h' ? '1H' : t === '4h' ? '4H' : '15m'}</button>`).join('');
+const COUNTS = [60, 120, 240, 500];
+$('counts').innerHTML = COUNTS.map(r => `<button data-r="${r}">${r}</button>`).join('');
+$('emarow').innerHTML = `<button class="chip on" id="emaall" aria-label="EMA 전체 켜기/끄기">EMA</button>` +
+  EMA_PERIODS.map(k => `<button class="chip" data-ema="${k}" style="--c:var(${EMA_VARS[k]})"><i></i>${k}</button>`).join('');
+$('hint').textContent = coarse ? '핀치: 확대/축소 · 좌우로 밀어 이동 · 길게 눌러 값 보기' : '휠: 확대/축소 · 드래그: 이동';
+
+function paintControls() {
+  for (const b of $('tfs').children) b.classList.toggle('on', b.dataset.tf === state.tf);
+  for (const b of $('tfs').children) b.disabled = state.fallback && b.dataset.tf !== '1h';
+  for (const b of $('emarow').querySelectorAll('[data-ema]')) b.classList.toggle('on', !!state.ema[b.dataset.ema]);
+  $('emaall').classList.toggle('on', EMA_PERIODS.some(k => state.ema[k]));
+  markCount();
+}
+function markCount() {
   const len = state.i1 - state.i0 + 1;
-  let best = null;
-  for (const b of $('ranges').children) { const on = Math.abs(len - +b.dataset.r) <= 1; b.classList.toggle('on', on); if (on) best = b; }
+  for (const b of $('counts').children) b.classList.toggle('on', Math.abs(len - +b.dataset.r) <= 1);
 }
-$('ranges').addEventListener('click', e => {
-  const b = e.target.closest('button'); if (!b) return;
-  state.i0 = Math.max(0, n - +b.dataset.r); state.i1 = n - 1;
-  main.dispatchAction({ type: 'dataZoom', startValue: state.i0, endValue: state.i1 });
-  refreshY(); markRange();
-});
-$('emachips').addEventListener('click', e => {
-  const b = e.target.closest('button'); if (!b) return;
-  state.ema[b.dataset.ema] ^= 1; b.classList.toggle('on', !!state.ema[b.dataset.ema]);
-  render();
-});
-$('tabs').addEventListener('click', e => {
-  const b = e.target.closest('button'); if (!b) return;
-  setTab(b.dataset.tab);
-});
-function setTab(t) {
-  document.body.dataset.tab = t;
-  for (const b of $('tabs').children) b.classList.toggle('on', b.dataset.tab === t);
-  try { localStorage.setItem('btc-tab', t); } catch (e) {}
-  requestAnimationFrame(() => { resizeAll(); scrollTo({ top: Math.min(scrollY, $('tabs').offsetTop), behavior: 'instant' }); });
-}
-function resizeAll() { main.resize(); Object.values(cvdCharts).forEach(c => c.resize()); }
 
 function theme() {
   return { fg: css('--fg'), mute: css('--mute'), grid: css('--grid'), rule: css('--rule'), card: css('--card'),
     up: css('--up'), down: css('--down'), bull: css('--bull'), bear: css('--bear') };
 }
+const narrow = () => (main.getWidth() || innerWidth) < 560;
+
+/* ---------- main chart ---------- */
 function tipRow(k, v, col) {
   return `<div style="display:flex;justify-content:space-between;gap:16px"><span style="color:${col || 'inherit'};opacity:${col ? 1 : .65}">${k}</span><b style="font-weight:600">${v}</b></div>`;
 }
 function mainTip(i) {
-  const c = D.candles[i];
-  let h = `<div style="margin-bottom:3px"><b>${labels[i]}</b></div>` +
-    tipRow('O', fmtP(c[1])) + tipRow('H', fmtP(c[2])) + tipRow('L', fmtP(c[3])) + tipRow('C', fmtP(c[4]));
-  for (const [per, a] of Object.entries(D.ema)) if (state.ema[per] && a[i] != null) h += tipRow('EMA ' + per, fmtP(a[i]), css(EMA_VARS[per]));
+  const c = S.K[i];
+  let h = `<div style="margin-bottom:3px"><b>${S.labels[i]}</b></div>` + tipRow('O', fmtP(c[1])) + tipRow('H', fmtP(c[2])) + tipRow('L', fmtP(c[3])) + tipRow('C', fmtP(c[4]));
+  for (const p of EMA_PERIODS) if (state.ema[p] && S.ema[p][i] != null) h += tipRow('EMA ' + p, fmtP(S.ema[p][i]), css(EMA_VARS[p]));
   return h;
 }
 function yRange() {
   let lo = Infinity, hi = -Infinity;
-  for (let i = state.i0; i <= state.i1; i++) { lo = Math.min(lo, D.candles[i][3]); hi = Math.max(hi, D.candles[i][2]); }
+  for (let i = state.i0; i <= state.i1; i++) { lo = Math.min(lo, S.K[i][3]); hi = Math.max(hi, S.K[i][2]); }
   const pad = (hi - lo) * 0.08 || 1;
   return [lo - pad, hi + pad];
 }
-function zones(T, ymin, ymax, narrow) {
-  return D.fvg.filter(z => z.hi > ymin && z.lo < ymax).map(z => {
-    const col = z.kind === 'bull' ? T.bull : T.bear, i0 = Math.max(0, Math.round((z.t - t0) / HOUR));
+function zoneBoxes(T, ymin, ymax) {
+  const n = S.K.length, tiny = narrow();
+  return fvgZones.filter(z => z.hi > ymin && z.lo < ymax).map(z => {
+    let i0 = S.times.findIndex(t => t >= z.t); if (i0 < 0) return null;
+    const col = z.kind === 'bull' ? T.bull : T.bear;
     return [
-      { xAxis: labels[Math.min(i0, n - 1)], yAxis: Math.max(z.lo, ymin),
-        itemStyle: { color: col, opacity: 0.15, borderColor: col, borderType: 'dashed', borderWidth: 1 },
-        label: { show: true, position: 'insideTopRight', color: col, fontSize: narrow ? 10 : 11, fontWeight: 600, formatter: `FVG ${z.tf} ${z.kind === 'bull' ? '▲' : '▼'}` } },
-      { xAxis: labels[n - 1], yAxis: Math.min(z.hi, ymax) },
+      { xAxis: S.labels[i0], yAxis: Math.max(z.lo, ymin), itemStyle: { color: col, opacity: 0.15, borderColor: col, borderType: 'dashed', borderWidth: 1 },
+        label: { show: true, position: 'insideTopRight', color: col, fontSize: tiny ? 10 : 11, fontWeight: 600, formatter: `FVG ${z.tf} ${z.kind === 'bull' ? '▲' : '▼'}` } },
+      { xAxis: S.labels[n - 1], yAxis: Math.min(z.hi, ymax) },
     ];
-  });
+  }).filter(Boolean);
+}
+const candleData = () => S.K.map(c => [c[1], c[4], c[3], c[2]]);
+const lastPrice = () => S.K[S.K.length - 1][4];
+const lastUp = () => { const c = S.K[S.K.length - 1]; return c[4] >= c[1]; };
+function priceLine(T) {
+  const lc = lastUp() ? T.up : T.down;
+  return { silent: true, symbol: 'none', lineStyle: { color: lc, type: 'dotted' },
+    label: { position: 'insideEndTop', formatter: fmtP(lastPrice()), color: '#fff', backgroundColor: lc, padding: [3, 7], borderRadius: 6, fontWeight: 600 },
+    data: [{ yAxis: lastPrice() }] };
 }
 function mainOption(T) {
-  const narrow = main.getWidth() < 560, [ymin, ymax] = yRange();
-  const lc = lastUp ? T.up : T.down;
-  const emaSeries = Object.entries(D.ema).filter(([per]) => state.ema[per]).map(([per, arr]) => ({
-    name: 'EMA ' + per, type: 'line', data: arr, showSymbol: false, silent: true, z: 3,
-    lineStyle: { width: 1.6, color: css(EMA_VARS[per]) }, itemStyle: { color: css(EMA_VARS[per]) },
-  }));
+  const nr = narrow(), [ymin, ymax] = yRange();
   return {
     animation: false, textStyle: { fontFamily: FONT },
-    grid: { left: narrow ? 46 : 60, right: 8, top: 14, bottom: narrow ? 26 : 56 },
-    xAxis: { type: 'category', data: labels, boundaryGap: true, axisLine: { lineStyle: { color: T.rule } },
-      axisTick: { show: false }, axisLabel: { color: T.mute, hideOverlap: true, fontSize: narrow ? 10 : 11 }, axisPointer: { label: { show: true } } },
+    grid: { left: nr ? 46 : 60, right: 8, top: 14, bottom: nr ? 26 : 56 },
+    xAxis: { type: 'category', data: S.labels, boundaryGap: true, axisLine: { lineStyle: { color: T.rule } },
+      axisTick: { show: false }, axisLabel: { color: T.mute, hideOverlap: true, fontSize: nr ? 10 : 11 }, axisPointer: { label: { show: true } } },
     yAxis: { scale: true, min: ymin, max: ymax, splitLine: { lineStyle: { color: T.grid } },
-      axisLabel: { color: T.mute, fontSize: narrow ? 10 : 11, formatter: fmtP0 }, axisPointer: { label: { formatter: p => fmtP(p.value) } } },
+      axisLabel: { color: T.mute, fontSize: nr ? 10 : 11, formatter: fmtP0 }, axisPointer: { label: { formatter: p => fmtP(p.value) } } },
     dataZoom: [
-      { type: 'inside', xAxisIndex: 0, filterMode: 'none', startValue: state.i0, endValue: state.i1, preventDefaultMouseMove: !coarse },
-      ...(narrow ? [] : [{ type: 'slider', xAxisIndex: 0, height: 20, bottom: 12, filterMode: 'none', borderColor: T.rule, startValue: state.i0, endValue: state.i1,
+      { type: 'inside', xAxisIndex: 0, filterMode: 'none', startValue: state.i0, endValue: state.i1, minValueSpan: 10, preventDefaultMouseMove: !coarse },
+      ...(nr ? [] : [{ type: 'slider', xAxisIndex: 0, height: 20, bottom: 12, filterMode: 'none', borderColor: T.rule, startValue: state.i0, endValue: state.i1,
         fillerColor: 'rgba(120,120,130,.15)', textStyle: { color: T.mute }, dataBackground: { lineStyle: { color: T.rule }, areaStyle: { color: T.grid } } }]),
     ],
-    tooltip: { trigger: 'axis', confine: true, axisPointer: { type: 'cross', lineStyle: { type: 'dashed', color: T.mute }, crossStyle: { color: T.mute },
-        label: { backgroundColor: T.mute } },
+    tooltip: { trigger: 'axis', confine: true, axisPointer: { type: 'cross', lineStyle: { type: 'dashed', color: T.mute }, crossStyle: { color: T.mute }, label: { backgroundColor: T.mute } },
       backgroundColor: T.card, borderColor: T.rule, borderWidth: 1, padding: [8, 10], extraCssText: 'border-radius:12px;box-shadow:0 6px 20px rgba(0,0,0,.18)',
       textStyle: { color: T.fg, fontSize: 12 }, formatter: ps => mainTip(ps[0].dataIndex) },
     series: [
-      { name: 'BTC', type: 'candlestick', data: D.candles.map(c => [c[1], c[4], c[3], c[2]]),
+      { id: 'k', name: 'BTC', type: 'candlestick', data: candleData(),
         itemStyle: { color: T.up, color0: T.down, borderColor: T.up, borderColor0: T.down },
-        markArea: { silent: true, data: zones(T, ymin, ymax, narrow) },
-        markLine: { silent: true, symbol: 'none', lineStyle: { color: lc, type: 'dotted' },
-          label: { position: 'insideEndTop', formatter: fmtP(last), color: '#fff', backgroundColor: lc, padding: [3, 7], borderRadius: 6, fontWeight: 600 },
-          data: [{ yAxis: last }] } },
-      ...emaSeries,
+        markArea: { silent: true, data: zoneBoxes(T, ymin, ymax) }, markLine: priceLine(T) },
+      ...EMA_PERIODS.map(p => ({ id: 'e' + p, name: 'EMA ' + p, type: 'line', data: state.ema[p] ? S.ema[p] : [], showSymbol: false, silent: true, z: 3,
+        lineStyle: { width: 1.6, color: css(EMA_VARS[p]) }, itemStyle: { color: css(EMA_VARS[p]) } })),
     ],
   };
 }
-function panelOption(p, T) {
-  const col = css('--' + p.color), vs = p.values.filter(v => v != null), lo = Math.min(...vs), hi = Math.max(...vs), narrow = main.getWidth() < 560;
+
+/* ---------- panels ---------- */
+function panelView(key) {
+  const p = P[key], d = p.data;
+  if (d.deltas && anyVal(d.deltas)) return rebase(cumSum(d.deltas), state.i0);
+  if (d.values && anyVal(d.values)) return d.values;
+  return null;
+}
+function panelOption(key, T, view, live) {
+  const p = P[key], def = p.def, col = css('--' + def.color), pct = def.kind === 'pct', nr = narrow();
+  const f = (v, dec) => pct ? sgn(v, x => x.toFixed(dec)) + '%' : fmtBig(v, dec);
+  let lo = Infinity, hi = -Infinity;
+  for (let i = state.i0; i <= state.i1; i++) { const v = view[i]; if (v != null) { lo = Math.min(lo, v); hi = Math.max(hi, v); } }
+  if (pct) { lo = Math.min(lo, 0); hi = Math.max(hi, 0); }
+  const padY = (hi - lo) * 0.08 || Math.abs(hi) * 0.01 || 1;
   const common = {
     animation: false, textStyle: { fontFamily: FONT },
-    grid: { left: narrow ? 46 : 56, right: 8, top: 10, bottom: 22 },
-    xAxis: { type: 'category', data: labels, boundaryGap: p.fmt === 'pct', axisLine: { lineStyle: { color: T.rule } }, axisTick: { show: false },
+    grid: { left: nr ? 46 : 56, right: 8, top: 10, bottom: 22 },
+    xAxis: { type: 'category', data: S.labels, boundaryGap: pct, axisLine: { lineStyle: { color: T.rule } }, axisTick: { show: false },
       axisLabel: { color: T.mute, hideOverlap: true, fontSize: 10 }, axisPointer: { label: { show: false } } },
-    yAxis: { scale: true, splitNumber: 2, splitLine: { lineStyle: { color: T.grid } },
-      axisLabel: { color: T.mute, fontSize: 10, formatter: v => fmtPanel(p, v, p.fmt === 'pct' ? 2 : 1) }, axisPointer: { label: { show: false } } },
-    dataZoom: [{ type: 'inside', xAxisIndex: 0, filterMode: 'none', startValue: state.i0, endValue: state.i1, preventDefaultMouseMove: !coarse }],
+    yAxis: { min: lo === Infinity ? undefined : lo - padY, max: hi === -Infinity ? undefined : hi + padY, splitNumber: 2, splitLine: { lineStyle: { color: T.grid } },
+      axisLabel: { color: T.mute, fontSize: 10, formatter: v => f(v, pct ? 2 : 1) }, axisPointer: { label: { show: false } } },
+    dataZoom: [{ type: 'inside', xAxisIndex: 0, filterMode: 'none', startValue: state.i0, endValue: state.i1, minValueSpan: 10, preventDefaultMouseMove: !coarse }],
     tooltip: { trigger: 'axis', confine: true, axisPointer: { type: 'line', lineStyle: { type: 'dashed', color: T.mute } },
       backgroundColor: T.card, borderColor: T.rule, borderWidth: 1, padding: [6, 10], extraCssText: 'border-radius:12px;box-shadow:0 6px 20px rgba(0,0,0,.18)',
       textStyle: { color: T.fg, fontSize: 12 },
-      formatter: ps => `<b>${labels[ps[0].dataIndex]}</b><br><span style="color:${col}">●</span> ${ps[0].value == null ? '–' : fmtPanel(p, ps[0].value)}` },
+      formatter: ps => `<b>${S.labels[ps[0].dataIndex]}</b><br><span style="color:${col}">●</span> ${ps[0].value == null ? '–' : f(ps[0].value, pct ? 3 : 2)}` },
   };
-  if (p.fmt === 'pct') {   // sign carries meaning here, so bars take the up/down colours
-    // bars are measured from zero, so the axis must include it (no scale:true) or negative bars look like they hang from the top
-    return { ...common, yAxis: { ...common.yAxis, scale: false }, series: [{ type: 'bar', barMaxWidth: 7,
-      data: p.values.map(v => v == null ? null : { value: v, itemStyle: { color: v >= 0 ? T.up : T.down, borderRadius: v >= 0 ? [2, 2, 0, 0] : [0, 0, 2, 2] } }),
-      markLine: { silent: true, symbol: 'none', label: { show: false }, lineStyle: { color: T.mute, type: 'dashed', opacity: .5 }, data: [{ yAxis: 0 }] } }] };
+  const zero = { silent: true, symbol: 'none', label: { show: false }, lineStyle: { color: T.mute, type: 'dashed', opacity: .5 }, data: [{ yAxis: 0 }] };
+  if (live) { delete common.dataZoom; delete common.tooltip; }   // a live refresh must not reset a gesture in progress or close a tooltip
+  if (pct) {
+    return { ...common, series: [{ id: 's', type: 'bar', barMaxWidth: 7,
+      data: view.map(v => v == null ? null : { value: v, itemStyle: { color: v >= 0 ? T.up : T.down, borderRadius: v >= 0 ? [2, 2, 0, 0] : [0, 0, 2, 2] } }), markLine: zero }] };
   }
-  return { ...common, series: [{ type: 'line', data: p.values, showSymbol: false, smooth: false, lineStyle: { width: 2, color: col }, itemStyle: { color: col },
+  return { ...common, series: [{ id: 's', type: 'line', data: view, showSymbol: false, lineStyle: { width: 2, color: col }, itemStyle: { color: col },
     areaStyle: { color: { type: 'linear', x: 0, y: 0, x2: 0, y2: 1, colorStops: [{ offset: 0, color: col + '40' }, { offset: 1, color: col + '00' }] } },
-    markLine: lo < 0 && hi > 0 ? { silent: true, symbol: 'none', label: { show: false }, lineStyle: { color: T.mute, type: 'dashed', opacity: .5 }, data: [{ yAxis: 0 }] } : undefined }] };
+    markLine: lo < 0 && hi > 0 ? zero : undefined }] };
+}
+function paintPanel(key, T, live) {
+  const p = P[key], def = p.def, view = panelView(key), none = $('pn-' + key);
+  const head = $('pv-' + key), sub = $('ps-' + key);
+  if (!view) {
+    p.chart.clear(); $('c-' + key).hidden = true; none.hidden = false; head.innerHTML = '';
+    none.textContent = (p.data.note || '데이터 없음');
+    sub.textContent = def.sub || '';
+    return;
+  }
+  const wasHidden = $('c-' + key).hidden;
+  $('c-' + key).hidden = false; none.hidden = true; if (wasHidden) p.chart.resize();
+  const v = view[state.i1] != null ? view[state.i1] : lastOf(view);   // value at the right edge of what is on screen
+  if (def.kind === 'cvd') {
+    head.innerHTML = `<b>${sgn(v, x => fmtBig(x, 1))}</b><span class="d ${dir(v)}">${arrow(v)} ${v >= 0 ? '순매수' : '순매도'}</span>`;
+    sub.textContent = '보이는 구간 누적 · 시작=0' + (def.fromBuild ? ' · 빌드 데이터' : '');
+  } else if (def.kind === 'pct') {
+    head.innerHTML = `<b>${sgn(v, x => x.toFixed(3))}%</b>`; sub.textContent = def.sub;
+  } else {
+    const a = view[Math.max(0, state.i0)], ch = a ? (v / a - 1) * 100 : 0;
+    head.innerHTML = `<b>$${fmtBig(v, 2)}</b><span class="d ${dir(ch)}">${arrow(ch)} ${Math.abs(ch).toFixed(2)}% · 구간</span>`; sub.textContent = def.sub;
+  }
+  p.chart.setOption(panelOption(key, T, view, live), !live);
 }
 
+/* ---------- FVG list ---------- */
 function fvgList(T) {
-  const rows = D.fvg.map(z => ({ z, mid: (z.lo + z.hi) / 2 })).sort((a, b) => b.mid - a.mid);
+  const price = tick ? tick.c : lastPrice();
+  const rows = fvgZones.map(z => ({ z, mid: (z.lo + z.hi) / 2 })).sort((a, b) => b.mid - a.mid);
+  if (!rows.length) return '<div class="none">아직 채워지지 않은 FVG가 없어요</div>';
   const line = ({ z, mid }) => {
-    const col = z.kind === 'bull' ? T.bull : T.bear, pct = (mid / last - 1) * 100;
+    const col = z.kind === 'bull' ? T.bull : T.bear, pct = (mid / price - 1) * 100;
     return `<div class="fr" style="--c:${col}"><span class="tf">${z.tf}</span>` +
       `<span class="rg">${fmtP(z.lo)} – ${fmtP(z.hi)}<small>${z.kind === 'bull' ? '상승 갭 ▲ · 지지 후보' : '하락 갭 ▼ · 저항 후보'}</small></span>` +
       `<span class="ds">${sgn(pct, v => v.toFixed(1))}%</span></div>`;
   };
-  const i = rows.findIndex(r => r.mid < last), cut = i < 0 ? rows.length : i;
-  const now = `<div class="now"><span>현재가</span><span>${fmtP(last)}</span></div>`;
+  const i = rows.findIndex(r => r.mid < price), cut = i < 0 ? rows.length : i;
+  const now = `<div class="now"><span>현재가</span><span>${fmtP(price)}</span></div>`;
   return '<div class="fvg">' + rows.slice(0, cut).map(line).join('') + now + rows.slice(cut).map(line).join('') + '</div>';
 }
-
-let rafY = 0;
-function refreshY() {      // keep price axis + FVG boxes fitted to the visible window
-  cancelAnimationFrame(rafY);
-  rafY = requestAnimationFrame(() => {
-    const T = theme(), [ymin, ymax] = yRange();
-    main.setOption({ yAxis: { min: ymin, max: ymax }, series: [{ markArea: { silent: true, data: zones(T, ymin, ymax, main.getWidth() < 560) } }] });
-  });
+function rebuildFvg() {
+  const now = Date.now(), price = tick ? tick.c : (S ? lastPrice() : 0);
+  const all = [];
+  for (const [tf, ms] of [['4h', TFS['4h']], ['1d', TFS['1d']]]) all.push(...nearestZones(findFvgs(HTF[tf], tf.toUpperCase(), ms, now), price, 6));
+  fvgZones = all;
 }
-main.on('datazoom', () => {
-  const dz = main.getOption().dataZoom[0], i0 = Math.round(dz.start / 100 * (n - 1)), i1 = Math.round(dz.end / 100 * (n - 1));
-  if (i0 === state.i0 && i1 === state.i1) return;
-  state.i0 = Math.max(0, i0); state.i1 = Math.min(n - 1, i1); refreshY(); markRange();
-});
 
-function render() {
+/* ---------- hero & KPIs ---------- */
+function paintHero() {
+  const px = tick ? tick.c : (S ? lastPrice() : null);
+  if (px == null) return;
+  const el = $('px'), prev = el.dataset.v ? +el.dataset.v : px;
+  el.innerHTML = fmtP(px) + '<small>USDT</small>';
+  if (px !== prev) { el.classList.remove('tu', 'td'); void el.offsetWidth; el.classList.add(px > prev ? 'tu' : 'td'); }
+  el.dataset.v = px;
+  if (tick) { const chg = (tick.c / tick.o - 1) * 100; $('chg').className = 'pill ' + dir(chg); $('chg').textContent = `${arrow(chg)} ${Math.abs(chg).toFixed(2)}% · 24h`; }
+}
+function kpi(k, v, d, cls) { return `<div class="kpi"><span class="k">${k}</span><b>${v}</b>${d ? `<span class="d ${cls || ''}">${d}</span>` : ''}</div>`; }
+function paintKpis() {
+  if (!S) return;
+  const px = tick ? tick.c : lastPrice(), rows = [];
+  if (tick) rows.push(kpi('24h 고가', fmtP0(tick.h), sgn((tick.h / px - 1) * 100, v => v.toFixed(2)) + '%', 'flat'), kpi('24h 저가', fmtP0(tick.l), sgn((tick.l / px - 1) * 100, v => v.toFixed(2)) + '%', 'flat'));
+  const oi = P.binance_oi.data.values, pr = P.cb_premium.data.values;
+  if (anyVal(oi)) { const v = lastOf(oi), cut = Date.now() - 24 * HOUR, j = S.times.findIndex(t => t >= cut), a = j >= 0 ? oi[j] : null, c = a && TFS[S.tf] <= 4 * HOUR ? (v / a - 1) * 100 : null;
+    rows.push(kpi('OI · Binance 선물', '$' + fmtBig(v, 2), c == null ? '' : `${arrow(c)} ${Math.abs(c).toFixed(2)}% · 24h`, c == null ? '' : dir(c))); }
+  if (anyVal(pr)) rows.push(kpi('Coinbase 프리미엄', sgn(lastOf(pr), x => x.toFixed(3)) + '%', 'Coinbase − Binance', 'flat'));
+  for (const key of ['binance_spot', 'binance_fut', 'coinbase', 'okx']) {
+    const d = P[key].data.deltas, tfMs = TFS[S.tf];
+    if (!d || !anyVal(d) || tfMs > 4 * HOUR) continue;   // a 24h sum is only meaningful on <=4h bars
+    const cut = Date.now() - 24 * HOUR; let s = 0;
+    S.times.forEach((t, i) => { if (t >= cut && d[i] != null) s += d[i]; });
+    rows.push(kpi(P[key].def.title.replace(' CVD', '') + ' 24h', sgn(s, x => fmtBig(x, 1)), `${arrow(s)} ${s >= 0 ? '순매수' : '순매도'}`, dir(s)));
+  }
+  const sig = rows.join('');
+  if (sig !== kpiSig) { kpiSig = sig; $('kpis').innerHTML = sig; }
+}
+let kpiSig = '', fvgSig = '';
+function paintFvg(T) { const h = fvgList(T); if (h !== fvgSig) { fvgSig = h; $('fvgmap').innerHTML = h; } }
+
+/* ---------- render ---------- */
+const wide = () => matchMedia('(min-width: 960px)').matches;
+const shown = sec => wide() || document.body.dataset.tab === sec;
+function setRange(count) {   // state only: the next full render applies it to the charts
+  const n = S.K.length;
+  state.i1 = n - 1; state.i0 = Math.max(0, n - Math.min(count, n));
+}
+function renderAll() {
+  if (!S) return;
   const T = theme();
+  for (const key in P) paintPanel(key, T);       // fills P[key].data first
   main.setOption(mainOption(T), true);
-  for (const p of PANELS) if (cvdCharts[p.key]) cvdCharts[p.key].setOption(panelOption(p, T), true);
-  $('fvgmap').innerHTML = fvgList(T);
+  paintFvg(T);
+  paintHero(); paintKpis(); paintControls();
   $('theme').innerHTML = css('--mode') === 'dark'
     ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M18.7 5.3l-1.6 1.6M6.9 17.1l-1.6 1.6"/></svg>'
     : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.5 14.2A8.5 8.5 0 0 1 9.8 3.5a8.5 8.5 0 1 0 10.7 10.7z"/></svg>';
   document.querySelector('meta[name="theme-color"]').content = css('--bg');
-  markRange();
 }
-render();
+function loadPanelData() { const d = buildPanelData(S); for (const key in P) P[key].data = d[key]; }
 
-window.addEventListener('resize', () => { resizeAll(); render(); });
-matchMedia('(prefers-color-scheme: dark)').addEventListener('change', render);
+let viewTimer = 0;
+function refreshView() {   // visible window changed: refit the price axis, FVG boxes and every panel (throttled)
+  if (viewTimer) return;
+  viewTimer = setTimeout(() => {
+    viewTimer = 0;
+    if (!S) return;
+    const T = theme(), [ymin, ymax] = yRange();
+    main.setOption({ yAxis: { min: ymin, max: ymax }, series: [{ id: 'k', markArea: { silent: true, data: zoneBoxes(T, ymin, ymax) } }] });
+    if (shown('flow')) for (const key in P) paintPanel(key, T);
+    paintKpis(); markCount();
+  }, 90);
+}
+main.on('datazoom', () => {
+  if (!S) return;
+  const opt = main.getOption().dataZoom, dz = opt && opt[0], n = S.K.length;
+  if (!dz || dz.start == null) return;
+  const i0 = Math.max(0, Math.round(dz.start / 100 * (n - 1))), i1 = Math.min(n - 1, Math.round(dz.end / 100 * (n - 1)));
+  if (i0 === state.i0 && i1 === state.i1) return;
+  state.i0 = i0; state.i1 = i1; refreshView();
+});
+
+/* ---------- loading a timeframe ---------- */
+function banner(msg) { const b = $('banner'); b.hidden = !msg; b.textContent = msg || ''; }
+let reqId = 0, retryTf = null;
+const periodsSince = d => Math.ceil((Date.now() - d.K[d.K.length - 1][0]) / TFS[d.tf]);
+async function loadTF(tf, opts = {}) {
+  const id = ++reqId;                                   // only the newest request may touch the screen
+  state.tf = tf; lsSet('btc-tf', tf); paintControls();
+  let d = opts.fresh ? null : store[tf];
+  $('ld').hidden = !!d || !!S;
+  if (!d) $('ld').hidden = false;
+  try {
+    if (!d) d = { tf, K: await spotK(tf, 1000), fut: null, oi: null, cb: null, err: {} };
+    else {   // revisiting: top up everything since we last looked (a long absence needs more than 5 bars)
+      d.recentN = Math.min(1000, Math.max(5, periodsSince(d) + 2));
+      d.K = mergeRows(d.K, await spotK(tf, d.recentN));
+    }
+  } catch (e) {
+    if (id !== reqId) return;
+    const why = String(e.message || e);
+    $('ld').hidden = true;
+    if (S && !state.fallback) { state.tf = S.tf; paintControls(); retryTf = tf; banner(`${tf} 데이터를 불러오지 못했어요 (${why}). 눌러서 다시 시도`); return; }
+    return useFallback(why, tf);
+  }
+  if (id !== reqId) return;
+  store[tf] = d; retryTf = null;
+  state.fallback = false; banner('');
+  S = d; computeEma(S); computeLabels(S);
+  setRange(state.count);
+  loadPanelData(); renderAll(); $('ld').hidden = true;
+  subscribe();
+  loadAux(S);   // futures CVD, OI, premium arrive after the first paint
+  loadHtf();
+}
+async function loadAux(d) {
+  const tf = d.tf, n = d.recentN || 5; d.recentN = 0;
+  const jobs = [
+    ['fut', () => d.fut ? futK(tf, n).then(r => mergeRows(d.fut, r)) : futK(tf, 1000)],
+    ['oi', () => d.oi ? oiHist(tf, Math.min(500, n)).then(r => mergeRows(d.oi, r)) : oiHist(tf, 500)],
+    ['cb', () => d.cb ? cbCloses(tf, 1, n <= 5).then(m => new Map([...d.cb, ...m])) : cbCloses(tf, tf === '4h' ? 3 : 2)],
+  ];
+  await Promise.all(jobs.map(async ([k, fn]) => {
+    try { d[k] = await fn(); delete d.err[k]; } catch (e) { if (!d[k]) d.err[k] = '불러오지 못했어요 (' + String(e.message || e).slice(0, 40) + ')'; }
+  }));
+  if (S !== d) return;   // timeframe changed while loading
+  loadPanelData();
+  const T = theme(); if (shown('flow')) for (const key in P) paintPanel(key, T, true);
+  paintKpis();
+}
+async function loadHtf() {
+  try {
+    const first = !HTF['4h'].length;
+    const [a, b] = await Promise.all([spotK('4h', first ? 500 : 6), spotK('1d', first ? 365 : 6)]);
+    HTF['4h'] = first ? a : mergeRows(HTF['4h'], a);
+    HTF['1d'] = HTF['1d'].length ? mergeRows(HTF['1d'], b) : b;
+  } catch (e) { if (!HTF['4h'].length) return; }
+  rebuildFvg();
+  if (S) { const T = theme(); paintFvg(T); refreshView(); }
+}
+/** Live feed unreachable: show the last build (1H) so the page is never blank. */
+function useFallback(why, wanted) {
+  state.fallback = true; state.tf = '1h'; retryTf = wanted || '15m';
+  const K = D.candles.map(c => [c[0], c[1], c[2], c[3], c[4], 0, 0]);
+  S = { tf: '1h', K, fut: null, oi: null, cb: null, err: {} };
+  computeLabels(S);
+  S.ema = {}; for (const p of EMA_PERIODS) S.ema[p] = D.ema[p] || D.ema[String(p)];
+  fvgZones = D.fvg;
+  setRange(Math.min(state.count, K.length));
+  loadPanelData();
+  const sp = D.cvd.find(x => x.key === 'binance_spot'), ft = D.cvd.find(x => x.key === 'binance_fut');
+  const dl = a => a.map((v, i) => v == null ? null : v - (i ? (a[i - 1] || 0) : 0));
+  if (sp && sp.values) P.binance_spot.data = { deltas: dl(sp.values) };
+  if (ft && ft.values) P.binance_fut.data = { deltas: dl(ft.values) };
+  for (const e of D.extra || []) if (e.values) P[e.key].data = { values: e.values };
+  banner(`실시간 연결에 실패해서 마지막 빌드(${D.generated} ${D.tz}) 1H 데이터를 보여줘요. 눌러서 다시 시도 (${why})`);
+  $('ld').hidden = true; renderAll();
+}
+
+/* ---------- live feed: miniTicker (1s) + kline of the selected timeframe ---------- */
+let ws = null, wsTries = 0, wsSubTf = null, wsReady = false, wsTimer = 0, lastMsg = 0, wasDown = false;
+const HOSTS = ['wss://data-stream.binance.vision/stream', 'wss://stream.binance.com:9443/stream'];
+function setLive(status) {
+  const el = $('stamp'); el.classList.toggle('stale', status !== 'live');
+  $('ago').textContent = status === 'live' ? 'LIVE · 1초 갱신' : status === 'connecting' ? '연결 중…' : '연결 끊김 · 재연결 중';
+  el.title = D.generated ? `빌드 ${D.generated} ${D.tz} (OKX·Coinbase CVD 기준)` : '';
+}
+function connect() {
+  clearTimeout(wsTimer);
+  if (ws) { ws.onopen = ws.onmessage = ws.onclose = ws.onerror = null; try { ws.close(); } catch (e) {} ws = null; }   // never keep two sockets
+  let sock;
+  try { sock = new WebSocket(HOSTS[wsTries % HOSTS.length]); } catch (e) { return retry(); }
+  ws = sock; lastMsg = Date.now(); setLive('connecting');
+  sock.onopen = () => {
+    if (sock !== ws) return;
+    wsTries = 0; wsSubTf = null; wsReady = false; setLive('live'); subscribe();
+    if (wasDown) { wasDown = false; backfill(); }   // candles may have closed while we were away
+  };
+  sock.onmessage = e => {
+    if (sock !== ws) return;
+    lastMsg = Date.now();
+    let m; try { m = JSON.parse(e.data); } catch (x) { return; }
+    const d = m.data; if (!d) return;
+    if (d.e === '24hrMiniTicker') onTicker(d); else if (d.e === 'kline') onKline(d.k);
+  };
+  sock.onclose = () => { if (sock === ws) retry(); };
+  sock.onerror = () => { try { sock.close(); } catch (e) {} };
+}
+function retry() { clearTimeout(wsTimer); wasDown = true; setLive('down'); wsTries++; wsTimer = setTimeout(connect, Math.min(15000, 1000 * 2 ** Math.min(wsTries, 4))); }
+setInterval(() => { if (!document.hidden && ws && ws.readyState === 1 && Date.now() - lastMsg > 8000) { wasDown = true; connect(); } }, 2000);   // half-open socket: no message for 8 s
+function subscribe() {
+  if (!ws || ws.readyState !== 1) return;
+  if (!wsReady) { ws.send(JSON.stringify({ method: 'SUBSCRIBE', params: ['btcusdt@miniTicker'], id: 1 })); wsReady = true; }   // the 1 s price needs no dataset
+  const tf = S && !state.fallback ? S.tf : null;
+  if (tf === wsSubTf) return;
+  if (wsSubTf) ws.send(JSON.stringify({ method: 'UNSUBSCRIBE', params: ['btcusdt@kline_' + wsSubTf], id: 2 }));
+  if (tf) ws.send(JSON.stringify({ method: 'SUBSCRIBE', params: ['btcusdt@kline_' + tf], id: 3 }));
+  wsSubTf = tf;
+}
+/** Re-read recent spot candles (after a socket gap) and merge them in. */
+async function backfill() {
+  const d = S; if (!d || state.fallback) return;
+  try {
+    const rows = await spotK(d.tf, Math.min(1000, periodsSince(d) + 2));
+    if (S !== d) return;
+    const follow = state.i1 >= d.K.length - 1, before = d.K.length;
+    d.K = mergeRows(d.K, rows); computeLabels(d);
+    const added = d.K.length - before;
+    if (added > 1) setRange(state.count);                 // candles were inserted: indices moved, show the latest window
+    else if (follow) { state.i1 = d.K.length - 1; state.i0 += added; }
+    syncZoom = true; loadPanelData(); loadAux(d); loadHtf(); scheduleLive();
+  } catch (e) { /* the next kline push or 20 s refresh will try again */ }
+}
+let liveRaf = 0;
+function scheduleLive() {   // rAF can be throttled (low-power mode, covered pane): a timer guarantees the update still runs
+  if (liveRaf) return;
+  liveRaf = 1;
+  const run = () => { if (!liveRaf) return; liveRaf = 0; renderLive(); };
+  requestAnimationFrame(run); setTimeout(run, 300);
+}
+function onTicker(d) {
+  tick = { c: +d.c, o: +d.o, h: +d.h, l: +d.l };
+  if (S && !state.fallback) {   // ticker price keeps the forming candle moving between kline pushes
+    const c = S.K[S.K.length - 1];
+    if (Date.now() < c[0] + TFS[S.tf]) { c[4] = tick.c; c[2] = Math.max(c[2], tick.c); c[3] = Math.min(c[3], tick.c); }   // closed candles are final
+  }
+  scheduleLive();
+}
+function onKline(k) {
+  if (!S || state.fallback || k.i !== S.tf) return;
+  const row = [k.t, +k.o, +k.h, +k.l, +k.c, +k.q, +k.Q], n = S.K.length, last = S.K[n - 1];
+  if (k.t === last[0]) { S.K[n - 1] = row; panelDirty = true; }
+  else if (k.t > last[0] + TFS[S.tf]) { backfill(); return; }   // missed at least one whole candle
+  else if (k.t > last[0]) {   // the next candle opened
+    const follow = state.i1 >= n - 1;
+    S.K.push(row); computeLabels(S);
+    if (follow) { state.i1 = S.K.length - 1; state.i0 += 1; }   // otherwise the indices already point at the same candles
+    syncZoom = true; loadPanelData(); loadAux(S); loadHtf();
+  } else return;
+  scheduleLive();
+}
+let lastFull = 0, syncZoom = false, panelDirty = false;
+function renderLive() {
+  if (!S || document.hidden) return;
+  const T = theme(), now = Date.now();
+  computeEma(S);   // the forming candle moves every second, so the EMAs do too
+  paintHero();
+  const [ymin, ymax] = yRange();
+  const upd = { yAxis: { min: ymin, max: ymax }, xAxis: { data: S.labels },
+    series: [{ id: 'k', data: candleData(), markLine: priceLine(T) }, ...EMA_PERIODS.map(p => ({ id: 'e' + p, data: state.ema[p] ? S.ema[p] : [] }))] };
+  if (syncZoom) {   // keep the main chart on the same candles after labels were extended (one entry per dataZoom component that exists)
+    syncZoom = false;
+    upd.dataZoom = main.getOption().dataZoom.map(() => ({ startValue: state.i0, endValue: state.i1 }));
+    refreshView();
+  }
+  if (shown('chart')) main.setOption(upd);
+  if (now - lastFull > 2000) {   // panels, KPIs and the FVG list change slowly: refresh every 2s
+    lastFull = now;
+    if (panelDirty) { panelDirty = false; loadPanelData(); }
+    if (shown('flow')) for (const key in P) paintPanel(key, T, true);
+    if (shown('fvg')) paintFvg(T);
+    paintKpis();
+  }
+}
+
+/* ---------- controls ---------- */
+$('banner').addEventListener('click', () => { banner(''); loadTF(retryTf || '15m', { fresh: true }); if (!ws || ws.readyState > 1) connect(); });
+$('tfs').addEventListener('click', e => { const b = e.target.closest('button'); if (!b || b.disabled || b.dataset.tf === state.tf) return; loadTF(b.dataset.tf); });
+$('counts').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; state.count = +b.dataset.r; lsSet('btc-count', state.count); setRange(state.count);
+  main.dispatchAction({ type: 'dataZoom', startValue: state.i0, endValue: state.i1 }); refreshView(); });
+$('emarow').addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b || !S) return;
+  if (b.id === 'emaall') { const on = !EMA_PERIODS.some(k => state.ema[k]); for (const k of EMA_PERIODS) state.ema[k] = on ? 1 : 0; }
+  else state.ema[b.dataset.ema] ^= 1;
+  lsSet('btc-ema', JSON.stringify(state.ema)); paintControls();
+  main.setOption({ series: EMA_PERIODS.map(p => ({ id: 'e' + p, data: state.ema[p] ? S.ema[p] : [] })) });
+});
+$('tabs').addEventListener('click', e => { const b = e.target.closest('button'); if (b) setTab(b.dataset.tab); });
+function setTab(t) {
+  document.body.dataset.tab = t;
+  for (const b of $('tabs').children) b.classList.toggle('on', b.dataset.tab === t);
+  lsSet('btc-tab', t);
+  requestAnimationFrame(() => { resizeAll(); if (S) renderAll(); scrollTo({ top: Math.min(scrollY, $('tabs').offsetTop), behavior: 'instant' }); });
+}
+function resizeAll() { main.resize(); for (const k in P) P[k].chart.resize(); }
+let rsT = 0, lastW = innerWidth;
+window.addEventListener('resize', () => {   // mobile URL-bar show/hide fires resize constantly: only react to width changes
+  clearTimeout(rsT);
+  rsT = setTimeout(() => { if (innerWidth === lastW) { resizeAll(); return; } lastW = innerWidth; resizeAll(); if (S) renderAll(); }, 150);
+});
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => S && renderAll());
 $('theme').addEventListener('click', () => {
   const root = document.documentElement, dark = css('--mode') === 'dark';
-  root.dataset.theme = dark ? 'light' : 'dark';
-  try { localStorage.setItem('btc-theme', root.dataset.theme); } catch (e) {}
-  render();
+  root.dataset.theme = dark ? 'light' : 'dark'; lsSet('btc-theme', root.dataset.theme);
+  if (S) renderAll();
 });
-try {
-  const t = localStorage.getItem('btc-theme'); if (t) { document.documentElement.dataset.theme = t; render(); }
-  const tab = localStorage.getItem('btc-tab'); if (tab && ['chart', 'flow', 'fvg'].includes(tab)) setTab(tab);
-} catch (e) {}
+let hiddenAt = 0;
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) { hiddenAt = Date.now(); return; }
+  const away = Date.now() - hiddenAt;
+  if (away > 30 * 60e3) return location.reload();          // pick up a newer build (OKX / Coinbase CVD, new code)
+  if (away > 20e3) loadTF(state.fallback ? (retryTf || '15m') : state.tf, { fresh: state.fallback });   // the socket may have slept: top up the gap (full reload only from the fallback)
+  if (!ws || ws.readyState > 1) connect();
+});
+
+/* ---------- boot ---------- */
+const t0 = lsGet('btc-theme', ''); if (t0) document.documentElement.dataset.theme = t0;
+const tab0 = lsGet('btc-tab', 'chart'); if (['chart', 'flow', 'fvg'].includes(tab0)) setTab(tab0);
+paintControls();
+getJSON(`${BN}/api/v3/ticker/24hr?symbol=BTCUSDT`).then(t => { if (!tick) { tick = { c: +t.lastPrice, o: +t.openPrice, h: +t.highPrice, l: +t.lowPrice }; paintHero(); paintKpis(); } }).catch(() => {});
+connect();
+loadTF(state.tf);
+setInterval(() => { if (!document.hidden && S && !state.fallback) loadAux(S); }, 20000);    // futures CVD / OI / premium for the forming bar
+setInterval(() => { if (!document.hidden && S && !state.fallback) loadHtf(); }, 60000);     // 4H / 1D candles -> FVG fills
 </script>
 </body>
 </html>

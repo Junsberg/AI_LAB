@@ -10,15 +10,13 @@ python -m btc_chart --skip coinbase       # skip slow sources, e.g. the first Co
 python -m btc_chart --utc-offset 9        # label timezone (default KST)
 ```
 
-Python 3.11+, standard library only. Tests: `python -m pytest tests/test_btc_chart.py`.
+Python 3.11+, standard library only. Tests: `python -m pytest tests/test_btc_chart.py` (the JS/Python parity tests need `node` and are skipped without it).
 
 ## Auto-refresh (Windows)
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File btc_chart
-efresh_task.ps1             # install: at logon + hourly
-powershell -ExecutionPolicy Bypass -File btc_chart
-efresh_task.ps1 -Uninstall  # remove
+powershell -ExecutionPolicy Bypass -File btc_chart\refresh_task.ps1             # install: at logon + hourly
+powershell -ExecutionPolicy Bypass -File btc_chart\refresh_task.ps1 -Uninstall  # remove
 ```
 
 Registers a per-user task `BTC_Chart_Refresh` (no admin). It only runs while the PC is on and you are
@@ -35,14 +33,20 @@ and turn Pages off in the repo settings.
 
 ## What it shows
 
-- 1H candles from Binance spot (`data-api.binance.vision`), EMA 20/50/100/200
-- Unfilled 4H / 1D fair value gaps — drawn on the chart when inside the price range, always listed in the FVG map
-- Cumulative CVD (net taker-buy USD, starting at 0 at the window start): Binance spot, Binance futures, Coinbase spot, OKX contracts
-- Binance futures open interest (USD) and Coinbase premium (Coinbase USD close vs Binance USDT close, %; includes the USD/USDT basis). Skip keys: `binance_oi`, `cb_premium`
+The page talks to the exchanges **directly from the browser** (public endpoints, no keys, no server), so it is live
+even when the PC that built it is off. Python only builds the file and supplies what a browser cannot fetch.
+
+- **Timeframes** 15m (default) / 1H / 4H / 1D; 1000 candles per timeframe, 120 visible on phones (60/120/240/500 buttons, pinch to zoom)
+- **Live price**: Binance WebSocket `miniTicker` (1 s) moves the forming candle, the header price and the 24h stats; `kline_<tf>` keeps volume/CVD current. If the socket drops it reconnects with back-off
+- EMA 20/50/100/200 with an `EMA` master switch and per-line chips (choice is remembered)
+- Unfilled 4H / 1D fair value gaps, computed in the page (JS port of `indicators.find_fvgs`, kept identical by `tests/test_btc_chart.py`)
+- Cumulative CVD (net taker-buy USD, reset to 0 at the left edge of the visible range): Binance spot and futures on every timeframe; Coinbase spot and OKX contracts on 1H/4H only (hourly build data)
+- Binance futures open interest and Coinbase premium (Coinbase USD close vs Binance USDT close, %; includes the USD/USDT basis) on every timeframe
+- If Binance is unreachable the page falls back to the last build (1H) and shows a banner; tap it to retry
 
 ## Notes
 
-- **Binance futures and Bybit are geo-blocked from many cloud hosts (HTTP 451/403).** Run it on your own PC; a blocked source shows "데이터 없음" and does not fail the build.
+- **Binance futures and Bybit are geo-blocked from many cloud hosts (HTTP 451/403).** Run it on your own PC. In the browser the same applies to the viewer's network; a blocked source shows a note instead of a chart.
 - Coinbase CVD is built from raw trades (`side` there is the *maker* side, so a `sell` print is a taker buy). The first run backfills the window (~10 min for 72h) and caches completed hours in `btc_chart/out/cache/`; later runs fetch only the new tail.
 - OKX CVD uses the `rubik/stat/taker-volume` endpoint (`[ts, sellVol, buyVol]`). Checked against raw BTC-USDT-SWAP trades: the column order is right, but `ts` is the bucket *end*, so rows are shifted back one hour. The volume covers more than BTC-USDT-SWAP (other BTC contracts), so compare direction, not size, with Binance.
 - Not available keyless: liquidation history (Binance has no public endpoint; OKX only exposes recent rows) — would need a websocket collector.
