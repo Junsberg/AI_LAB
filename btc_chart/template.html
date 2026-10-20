@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BTC Chart</title>
+<style>
+  :root {
+    --bg: #fbfaf8; --fg: #2b2b2e; --mute: #8a8a90; --grid: #e7e5e0; --rule: #dedbd5;
+    --up: #5aa68c; --down: #c0587a;
+    --e20: #2c7a8c; --e50: #8e5ba8; --e100: #b9812f; --e200: #4a5fb5;
+    --bull: #4d9d86; --bear: #c0587a;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #17181b; --fg: #e6e4df; --mute: #8f9096; --grid: #2a2b30; --rule: #34363c;
+      --up: #5fbf9f; --down: #d4688a;
+      --e20: #4fb0c4; --e50: #b284cc; --e100: #d9a14d; --e200: #7b8fe0;
+      --bull: #5fbf9f; --bear: #d4688a;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #17181b; --fg: #e6e4df; --mute: #8f9096; --grid: #2a2b30; --rule: #34363c;
+    --up: #5fbf9f; --down: #d4688a;
+    --e20: #4fb0c4; --e50: #b284cc; --e100: #d9a14d; --e200: #7b8fe0;
+    --bull: #5fbf9f; --bear: #d4688a;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--fg);
+    font: 13px/1.4 -apple-system, "Segoe UI", "Malgun Gothic", "Noto Sans KR", sans-serif; }
+  .page { max-width: 1500px; margin: 0 auto; padding: 20px 16px 28px; }
+  header { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 8px 32px;
+    padding-bottom: 12px; border-bottom: 2px solid var(--rule); }
+  h1 { margin: 0; font-size: 30px; font-weight: 400; letter-spacing: .01em; }
+  .stamp { color: var(--mute); font-size: 12px; }
+  .legend { display: flex; flex-wrap: wrap; gap: 4px 16px; color: var(--mute); font-size: 12px; }
+  .legend i { display: inline-block; width: 16px; height: 0; border-top: 2px solid; vertical-align: middle; margin-right: 5px; }
+  .legend b { display: inline-block; width: 12px; height: 9px; vertical-align: middle; margin-right: 5px;
+    border: 1px dashed; opacity: .9; }
+  .grid { display: grid; grid-template-columns: minmax(0, 1fr) 380px; gap: 28px; margin-top: 14px; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+  .sec { color: var(--fg); font-size: 15px; margin: 4px 0 2px; }
+  #main { position: relative; height: 640px; }
+  svg { display: block; width: 100%; height: 100%; overflow: visible; }
+  .panel { border-bottom: 2px solid var(--rule); padding: 6px 0 4px; }
+  .panel:last-child { border-bottom: 0; }
+  .panel h2 { margin: 0; font-size: 14px; font-weight: 400; display: flex; justify-content: space-between; }
+  .panel h2 .val { color: var(--mute); font-size: 12px; font-variant-numeric: tabular-nums; }
+  .panel .plot { height: 130px; }
+  .panel .none { height: 130px; display: flex; align-items: center; color: var(--mute); font-size: 12px; }
+  #tip { position: absolute; pointer-events: none; display: none; z-index: 2; padding: 6px 9px;
+    background: var(--bg); border: 1px solid var(--rule); border-radius: 6px; font-size: 12px;
+    font-variant-numeric: tabular-nums; box-shadow: 0 2px 8px rgba(0,0,0,.12); white-space: nowrap; }
+  #tip div { display: flex; justify-content: space-between; gap: 14px; }
+  #tip .k { color: var(--mute); }
+  text { fill: var(--mute); font-size: 11px; font-variant-numeric: tabular-nums; }
+</style>
+</head>
+<body>
+<div class="page">
+  <header>
+    <div><h1>BTC · 1H</h1><div class="stamp" id="stamp"></div></div>
+    <div class="legend" id="legend"></div>
+  </header>
+  <div class="grid">
+    <div><div class="sec">가격 · EMA · FVG</div><div id="main"><svg id="msvg"></svg><div id="tip"></div></div></div>
+    <div id="panels"></div>
+  </div>
+</div>
+<script>
+const D = /*__DATA__*/null;
+const HOUR = 3600e3, NS = 'http://www.w3.org/2000/svg';
+const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const n = D.candles.length, t0 = D.candles[0][0];
+const pad2 = v => String(v).padStart(2, '0');
+function fmtT(ms) {
+  const d = new Date(ms + D.utc_offset * HOUR);
+  return `${pad2(d.getUTCDate())}/${pad2(d.getUTCMonth() + 1)}, ${pad2(d.getUTCHours())}:00`;
+}
+function fmtBig(v, dec = 2) {
+  const a = Math.abs(v), s = v < 0 ? '-' : '';
+  if (a >= 1e9) return s + (a / 1e9).toFixed(dec) + 'B';
+  if (a >= 1e6) return s + (a / 1e6).toFixed(dec) + 'M';
+  if (a >= 1e3) return s + (a / 1e3).toFixed(dec) + 'K';
+  return s + a.toFixed(dec);
+}
+const fmtP = v => v.toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+function niceTicks(lo, hi, count) {
+  const raw = (hi - lo) / count, mag = Math.pow(10, Math.floor(Math.log10(raw)));
+  const step = [1, 2, 2.5, 5, 10].map(f => f * mag).find(s => s >= raw);
+  const out = [];
+  for (let v = Math.ceil(lo / step) * step; v <= hi; v += step) out.push(v);
+  return out;
+}
+const xLabels = () => [0, Math.round((n - 1) / 2), n - 1];
+
+document.getElementById('stamp').textContent = `${D.generated} ${D.tz}`;
+const EMA_VARS = { 20: '--e20', 50: '--e50', 100: '--e100', 200: '--e200' };
+document.getElementById('legend').innerHTML =
+  Object.keys(D.ema).map(p => `<span><i style="border-color:var(${EMA_VARS[p]})"></i>EMA ${p}</span>`).join('') +
+  `<span><b style="border-color:var(--bull);background:color-mix(in srgb,var(--bull) 18%,transparent)"></b>FVG 상승</span>` +
+  `<span><b style="border-color:var(--bear);background:color-mix(in srgb,var(--bear) 18%,transparent)"></b>FVG 하락</span>`;
+
+/* ---------- main chart ---------- */
+const mm = { l: 58, r: 84, t: 8, b: 26 };
+let mgeo = null;
+function drawMain() {
+  const svg = document.getElementById('msvg');
+  const W = svg.clientWidth, H = svg.clientHeight;
+  const pw = W - mm.l - mm.r, ph = H - mm.t - mm.b, step = pw / n;
+  let lo = Math.min(...D.candles.map(c => c[3])), hi = Math.max(...D.candles.map(c => c[2]));
+  const p = (hi - lo) * 0.06; lo -= p; hi += p;
+  const x = i => mm.l + (i + 0.5) * step, y = v => mm.t + (hi - v) / (hi - lo) * ph;
+  mgeo = { W, H, pw, step, x, y, lo, hi };
+  let s = `<defs><clipPath id="clip"><rect x="${mm.l}" y="${mm.t}" width="${pw}" height="${ph}"/></clipPath></defs>`;
+  for (const v of niceTicks(lo, hi, 5))
+    s += `<line x1="${mm.l}" x2="${mm.l + pw}" y1="${y(v)}" y2="${y(v)}" stroke="${css('--grid')}"/>` +
+         `<text x="${mm.l - 8}" y="${y(v) + 4}" text-anchor="end">${fmtP(v)}</text>`;
+  xLabels().forEach((i, k) => {
+    s += `<text x="${x(i)}" y="${H - 6}" text-anchor="${k == 0 ? 'start' : k == 2 ? 'end' : 'middle'}">${fmtT(D.candles[i][0])}</text>`;
+  });
+  s += '<g clip-path="url(#clip)">';
+  for (const z of D.fvg) {
+    const top = y(Math.min(z.hi, hi)), bot = y(Math.max(z.lo, lo));
+    if (z.lo > hi || z.hi < lo) continue;
+    const xs = Math.max(mm.l, mm.l + ((z.t - t0) / HOUR + 0.5) * step), col = css(z.kind == 'bull' ? '--bull' : '--bear');
+    s += `<rect x="${xs}" y="${top}" width="${mm.l + pw - xs}" height="${Math.max(1, bot - top)}" fill="${col}" fill-opacity=".16" stroke="${col}" stroke-opacity=".7" stroke-dasharray="4 3"/>`;
+  }
+  for (const [i, c] of D.candles.entries()) {
+    const col = css(c[4] >= c[1] ? '--up' : '--down'), bw = Math.max(2, step * 0.62);
+    s += `<line x1="${x(i)}" x2="${x(i)}" y1="${y(c[2])}" y2="${y(c[3])}" stroke="${col}"/>` +
+         `<rect x="${x(i) - bw / 2}" y="${y(Math.max(c[1], c[4]))}" width="${bw}" height="${Math.max(1, Math.abs(y(c[1]) - y(c[4])))}" fill="${col}"/>`;
+  }
+  for (const [per, arr] of Object.entries(D.ema)) {
+    const pts = arr.map((v, i) => v == null ? null : `${x(i)},${y(v)}`).filter(Boolean).join(' ');
+    s += `<polyline points="${pts}" fill="none" stroke="${css(EMA_VARS[per])}" stroke-width="1.6"/>`;
+  }
+  s += '</g>';
+  for (const z of D.fvg) {
+    if (z.lo > hi || z.hi < lo) continue;
+    s += `<text x="${mm.l + pw + 6}" y="${y((z.lo + z.hi) / 2) + 4}" style="fill:${css(z.kind == 'bull' ? '--bull' : '--bear')}">FVG ${z.tf} ${z.kind == 'bull' ? '▲' : '▼'}</text>`;
+  }
+  /* FVGs outside the visible price range: list the nearest ones at the plot edge with their distance */
+  const lastPx = D.candles[n - 1][4];
+  const edge = (zs, y0, arrow) => zs.forEach((z, k) => {
+    const pct = (((z.lo + z.hi) / 2 / lastPx - 1) * 100).toFixed(1);
+    s += `<text x="${mm.l + 6}" y="${y0 + 14 * k}" style="fill:${css(z.kind == 'bull' ? '--bull' : '--bear')}">${arrow} FVG ${z.tf} ${z.kind == 'bull' ? '상승' : '하락'}  ${fmtP(z.lo)} – ${fmtP(z.hi)}  (${pct > 0 ? '+' : ''}${pct}%)</text>`;
+  });
+  const above = D.fvg.filter(z => z.lo > hi).sort((a, b) => a.lo - b.lo).slice(0, 4).reverse();  // farthest on top
+  const below = D.fvg.filter(z => z.hi < lo).sort((a, b) => b.hi - a.hi).slice(0, 4);  // nearest on top
+  edge(above, mm.t + 14, '▲');
+  edge(below, mm.t + ph - 14 * below.length, '▼');
+  const last = D.candles[n - 1][4], lc = css(D.candles[n - 1][4] >= D.candles[n - 1][1] ? '--up' : '--down');
+  s += `<line x1="${mm.l}" x2="${mm.l + pw}" y1="${y(last)}" y2="${y(last)}" stroke="${lc}" stroke-dasharray="2 3"/>` +
+       `<rect x="${mm.l + pw + 2}" y="${y(last) - 9}" width="${mm.r - 6}" height="18" rx="3" fill="${lc}"/>` +
+       `<text x="${mm.l + pw + 2 + (mm.r - 6) / 2}" y="${y(last) + 4}" text-anchor="middle" style="fill:#fff">${fmtP(last)}</text>`;
+  s += `<line id="mh" y1="${mm.t}" y2="${mm.t + ph}" stroke="${css('--mute')}" stroke-dasharray="3 3" visibility="hidden"/>` +
+       `<rect id="mcap" x="${mm.l}" y="${mm.t}" width="${pw}" height="${ph}" fill="transparent"/>`;
+  svg.innerHTML = s;
+  const cap = document.getElementById('mcap');
+  cap.addEventListener('mousemove', e => {
+    const r = svg.getBoundingClientRect();
+    hover(Math.min(n - 1, Math.max(0, Math.floor((e.clientX - r.left - mm.l) / step))), e);
+  });
+  cap.addEventListener('mouseleave', () => hover(null));
+}
+
+/* ---------- CVD panels ---------- */
+const pm = { l: 64, r: 8, t: 8, b: 20 };
+const pgeo = {};
+function drawPanels() {
+  const host = document.getElementById('panels');
+  host.innerHTML = D.cvd.map(p => `<div class="panel"><h2><span style="color:${p.color}">${p.title}</span><span class="val" id="v-${p.key}"></span></h2>` +
+    (p.values ? `<div class="plot"><svg id="s-${p.key}"></svg></div>` :
+     `<div class="none">데이터 없음 — ${(p.error || '').replace(/</g, '&lt;').slice(0, 110)}</div>`) + '</div>').join('');
+  for (const p of D.cvd) {
+    if (!p.values) continue;
+    const svg = document.getElementById('s-' + p.key), W = svg.clientWidth, H = svg.clientHeight;
+    const pw = W - pm.l - pm.r, ph = H - pm.t - pm.b, step = pw / n;
+    const vs = p.values.filter(v => v != null);
+    let lo = Math.min(...vs), hi = Math.max(...vs);
+    if (lo === hi) { lo -= 1; hi += 1; }
+    const x = i => pm.l + (i + 0.5) * step, y = v => pm.t + (hi - v) / (hi - lo) * ph;
+    pgeo[p.key] = { x, y };
+    let s = '';
+    if (lo < 0 && hi > 0) s += `<line x1="${pm.l}" x2="${pm.l + pw}" y1="${y(0)}" y2="${y(0)}" stroke="${css('--grid')}" stroke-dasharray="3 3"/>`;
+    s += `<line x1="${pm.l}" x2="${pm.l + pw}" y1="${pm.t + ph}" y2="${pm.t + ph}" stroke="${css('--grid')}"/>` +
+         `<text x="${pm.l - 8}" y="${pm.t + 4}" text-anchor="end">${fmtBig(hi)}</text>` +
+         `<text x="${pm.l - 8}" y="${pm.t + ph + 4}" text-anchor="end">${fmtBig(lo)}</text>`;
+    xLabels().forEach((i, k) => {
+      s += `<text x="${x(i)}" y="${H - 4}" text-anchor="${k == 0 ? 'start' : k == 2 ? 'end' : 'middle'}">${fmtT(D.candles[i][0])}</text>`;
+    });
+    const pts = p.values.map((v, i) => v == null ? null : `${x(i)},${y(v)}`).filter(Boolean).join(' ');
+    s += `<polyline points="${pts}" fill="none" stroke="${p.color}" stroke-width="1.8" stroke-linejoin="round"/>` +
+         `<line id="h-${p.key}" y1="${pm.t}" y2="${pm.t + ph}" stroke="${css('--mute')}" stroke-dasharray="3 3" visibility="hidden"/>` +
+         `<circle id="d-${p.key}" r="3.5" fill="${p.color}" visibility="hidden"/>` +
+         `<rect id="c-${p.key}" x="${pm.l}" y="${pm.t}" width="${pw}" height="${ph}" fill="transparent"/>`;
+    svg.innerHTML = s;
+    const cap = document.getElementById('c-' + p.key);
+    cap.addEventListener('mousemove', e => {
+      const r = svg.getBoundingClientRect();
+      hover(Math.min(n - 1, Math.max(0, Math.floor((e.clientX - r.left - pm.l) / step))));
+    });
+    cap.addEventListener('mouseleave', () => hover(null));
+  }
+}
+
+/* ---------- shared hover ---------- */
+function hover(i, ev) {
+  const tip = document.getElementById('tip'), mh = document.getElementById('mh');
+  if (i == null) {
+    tip.style.display = 'none'; mh && mh.setAttribute('visibility', 'hidden');
+    for (const p of D.cvd) {
+      const h = document.getElementById('h-' + p.key), d = document.getElementById('d-' + p.key);
+      h && h.setAttribute('visibility', 'hidden'); d && d.setAttribute('visibility', 'hidden');
+      const v = document.getElementById('v-' + p.key); if (v) v.textContent = '';
+    }
+    return;
+  }
+  if (mh && mgeo) { mh.setAttribute('x1', mgeo.x(i)); mh.setAttribute('x2', mgeo.x(i)); mh.setAttribute('visibility', 'visible'); }
+  for (const p of D.cvd) {
+    const g = pgeo[p.key]; if (!g) continue;
+    const v = p.values[i], h = document.getElementById('h-' + p.key), d = document.getElementById('d-' + p.key);
+    h.setAttribute('x1', g.x(i)); h.setAttribute('x2', g.x(i)); h.setAttribute('visibility', 'visible');
+    if (v != null) { d.setAttribute('cx', g.x(i)); d.setAttribute('cy', g.y(v)); d.setAttribute('visibility', 'visible'); }
+    else d.setAttribute('visibility', 'hidden');
+    document.getElementById('v-' + p.key).textContent = v == null ? '' : `${fmtT(D.candles[i][0])}  ${fmtBig(v)}`;
+  }
+  if (ev) {
+    const c = D.candles[i], row = (k, v, col) => `<div><span class="k"${col ? ` style="color:${col}"` : ''}>${k}</span><span>${v}</span></div>`;
+    tip.innerHTML = `<div><b>${fmtT(c[0])}</b></div>` + row('O', fmtP(c[1])) + row('H', fmtP(c[2])) + row('L', fmtP(c[3])) + row('C', fmtP(c[4])) +
+      Object.entries(D.ema).map(([per, a]) => a[i] == null ? '' : row('EMA ' + per, fmtP(a[i]), css(EMA_VARS[per]))).join('');
+    tip.style.display = 'block';
+    const box = document.getElementById('main').getBoundingClientRect();
+    let tx = ev.clientX - box.left + 14; if (tx + tip.offsetWidth > box.width) tx -= tip.offsetWidth + 28;
+    tip.style.left = tx + 'px'; tip.style.top = Math.max(0, ev.clientY - box.top - 20) + 'px';
+  }
+}
+
+function draw() { drawMain(); drawPanels(); }
+draw();
+new ResizeObserver(() => draw()).observe(document.getElementById('main'));
+</script>
+</body>
+</html>

@@ -17,3 +17,6 @@ logs/
 *.log
 .DS_Store
 Thumbs.db
+
+# btc_chart generated output / cache
+btc_chart/out/
