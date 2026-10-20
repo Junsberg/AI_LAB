@@ -224,5 +224,5 @@ def test_real_sdk_round_trip_against_stub_server(tmp_path, monkeypatch):
     path, body = Stub.log[0]
     assert path == "/v1/messages/batches"
     params = body["requests"][0]["params"]
-    assert params["output_config"]["effort"] == "medium" and params["max_tokens"] == 16000
+    assert params["output_config"]["effort"] == "high" and params["max_tokens"] == 16000
     assert "Fact sheet" in params["messages"][0]["content"]

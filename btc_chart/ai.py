@@ -183,7 +183,7 @@ def _cfg() -> dict[str, Any]:
     e = os.environ.get
     return {
         "model": e("BTC_AI_MODEL", "claude-opus-5-5"),
-        "effort": e("BTC_AI_EFFORT", "medium"),
+        "effort": e("BTC_AI_EFFORT", "high"),
         "min_minutes": float(e("BTC_AI_MIN_MINUTES", "55")),
         "max_calls_day": int(e("BTC_AI_MAX_CALLS_PER_DAY", "24")),
         "budget": float(e("BTC_AI_BUDGET_USD", "90")),

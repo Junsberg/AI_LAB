@@ -44,7 +44,7 @@ page itself never calls an API, so no key is ever published: only the resulting 
   `%USERPROFILE%\.btc_chart\anthropic_key.txt`.
 - No key means the AI tab simply stays hidden. `--ai off` disables it, `--ai force` submits right away.
 - Caps (env vars): `BTC_AI_BUDGET_USD` (total, default 90), `BTC_AI_MAX_CALLS_PER_DAY` (24),
-  `BTC_AI_MIN_MINUTES` (55), `BTC_AI_MODEL` (`claude-opus-5-5`), `BTC_AI_EFFORT` (`medium`). Three failures in a
+  `BTC_AI_MIN_MINUTES` (55), `BTC_AI_MODEL` (`claude-opus-5-5`), `BTC_AI_EFFORT` (`high`). Three failures in a
   row (e.g. credit used up) pause it for 6 h. Spend is tracked in `out/ai.json`; `python -m btc_chart.ai` prints it.
 - Needs `pip install anthropic`.
 
