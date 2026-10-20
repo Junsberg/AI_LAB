@@ -15,13 +15,23 @@ Python 3.11+, standard library only. Tests: `python -m pytest tests/test_btc_cha
 ## Auto-refresh (Windows)
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File btc_chartefresh_task.ps1             # install: at logon + hourly
-powershell -ExecutionPolicy Bypass -File btc_chartefresh_task.ps1 -Uninstall  # remove
+powershell -ExecutionPolicy Bypass -File btc_chart
+efresh_task.ps1             # install: at logon + hourly
+powershell -ExecutionPolicy Bypass -File btc_chart
+efresh_task.ps1 -Uninstall  # remove
 ```
 
 Registers a per-user task `BTC_Chart_Refresh` (no admin). It only runs while the PC is on and you are
 logged in; a missed run executes once as soon as possible. Output goes to `btc_chart/out/refresh.log`.
 Open `btc_chart/out/index.html` any time for the latest build.
+
+## Web (GitHub Pages)
+
+Live copy: https://junsberg.github.io/AI_LAB/ (public — anyone with the link can open it; it only contains market data).
+`python -m btc_chart --publish` force-pushes the built page as the single commit of the `gh-pages` branch, so
+history never grows. The scheduled task runs with `--publish`, so the page updates hourly while the PC is on and
+shows the last build when it is off. To stop publishing: reinstall the task without `-ExtraArgs "--publish"`
+and turn Pages off in the repo settings.
 
 ## What it shows
 

@@ -1,6 +1,9 @@
 import pytest
 
 from btc_chart.indicators import align, cumulate, ema, find_fvgs, nearest, premium_pct
+import subprocess
+
+from btc_chart.publish import publish
 from btc_chart.sources import HOUR, Candle, SourceError, klines_cvd, parse_coinbase_candles, parse_okx_taker_volume
 
 TF = 4 * HOUR
@@ -105,3 +108,22 @@ def test_premium_pct_and_align_leave_gaps_as_none():
     assert premium_pct({0: 101.0, HOUR: 99.0}, {0: 100.0, HOUR: 100.0, 2 * HOUR: 100.0}, hours) == [
         pytest.approx(1.0), pytest.approx(-1.0), None]
     assert align({HOUR: 5.0}, hours) == [None, 5.0, None]
+
+
+def test_publish_keeps_a_single_force_pushed_commit(tmp_path):
+    remote = tmp_path / "remote.git"
+    subprocess.run(["git", "init", "-q", "--bare", str(remote)], check=True)
+    page = tmp_path / "index.html"
+    for body in ("v1", "v2", "v3"):
+        page.write_text(body)
+        publish(page, tmp_path / "pages", str(remote))
+    log = subprocess.run(
+        ["git", "--git-dir", str(remote), "log", "--format=%s", "gh-pages"],
+        capture_output=True, text=True, check=True,
+    ).stdout.split()
+    assert len(log) > 0 and len(subprocess.run(
+        ["git", "--git-dir", str(remote), "rev-list", "--count", "gh-pages"],
+        capture_output=True, text=True, check=True).stdout.split()) == 1
+    shown = subprocess.run(["git", "--git-dir", str(remote), "show", "gh-pages:index.html"],
+                           capture_output=True, text=True, check=True).stdout
+    assert shown == "v3"

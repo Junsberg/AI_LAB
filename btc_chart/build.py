@@ -10,6 +10,7 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 from . import sources as src
+from .publish import PublishError, origin_url, publish
 from .indicators import align, cumulate, ema, find_fvgs, nearest, premium_pct
 from .sources import HOUR, SourceError
 
@@ -134,6 +135,9 @@ def main(argv: list[str] | None = None) -> None:
     ap.add_argument("--utc-offset", type=int, default=9, help="label timezone (default KST +9)")
     ap.add_argument("--skip", default="", help="comma list of panel keys to skip, e.g. coinbase,cb_premium")
     ap.add_argument("--fvg-per-tf", type=int, default=6, help="FVG zones kept per timeframe")
+    ap.add_argument(
+        "--publish", action="store_true", help="push the built page to the gh-pages branch"
+    )
     args = ap.parse_args(argv)
 
     payload = build(
@@ -145,6 +149,12 @@ def main(argv: list[str] | None = None) -> None:
     )
     missing = [p["key"] for p in payload["cvd"] + payload["extra"] if p["values"] is None]
     print(f"wrote {args.out}" + (f" (no data: {', '.join(missing)})" if missing else ""))
+    if args.publish:
+        try:
+            publish(args.out, args.out.parent / "pages", origin_url(HERE.parent))
+        except PublishError as e:
+            sys.exit(f"publish failed: {e}")
+        print("published to gh-pages")
 
 
 if __name__ == "__main__":
