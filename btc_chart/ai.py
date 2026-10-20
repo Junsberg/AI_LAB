@@ -377,7 +377,7 @@ def run(
 def compare(
     payload: dict[str, Any],
     out_dir: Path,
-    efforts: tuple[str, ...] = ("high", "xhigh", "max"),
+    efforts: tuple[str, ...] | None = None,
     *,
     client: Any | None = None,
     fetch: Callable[[], dict[str, Any]] = fetch_timeframes,
@@ -386,6 +386,7 @@ def compare(
 ) -> dict[str, Any]:
     """One batch, the same fact sheet at several effort levels; writes out/ai_compare.json and .md."""
     cfg = _cfg()
+    efforts = efforts or tuple(os.environ.get("BTC_AI_COMPARE_EFFORTS", "high,xhigh,max").split(","))
     client = client or make_client()
     if client is None:
         raise RuntimeError(f"no API key (set ANTHROPIC_API_KEY or put it in {KEY_FILE})")
@@ -420,13 +421,13 @@ def compare(
     state["spend"]["total_usd"] = round(state["spend"]["total_usd"] + spent, 4)
     out_dir.mkdir(parents=True, exist_ok=True)
     (out_dir / STATE_NAME).write_text(json.dumps(state, ensure_ascii=False, indent=1), encoding="utf-8")
-    (out_dir / "ai_compare.json").write_text(json.dumps({"facts": facts, "results": rows}, ensure_ascii=False, indent=1), encoding="utf-8")
-    (out_dir / "ai_compare.md").write_text(_compare_md(rows, efforts), encoding="utf-8")
+    (out_dir / f"ai_compare_{cfg['model']}.json").write_text(json.dumps({"facts": facts, "results": rows}, ensure_ascii=False, indent=1), encoding="utf-8")
+    (out_dir / f"ai_compare_{cfg['model']}.md").write_text(_compare_md(rows, efforts), encoding="utf-8")
     return rows
 
 
 def _compare_md(rows: dict[str, Any], efforts: tuple[str, ...]) -> str:
-    out = ["# AI effort comparison", "", "| effort | output tokens | cost (batch) | stop |", "|---|---|---|---|"]
+    out = [f"# AI effort comparison", "", "| effort | output tokens | cost (batch) | stop |", "|---|---|---|---|"]
     for e in efforts:
         r = rows.get(e, {})
         out.append(f"| {e} | {r.get('output_tokens', '-')} | ${r.get('cost_usd', 0):.3f} | {r.get('stop_reason') or r.get('error', '-')} |")

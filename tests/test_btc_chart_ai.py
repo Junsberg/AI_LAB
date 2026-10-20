@@ -244,6 +244,6 @@ def test_compare_sends_one_request_per_effort_and_writes_report(tmp_path):
     assert [r["params"]["output_config"]["effort"] for r in reqs] == ["high", "xhigh", "max"]
     assert all(r["params"]["max_tokens"] == 32000 for r in reqs)
     assert rows["max"]["cost_usd"] > rows["high"]["cost_usd"] > 0
-    md = (tmp_path / "ai_compare.md").read_text(encoding="utf-8")
+    md = (tmp_path / "ai_compare_claude-opus-5-5.md").read_text(encoding="utf-8")
     assert "## xhigh" in md and ANSWER["headline"] in md
     assert ai.load_state(tmp_path / "ai.json")["spend"]["total_usd"] == pytest.approx(sum(r["cost_usd"] for r in rows.values()))
