@@ -84,7 +84,10 @@ def build(hours: int, out_path: Path, utc_offset: int, skip: set[str], fvg_per_t
         "cvd": panels,
     }
     html = (HERE / "template.html").read_text(encoding="utf-8")
-    html = html.replace("/*__DATA__*/null", json.dumps(payload, separators=(",", ":")))
+    # "</" is escaped so exchange error text can never close the <script> block early.
+    data = json.dumps(payload, separators=(",", ":")).replace("</", "<\\/")
+    echarts_js = (HERE / "vendor" / "echarts.min.js").read_text(encoding="utf-8")
+    html = html.replace("/*__ECHARTS__*/", echarts_js).replace("/*__DATA__*/null", data)
     out_path.parent.mkdir(parents=True, exist_ok=True)
     out_path.write_text(html, encoding="utf-8")
     return payload
