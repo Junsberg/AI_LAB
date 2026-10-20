@@ -31,6 +31,23 @@ history never grows. The scheduled task runs with `--publish`, so the page updat
 shows the last build when it is off. To stop publishing: reinstall the task without `-ExtraArgs "--publish"`
 and turn Pages off in the repo settings.
 
+## AI commentary (Claude Message Batches API)
+
+The hourly build can ask Claude for a short Korean market commentary (shown in the page's **AI** tab). The
+page itself never calls an API, so no key is ever published: only the resulting text goes into `index.html`.
+
+- Uses the **Message Batches API** (50 % cheaper), because the Console promo credit applies to Batch API /
+  Agent SDK / Playground / Managed Agents, not to plain real-time Messages calls. One batch per hour; if it is
+  not finished within ~2 minutes the next build collects it.
+- Key (never commit it, never paste it in chat): create it in the Console under the organization that holds the
+  credit, then either set the `ANTHROPIC_API_KEY` environment variable or save it as
+  `%USERPROFILE%\.btc_chart\anthropic_key.txt`.
+- No key means the AI tab simply stays hidden. `--ai off` disables it, `--ai force` submits right away.
+- Caps (env vars): `BTC_AI_BUDGET_USD` (total, default 90), `BTC_AI_MAX_CALLS_PER_DAY` (24),
+  `BTC_AI_MIN_MINUTES` (55), `BTC_AI_MODEL` (`claude-opus-5-5`), `BTC_AI_EFFORT` (`medium`). Three failures in a
+  row (e.g. credit used up) pause it for 6 h. Spend is tracked in `out/ai.json`; `python -m btc_chart.ai` prints it.
+- Needs `pip install anthropic`.
+
 ## What it shows
 
 The page talks to the exchanges **directly from the browser** (public endpoints, no keys, no server), so it is live

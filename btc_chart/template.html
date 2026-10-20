@@ -129,7 +129,7 @@
   /* phone: one section at a time */
   @media (max-width: 959px) {
     [data-sec] { display: none; }
-    body[data-tab="chart"] [data-sec="chart"], body[data-tab="fvg"] [data-sec="fvg"] { display: block; }
+    body[data-tab="chart"] [data-sec="chart"], body[data-tab="fvg"] [data-sec="fvg"], body[data-tab="ai"] [data-sec="ai"] { display: block; }
     body[data-tab="flow"] [data-sec="flow"] { display: grid; }
   }
   @media (min-width: 960px) {
@@ -139,6 +139,22 @@
     .kpis { margin: 16px 0 0; padding: 2px 2px 6px; grid-auto-flow: row; grid-template-columns: repeat(auto-fit, minmax(124px, 1fr)); overflow: visible; }
     #main { height: 600px; }
   }
+
+  /* AI commentary */
+  .ai[hidden], #aitab[hidden] { display: none; }
+  .ai .bias { display: inline-block; font-size: 12px; font-weight: 700; padding: 2px 10px; border-radius: 999px; margin-bottom: 6px;
+    color: var(--fg2); border: 1px solid var(--rule); }
+  .ai .bias.up { color: var(--up); border-color: currentColor; } .ai .bias.down { color: var(--down); border-color: currentColor; }
+  .ai h3 { margin: 0 0 8px; font-size: 17px; line-height: 1.35; letter-spacing: -.01em; }
+  .ai h4 { margin: 14px 0 6px; font-size: 12px; font-weight: 600; letter-spacing: .02em; color: var(--mute); }
+  .ai ul { margin: 0; padding-left: 18px; } .ai li { margin: 3px 0; }
+  .ai p { margin: 0; color: var(--fg2); }
+  .ai .tfa { display: grid; grid-template-columns: 34px 1fr; gap: 4px 8px; align-items: baseline; }
+  .ai .tfa b { font-size: 11px; color: var(--mute); }
+  .ai .wl { padding: 8px 10px; margin: 6px 0; border-radius: 12px; border-left: 3px solid var(--s5);
+    background: color-mix(in srgb, var(--s5) 9%, transparent); } .ai .wl b { display: block; font-variant-numeric: tabular-nums; }
+  .ai .wl span { color: var(--fg2); font-size: 13px; }
+  .ai .foot { margin-top: 14px; padding-top: 10px; border-top: 1px solid var(--rule); color: var(--mute); font-size: 11.5px; }
 
   /* timeframe + live */
   .tfrow { margin: 10px 0 2px; }
@@ -178,6 +194,7 @@
     <button data-tab="chart" class="on">차트</button>
     <button data-tab="flow">수급</button>
     <button data-tab="fvg">FVG</button>
+    <button data-tab="ai" id="aitab" hidden>AI</button>
   </nav>
 
   <div class="layout">
@@ -192,6 +209,10 @@
       <section class="card" data-sec="fvg">
         <div class="chead"><div><h2>FVG 맵</h2><div class="sub">4H · 1D, 아직 채워지지 않은 구간</div></div></div>
         <div id="fvgmap"></div>
+      </section>
+      <section class="card ai" data-sec="ai" id="ai" hidden>
+        <div class="chead"><div><h2>AI 시황 코멘트</h2><div class="sub" id="aisub"></div></div></div>
+        <div id="aibody"></div>
       </section>
     </div>
     <div class="col" id="panels" data-sec="flow"></div>
@@ -617,6 +638,22 @@ function paintKpis() {
   if (sig !== kpiSig) { kpiSig = sig; $('kpis').innerHTML = sig; }
 }
 let kpiSig = '', fvgSig = '';
+/** Claude's commentary from the last build (the page never calls an API itself, so no key is exposed here). */
+function paintAi() {
+  const a = D.ai && D.ai.analysis; if (!a) return;
+  const li = x => `<li>${esc(x)}</li>`, cls = a.bias.includes('상승') ? 'up' : a.bias.includes('하락') ? 'down' : '';
+  const tfs = ['15m', '1h', '4h', '1d'].filter(k => a.timeframes[k]).map(k => `<b>${k}</b><span>${esc(a.timeframes[k])}</span>`).join('');
+  $('aibody').innerHTML =
+    `<span class="bias ${cls}">${esc(a.bias)}</span><h3>${esc(a.headline)}</h3><ul>${a.summary.map(li).join('')}</ul>` +
+    (tfs ? `<h4>타임프레임별</h4><div class="tfa">${tfs}</div>` : '') +
+    (a.flow ? `<h4>수급 종합</h4><p>${esc(a.flow)}</p>` : '') +
+    (a.watch.length ? `<h4>지켜볼 가격대</h4>${a.watch.map(w => `<div class="wl"><b>${esc(w.level)}</b><span>${esc(w.why)}</span></div>`).join('')}` : '') +
+    (a.caveats.length ? `<h4>참고</h4><ul>${a.caveats.map(li).join('')}</ul>` : '') +
+    `<div class="foot">Claude(${esc(D.ai.model || '')})가 위 데이터 요약만 보고 쓴 해설이에요 · 투자 조언이 아니고 예측도 아니에요</div>`;
+  const ageMin = D.ai.generated_ms ? Math.max(0, Math.round((Date.now() - D.ai.generated_ms) / 60000)) : null;
+  $('aisub').textContent = ageMin == null ? '' : ageMin < 90 ? `${ageMin}분 전 생성` : `${Math.round(ageMin / 60)}시간 전 생성`;
+  $('ai').hidden = false; $('aitab').hidden = false;
+}
 function paintFvg(T) { const h = fvgList(T); if (h !== fvgSig) { fvgSig = h; $('fvgmap').innerHTML = h; } }
 
 /* ---------- render ---------- */
@@ -886,7 +923,8 @@ document.addEventListener('visibilitychange', () => {
 
 /* ---------- boot ---------- */
 const t0 = lsGet('btc-theme', ''); if (t0) document.documentElement.dataset.theme = t0;
-const tab0 = lsGet('btc-tab', 'chart'); if (['chart', 'flow', 'fvg'].includes(tab0)) setTab(tab0);
+paintAi();
+const tab0 = lsGet('btc-tab', 'chart'); if (['chart', 'flow', 'fvg', ...(D.ai && D.ai.analysis ? ['ai'] : [])].includes(tab0)) setTab(tab0);
 paintControls();
 getJSON(`${BN}/api/v3/ticker/24hr?symbol=BTCUSDT`).then(t => { if (!tick) { tick = { c: +t.lastPrice, o: +t.openPrice, h: +t.highPrice, l: +t.lowPrice }; paintHero(); paintKpis(); } }).catch(() => {});
 connect();

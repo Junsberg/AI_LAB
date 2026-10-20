@@ -10,6 +10,7 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 from . import sources as src
+from . import ai
 from .publish import PublishError, origin_url, publish
 from .indicators import align, cumulate, ema, find_fvgs, nearest, premium_pct
 from .sources import HOUR, SourceError
@@ -56,7 +57,7 @@ def collect_cvd(key: str, hours: int, now_ms: int, out_dir: Path, spot_bars: lis
     raise ValueError(key)
 
 
-def build(hours: int, out_path: Path, utc_offset: int, skip: set[str], fvg_per_tf: int) -> dict:
+def build(hours: int, out_path: Path, utc_offset: int, skip: set[str], fvg_per_tf: int, ai_mode: str = "off") -> dict:
     now_ms = int(time.time() * 1000)
     out_dir = out_path.parent
 
@@ -118,7 +119,10 @@ def build(hours: int, out_path: Path, utc_offset: int, skip: set[str], fvg_per_t
         "fvg": fvgs,
         "cvd": panels,
         "extra": extra,
+        "ai": None,
     }
+    if ai_mode != "off":
+        payload["ai"] = ai.run(payload, out_dir, mode=ai_mode, now_ms=now_ms)
     html = (HERE / "template.html").read_text(encoding="utf-8")
     # "</" is escaped so exchange error text can never close the <script> block early.
     data = json.dumps(payload, separators=(",", ":")).replace("</", "<\\/")
@@ -139,6 +143,10 @@ def main(argv: list[str] | None = None) -> None:
     ap.add_argument(
         "--publish", action="store_true", help="push the built page to the gh-pages branch"
     )
+    ap.add_argument(
+        "--ai", choices=["auto", "off", "force"], default="auto",
+        help="Claude market commentary via the Batches API (needs an API key; auto = when due, force = now)",
+    )
     args = ap.parse_args(argv)
 
     payload = build(
@@ -147,6 +155,7 @@ def main(argv: list[str] | None = None) -> None:
         args.utc_offset,
         {k for k in args.skip.split(",") if k},
         args.fvg_per_tf,
+        args.ai,
     )
     missing = [p["key"] for p in payload["cvd"] + payload["extra"] if p["values"] is None]
     print(f"wrote {args.out}" + (f" (no data: {', '.join(missing)})" if missing else ""))
