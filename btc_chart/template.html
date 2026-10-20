@@ -462,15 +462,6 @@ function theme() {
 const narrow = () => (main.getWidth() || innerWidth) < 560;
 
 /* ---------- main chart ---------- */
-function tipRow(k, v, col) {
-  return `<div style="display:flex;justify-content:space-between;gap:16px"><span style="color:${col || 'inherit'};opacity:${col ? 1 : .65}">${k}</span><b style="font-weight:600">${v}</b></div>`;
-}
-function mainTip(i) {
-  const c = S.K[i];
-  let h = `<div style="margin-bottom:3px"><b>${S.labels[i]}</b></div>` + tipRow('O', fmtP(c[1])) + tipRow('H', fmtP(c[2])) + tipRow('L', fmtP(c[3])) + tipRow('C', fmtP(c[4]));
-  for (const p of EMA_PERIODS) if (state.ema[p] && S.ema[p][i] != null) h += tipRow('EMA ' + p, fmtP(S.ema[p][i]), css(EMA_VARS[p]));
-  return h;
-}
 function yRange() {
   let lo = Infinity, hi = -Infinity;
   for (let i = state.i0; i <= state.i1; i++) { lo = Math.min(lo, S.K[i][3]); hi = Math.max(hi, S.K[i][2]); }
@@ -504,7 +495,7 @@ function mainOption(T) {
     animation: false, textStyle: { fontFamily: FONT },
     grid: { left: nr ? 46 : 60, right: 8, top: 14, bottom: nr ? 26 : 56 },
     xAxis: { type: 'category', data: S.labels, boundaryGap: true, axisLine: { lineStyle: { color: T.rule } },
-      axisTick: { show: false }, axisLabel: { color: T.mute, hideOverlap: true, fontSize: nr ? 10 : 11 }, axisPointer: { label: { show: true } } },
+      axisTick: { show: false }, axisLabel: { color: T.mute, hideOverlap: true, fontSize: nr ? 10 : 11 }, axisPointer: { label: { show: false } } },
     yAxis: { scale: true, min: ymin, max: ymax, splitLine: { lineStyle: { color: T.grid } },
       axisLabel: { color: T.mute, fontSize: nr ? 10 : 11, formatter: fmtP0 }, axisPointer: { label: { formatter: p => fmtP(p.value) } } },
     dataZoom: [
@@ -512,9 +503,7 @@ function mainOption(T) {
       ...(nr ? [] : [{ type: 'slider', xAxisIndex: 0, height: 20, bottom: 12, filterMode: 'none', borderColor: T.rule, startValue: state.i0, endValue: state.i1,
         fillerColor: 'rgba(120,120,130,.15)', textStyle: { color: T.mute }, dataBackground: { lineStyle: { color: T.rule }, areaStyle: { color: T.grid } } }]),
     ],
-    tooltip: { trigger: 'axis', confine: true, axisPointer: { type: 'cross', lineStyle: { type: 'dashed', color: T.mute }, crossStyle: { color: T.mute }, label: { backgroundColor: T.mute } },
-      backgroundColor: T.card, borderColor: T.rule, borderWidth: 1, padding: [8, 10], extraCssText: 'border-radius:12px;box-shadow:0 6px 20px rgba(0,0,0,.18)',
-      textStyle: { color: T.fg, fontSize: 12 }, formatter: ps => mainTip(ps[0].dataIndex) },
+    tooltip: { trigger: 'axis', showContent: false, axisPointer: { type: 'cross', lineStyle: { type: 'dashed', color: T.mute }, crossStyle: { color: T.mute }, label: { backgroundColor: T.mute } } },   // crosshair + price label on the left axis only (no OHLC box)
     series: [
       { id: 'k', name: 'BTC', type: 'candlestick', data: candleData(),
         itemStyle: { color: T.up, color0: T.down, borderColor: T.up, borderColor0: T.down },
