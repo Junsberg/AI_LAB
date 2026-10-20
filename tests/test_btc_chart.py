@@ -1,5 +1,7 @@
-from btc_chart.indicators import cumulate, ema, find_fvgs, nearest
-from btc_chart.sources import HOUR, Candle, klines_cvd
+import pytest
+
+from btc_chart.indicators import align, cumulate, ema, find_fvgs, nearest, premium_pct
+from btc_chart.sources import HOUR, Candle, SourceError, klines_cvd, parse_coinbase_candles, parse_okx_taker_volume
 
 TF = 4 * HOUR
 
@@ -80,3 +82,26 @@ def test_cumulate_skips_leading_gap():
         3.0,
         3.0,
     ]
+
+
+def test_okx_rows_are_keyed_by_bucket_open_with_buy_minus_sell():
+    # OKX stamps a bucket with its END time and lists [ts, sellVol, buyVol].
+    res = {"code": "0", "data": [[str(5 * HOUR), "100", "130"], [str(4 * HOUR), "90", "60"]]}
+    assert parse_okx_taker_volume(res) == {4 * HOUR: 30.0, 3 * HOUR: -30.0}
+
+
+def test_okx_error_code_raises():
+    with pytest.raises(SourceError):
+        parse_okx_taker_volume({"code": "50011", "msg": "Too Many Requests", "data": []})
+
+
+def test_coinbase_candle_close_is_column_four():
+    # [time_s, low, high, open, close, volume] -- close is NOT the 4th element
+    assert parse_coinbase_candles([[3600, 9.0, 12.0, 10.0, 11.0, 5.0]]) == {3600_000: 11.0}
+
+
+def test_premium_pct_and_align_leave_gaps_as_none():
+    hours = [0, HOUR, 2 * HOUR]
+    assert premium_pct({0: 101.0, HOUR: 99.0}, {0: 100.0, HOUR: 100.0, 2 * HOUR: 100.0}, hours) == [
+        pytest.approx(1.0), pytest.approx(-1.0), None]
+    assert align({HOUR: 5.0}, hours) == [None, 5.0, None]

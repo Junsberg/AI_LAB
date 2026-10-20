@@ -105,16 +105,18 @@ chgEl.textContent = `${chg >= 0 ? '+' : ''}${chg.toFixed(2)}% (24h)`;
 chgEl.style.color = `var(${chg >= 0 ? '--up' : '--down'})`;
 document.getElementById('stamp').textContent = `${D.generated} ${D.tz}`;
 
-/* layout: main chart + one card per CVD source */
+/* layout: main chart + one card per CVD source, then the extra (OI, premium) panels */
 const GROUP = 'btc';
-document.getElementById('panels').innerHTML = D.cvd.map(p =>
-  `<div class="card"><h2><span style="color:${p.color}">${esc(p.title)}</span><small>${p.values ? '누적 · 창 시작=0' : ''}</small></h2>` +
+const PANELS = D.cvd.concat(D.extra || []);
+const fmtPanel = (p, v, dec) => p.fmt === 'pct' ? (v > 0 ? '+' : '') + v.toFixed(3) + '%' : fmtBig(v, dec);
+document.getElementById('panels').innerHTML = PANELS.map(p =>
+  `<div class="card"><h2><span style="color:${p.color}">${esc(p.title)}</span><small>${p.values ? (p.sub || '누적 · 창 시작=0') : ''}</small></h2>` +
   (p.values ? `<div class="cvd" id="c-${p.key}"></div>` : `<div class="none">데이터 없음 — ${esc((p.error || '').slice(0, 120))}</div>`) + '</div>').join('');
 
 const main = echarts.init(document.getElementById('main'));
 main.group = GROUP;
 const cvdCharts = {};
-for (const p of D.cvd) if (p.values) { const c = echarts.init(document.getElementById('c-' + p.key)); c.group = GROUP; cvdCharts[p.key] = c; }
+for (const p of PANELS) if (p.values) { const c = echarts.init(document.getElementById('c-' + p.key)); c.group = GROUP; cvdCharts[p.key] = c; }
 echarts.connect(GROUP);
 
 function theme() {
@@ -189,11 +191,11 @@ function cvdOption(p, T) {
     xAxis: { type: 'category', data: labels, boundaryGap: false, axisLine: { lineStyle: { color: T.rule } }, axisTick: { show: false },
       axisLabel: { color: T.mute, hideOverlap: true, fontSize: 11 }, axisPointer: { label: { show: false } } },
     yAxis: { scale: true, splitNumber: 2, splitLine: { lineStyle: { color: T.grid } },
-      axisLabel: { color: T.mute, fontSize: 11, formatter: v => fmtBig(v, 1) }, axisPointer: { label: { show: false } } },
+      axisLabel: { color: T.mute, fontSize: 11, formatter: v => fmtPanel(p, v, p.fmt === 'pct' ? 2 : 1) }, axisPointer: { label: { show: false } } },
     dataZoom: [{ type: 'inside', xAxisIndex: 0, filterMode: 'none' }],
     tooltip: { trigger: 'axis', axisPointer: { type: 'line', lineStyle: { type: 'dashed', color: T.mute } },
       backgroundColor: T.card, borderColor: T.rule, textStyle: { color: T.fg, fontSize: 12 },
-      formatter: ps => `<b>${labels[ps[0].dataIndex]}</b><br><span style="color:${p.color}">●</span> ${fmtBig(ps[0].value)}` },
+      formatter: ps => `<b>${labels[ps[0].dataIndex]}</b><br><span style="color:${p.color}">●</span> ${ps[0].value == null ? '–' : fmtPanel(p, ps[0].value)}` },
     series: [{ type: 'line', data: p.values, showSymbol: false, smooth: false, lineStyle: { width: 1.8, color: p.color }, itemStyle: { color: p.color },
       areaStyle: { color: { type: 'linear', x: 0, y: 0, x2: 0, y2: 1, colorStops: [{ offset: 0, color: p.color + '33' }, { offset: 1, color: p.color + '00' }] } },
       markLine: lo < 0 && hi > 0 ? { silent: true, symbol: 'none', label: { show: false }, lineStyle: { color: T.mute, type: 'dashed', opacity: .5 }, data: [{ yAxis: 0 }] } : undefined }],
@@ -215,7 +217,7 @@ function fvgTable(T) {
 function render() {
   const T = theme();
   main.setOption(mainOption(T), true);
-  for (const p of D.cvd) if (cvdCharts[p.key]) cvdCharts[p.key].setOption(cvdOption(p, T), true);
+  for (const p of PANELS) if (cvdCharts[p.key]) cvdCharts[p.key].setOption(cvdOption(p, T), true);
   document.getElementById('fvgmap').innerHTML = fvgTable(T);
 }
 render();

@@ -10,7 +10,7 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 from . import sources as src
-from .indicators import cumulate, ema, find_fvgs, nearest
+from .indicators import align, cumulate, ema, find_fvgs, nearest, premium_pct
 from .sources import HOUR, SourceError
 
 EMA_PERIODS = (20, 50, 100, 200)
@@ -25,6 +25,21 @@ CVD_PANELS = (
     ("coinbase", "Coinbase 현물 CVD", "#4a65a8"),
     ("okx", "OKX 선물 CVD", "#b98a3c"),
 )
+
+# Non-CVD panels: key, title, colour, subtitle, value format ("big" = 1.2M, "pct" = 0.05%).
+EXTRA_PANELS = (
+    ("binance_oi", "Binance 선물 미결제약정", "#7a6bb5", "USD · 시점 값", "big"),
+    ("cb_premium", "Coinbase 프리미엄", "#c4683c", "Coinbase(USD) − Binance(USDT) 종가 %", "pct"),
+)
+
+
+def collect_extra(key: str, hours: int, now_ms: int, hour_ts: list[int], spot_bars: list[src.Candle]):
+    if key == "binance_oi":
+        return align(src.binance_oi(hours), hour_ts)
+    if key == "cb_premium":
+        cb = src.coinbase_closes(hours, now_ms)
+        return premium_pct(cb, {b.t: b.close for b in spot_bars}, hour_ts)
+    raise ValueError(key)
 
 
 def collect_cvd(key: str, hours: int, now_ms: int, out_dir: Path, spot_bars: list[src.Candle]):
@@ -73,6 +88,24 @@ def build(hours: int, out_path: Path, utc_offset: int, skip: set[str], fvg_per_t
             {"key": key, "title": title, "color": color, "values": values, "error": error}
         )
 
+    extra = []
+    for key, title, color, sub, fmt in EXTRA_PANELS:
+        error, values = None, None
+        if key in skip:
+            error = "건너뜀"
+        else:
+            try:
+                values = collect_extra(key, hours, now_ms, hour_ts, bars)
+                if not any(v is not None for v in values):
+                    values, error = None, "데이터 없음"
+            except SourceError as e:
+                error = str(e)
+                print(f"[{key}] {error}", file=sys.stderr)
+        extra.append(
+            {"key": key, "title": title, "color": color, "sub": sub, "fmt": fmt,
+             "values": values, "error": error}
+        )
+
     tz = timezone(timedelta(hours=utc_offset))
     payload = {
         "generated": datetime.now(tz).strftime("%Y. %m. %d. %H:%M:%S"),
@@ -82,6 +115,7 @@ def build(hours: int, out_path: Path, utc_offset: int, skip: set[str], fvg_per_t
         "ema": emas,
         "fvg": fvgs,
         "cvd": panels,
+        "extra": extra,
     }
     html = (HERE / "template.html").read_text(encoding="utf-8")
     # "</" is escaped so exchange error text can never close the <script> block early.
@@ -98,7 +132,7 @@ def main(argv: list[str] | None = None) -> None:
     ap.add_argument("--hours", type=int, default=72, help="visible 1H candles (default 72)")
     ap.add_argument("--out", type=Path, default=HERE / "out" / "index.html")
     ap.add_argument("--utc-offset", type=int, default=9, help="label timezone (default KST +9)")
-    ap.add_argument("--skip", default="", help="comma list of CVD keys to skip, e.g. coinbase")
+    ap.add_argument("--skip", default="", help="comma list of panel keys to skip, e.g. coinbase,cb_premium")
     ap.add_argument("--fvg-per-tf", type=int, default=6, help="FVG zones kept per timeframe")
     args = ap.parse_args(argv)
 
@@ -109,7 +143,7 @@ def main(argv: list[str] | None = None) -> None:
         {k for k in args.skip.split(",") if k},
         args.fvg_per_tf,
     )
-    missing = [p["key"] for p in payload["cvd"] if p["values"] is None]
+    missing = [p["key"] for p in payload["cvd"] + payload["extra"] if p["values"] is None]
     print(f"wrote {args.out}" + (f" (no data: {', '.join(missing)})" if missing else ""))
 
 

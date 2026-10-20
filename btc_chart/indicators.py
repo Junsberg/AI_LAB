@@ -85,3 +85,15 @@ def cumulate(deltas: dict[int, float], hours: list[int]) -> list[float | None]:
             total += deltas[h]
         out.append(total if started else None)
     return out
+
+
+def align(series: dict[int, float], hours: list[int]) -> list[float | None]:
+    """Values of ``series`` at each of ``hours``; ``None`` where the source has no bar."""
+    return [series.get(h) for h in hours]
+
+
+def premium_pct(price: dict[int, float], ref: dict[int, float], hours: list[int]) -> list[float | None]:
+    """``(price / ref - 1) * 100`` per hour; ``None`` unless both sources have the hour."""
+    return [
+        (price[h] / ref[h] - 1) * 100 if h in price and ref.get(h) else None for h in hours
+    ]

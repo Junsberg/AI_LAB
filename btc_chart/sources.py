@@ -13,7 +13,7 @@ import urllib.error
 import urllib.parse
 import urllib.request
 from collections import defaultdict
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, NamedTuple
 
@@ -24,6 +24,8 @@ BINANCE_SPOT_KLINES = "https://data-api.binance.vision/api/v3/klines"
 BINANCE_FUT_KLINES = "https://fapi.binance.com/fapi/v1/klines"
 COINBASE_TRADES = "https://api.exchange.coinbase.com/products/BTC-USD/trades"
 OKX_TAKER_VOLUME = "https://www.okx.com/api/v5/rubik/stat/taker-volume"
+BINANCE_FUT_OI = "https://fapi.binance.com/futures/data/openInterestHist"
+COINBASE_CANDLES = "https://api.exchange.coinbase.com/products/BTC-USD/candles"
 
 
 class SourceError(RuntimeError):
@@ -85,11 +87,53 @@ def klines_cvd(candles: list[Candle]) -> dict[int, float]:
 
 
 def okx_cvd() -> dict[int, float]:
-    """OKX BTC contracts, hourly. Row layout per OKX docs: [ts, sellVol, buyVol]."""
+    """OKX BTC contracts, hourly. Row layout per OKX docs: [ts, sellVol, buyVol].
+
+    Verified against raw BTC-USDT-SWAP trades: ``ts`` is the *end* of the bucket, so the
+    row stamped T covers [T-1h, T); keyed by T-1h to line up with the hour-open candles.
+    """
     res = http_json(OKX_TAKER_VOLUME, {"ccy": "BTC", "instType": "CONTRACTS", "period": "1H"})
+    return parse_okx_taker_volume(res)
+
+
+def parse_okx_taker_volume(res: dict[str, Any]) -> dict[int, float]:
     if res.get("code") != "0":
         raise SourceError(f"okx: {res.get('msg')}")
-    return {int(ts): float(buy) - float(sell) for ts, sell, buy in res["data"]}
+    return {int(ts) - HOUR: float(buy) - float(sell) for ts, sell, buy in res["data"]}
+
+
+def binance_oi(hours: int) -> dict[int, float]:
+    """Binance USDT-M BTC open interest in USD at each hour (history is capped at 500 rows)."""
+    rows = http_json(
+        BINANCE_FUT_OI, {"symbol": "BTCUSDT", "period": "1h", "limit": min(hours + 2, 500)}
+    )
+    return {int(r["timestamp"]): float(r["sumOpenInterestValue"]) for r in rows}
+
+
+def parse_coinbase_candles(rows: list[list[float]]) -> dict[int, float]:
+    """Coinbase rows are ``[time_s, low, high, open, close, volume]``; returns open_ms -> close."""
+    return {int(r[0]) * 1000: float(r[4]) for r in rows}
+
+
+def coinbase_closes(hours: int, now_ms: int) -> dict[int, float]:
+    """Coinbase BTC-USD 1H closes for the last ``hours`` bars (300 bars max per request)."""
+    out: dict[int, float] = {}
+    end = now_ms // HOUR * HOUR + HOUR
+    stop = end - (hours + 2) * HOUR
+    while end > stop:
+        start = max(stop, end - 300 * HOUR)
+        rows = http_json(
+            COINBASE_CANDLES,
+            {
+                "granularity": 3600,
+                "start": datetime.fromtimestamp(start / 1000, timezone.utc).isoformat(),
+                "end": datetime.fromtimestamp((end - 1) / 1000, timezone.utc).isoformat(),
+            },
+        )
+        out.update(parse_coinbase_candles(rows))
+        end = start
+        time.sleep(0.15)
+    return out
 
 
 def _iso_ms(s: str) -> int:
