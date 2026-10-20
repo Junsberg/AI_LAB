@@ -33,19 +33,28 @@ and turn Pages off in the repo settings.
 
 ## AI commentary (Claude Message Batches API)
 
-The hourly build can ask Claude for a short Korean market commentary (shown in the page's **AI** tab). The
-page itself never calls an API, so no key is ever published: only the resulting text goes into `index.html`.
+The hourly build asks Claude for Korean market commentary, shown in the page's **AI** tab. The page itself
+never calls an API, so no key is ever published: only the resulting text goes into `index.html`.
 
-- Uses the **Message Batches API** (50 % cheaper), because the Console promo credit applies to Batch API /
-  Agent SDK / Playground / Managed Agents, not to plain real-time Messages calls. One batch per hour; if it is
-  not finished within ~2 minutes the next build collects it.
+- Two jobs: **hourly note** (Opus 5.5, effort `xhigh`, about every hour) and **deep report** (Fable 5.1,
+  `xhigh`, about every 11 h so ~2/day, told what changed since the previous deep report).
+- Uses the **Message Batches API** (50 % cheaper) because the Console promo credit applies to Batch API /
+  Agent SDK / Playground / Managed Agents, not to plain real-time Messages calls. A build waits ~2 minutes for
+  its batches; unfinished ones are collected by the next build.
 - Key (never commit it, never paste it in chat): create it in the Console under the organization that holds the
-  credit, then either set the `ANTHROPIC_API_KEY` environment variable or save it as
-  `%USERPROFILE%\.btc_chart\anthropic_key.txt`.
-- No key means the AI tab simply stays hidden. `--ai off` disables it, `--ai force` submits right away.
-- Caps (env vars): `BTC_AI_BUDGET_USD` (total, default 90), `BTC_AI_MAX_CALLS_PER_DAY` (24),
-  `BTC_AI_MIN_MINUTES` (55), `BTC_AI_MODEL` (`claude-opus-5-5`), `BTC_AI_EFFORT` (`xhigh`). Three failures in a
-  row (e.g. credit used up) pause it for 6 h. Spend is tracked in `out/ai.json`; `python -m btc_chart.ai` prints it.
+  credit, then set `ANTHROPIC_API_KEY` or save it as `%USERPROFILE%\.btc_chart\anthropic_key.txt`.
+  No key means the AI tab stays hidden. `--ai off` disables, `--ai force` submits both jobs now.
+- **Pacing**: `plan()` spreads the remaining budget (`BTC_AI_BUDGET_USD`, default 90) over the days left until
+  `BTC_AI_EXPIRES` (2026-11-18) using each job's measured last cost. If calls get pricier (more facts in the
+  fact sheet -> more tokens) the hourly note automatically slows down instead of overspending; the deep report
+  keeps its slot. Also a daily call cap, and 3 failures in a row pause a job for 6 h (e.g. credit used up).
+- Env knobs: `BTC_AI_MODEL`/`BTC_AI_EFFORT`/`BTC_AI_MIN_MINUTES` (hourly), `BTC_AI_DEEP_MODEL`/
+  `BTC_AI_DEEP_EFFORT`/`BTC_AI_DEEP_MIN_MINUTES` (deep), `BTC_AI_MAX_CALLS_PER_DAY` (30).
+- `python -m btc_chart.ai` prints spend and the current schedule (state is in `out/ai.json`).
+- `python -m btc_chart --ai compare` runs one batch with the same facts at `BTC_AI_COMPARE_EFFORTS`
+  (default `high,xhigh,max`) for `BTC_AI_MODEL` and writes `out/ai_compare_<model>.md`. Measured so far
+  (Opus 5.5): high 2.7k tokens $0.03, xhigh 5.3k $0.06, max hit the 32k token limit and was cut off ($0.33).
+  Fable 5.1: high $0.11, xhigh $0.13.
 - Needs `pip install anthropic`.
 
 ## What it shows

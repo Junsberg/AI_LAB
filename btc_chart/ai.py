@@ -176,36 +176,70 @@ def batch_cost(model: str, input_tokens: int, output_tokens: int) -> float:
     return (input_tokens * pin + output_tokens * pout) / 1e6 * BATCH_DISCOUNT
 
 
-# ---------------------------------------------------------------- state
+# ---------------------------------------------------------------- config & state
+
+DAY = 24 * HOUR
+JOB_ORDER = ("deep", "hourly")   # the rarer, pricier job gets the budget first
+
+DEEP_ADDENDUM = """
+This is the in-depth report, written a few times a day. Go deeper than the hourly note:
+- summary: 5-6 bullets; watch: 3-5 zones; explain where indicators conflict and what would resolve it.
+- If the fact sheet has previous_report, say briefly what changed since it (levels reached, bias flips).
+- Separate what the data shows from what is only inferred (e.g. an OI drop is not proof of liquidations).
+- Never mention JSON field names (like previous_report); if there is no earlier report just do not compare."""
 
 
 def _cfg() -> dict[str, Any]:
     e = os.environ.get
     return {
-        "model": e("BTC_AI_MODEL", "claude-opus-5-5"),
+        "model": e("BTC_AI_MODEL", "claude-opus-5-5"),   # also what `--ai compare` uses
         "effort": e("BTC_AI_EFFORT", "xhigh"),
-        "min_minutes": float(e("BTC_AI_MIN_MINUTES", "55")),
-        "max_calls_day": int(e("BTC_AI_MAX_CALLS_PER_DAY", "24")),
         "budget": float(e("BTC_AI_BUDGET_USD", "90")),
+        "expires": e("BTC_AI_EXPIRES", "2026-11-18"),
+        "max_calls_day": int(e("BTC_AI_MAX_CALLS_PER_DAY", "30")),
         "wait_sec": float(e("BTC_AI_WAIT_SEC", "120")),
+        "jobs": {
+            "hourly": {"model": e("BTC_AI_MODEL", "claude-opus-5-5"), "effort": e("BTC_AI_EFFORT", "xhigh"),
+                       "min_minutes": float(e("BTC_AI_MIN_MINUTES", "55")), "max_tokens": 24000, "est": 0.06,
+                       "system": SYSTEM},
+            "deep": {"model": e("BTC_AI_DEEP_MODEL", "claude-fable-5-1"), "effort": e("BTC_AI_DEEP_EFFORT", "xhigh"),
+                     "min_minutes": float(e("BTC_AI_DEEP_MIN_MINUTES", "660")), "max_tokens": 32000, "est": 0.15,
+                     "system": SYSTEM + DEEP_ADDENDUM},
+        },
     }
 
 
-def _empty_state() -> dict[str, Any]:
+def _empty_job() -> dict[str, Any]:
     return {"analysis": None, "generated_ms": None, "model": None, "pending": None, "last_submit_ms": 0,
-            "spend": {"total_usd": 0.0, "by_day": {}}, "last_cost_usd": None, "failures": 0,
-            "pause_until_ms": 0, "last_error": None}
+            "last_cost_usd": None, "failures": 0, "pause_until_ms": 0, "last_error": None}
+
+
+def _empty_state() -> dict[str, Any]:
+    return {"jobs": {n: _empty_job() for n in JOB_ORDER}, "spend": {"total_usd": 0.0, "by_day": {}, "by_job": {}}}
 
 
 def load_state(path: Path) -> dict[str, Any]:
+    st = _empty_state()
     try:
-        return {**_empty_state(), **json.loads(path.read_text(encoding="utf-8"))}
+        raw = json.loads(path.read_text(encoding="utf-8"))
     except (OSError, ValueError):
-        return _empty_state()
+        return st
+    if "jobs" not in raw:   # first version kept a single flat job
+        flat = {k: raw[k] for k in _empty_job() if k in raw}
+        raw = {"jobs": {"hourly": flat}, "spend": raw.get("spend", {})}
+    for n in JOB_ORDER:
+        st["jobs"][n].update(raw.get("jobs", {}).get(n, {}))
+    st["spend"].update(raw.get("spend", {}))
+    return st
 
 
 def _day(ms: int) -> str:
     return datetime.fromtimestamp(ms / 1000, timezone.utc).strftime("%Y-%m-%d")
+
+
+def _expiry_ms(cfg: dict[str, Any]) -> int:
+    d = datetime.strptime(cfg["expires"], "%Y-%m-%d").replace(tzinfo=timezone.utc)
+    return int(d.timestamp() * 1000) + DAY   # usable through the end of that day
 
 
 def make_client() -> Any | None:
@@ -223,84 +257,109 @@ def make_client() -> Any | None:
     return anthropic.Anthropic(api_key=key) if key else None
 
 
+def plan(state: dict[str, Any], cfg: dict[str, Any], now_ms: int) -> dict[str, float]:
+    """Minutes between calls per job so the remaining budget lasts until the credit expires.
+
+    Costs are the measured last cost of each job, so adding facts (more tokens) automatically slows the
+    hourly job instead of overspending. The deep job is funded first, the hourly job gets what is left.
+    """
+    days_left = max(1.0, (_expiry_ms(cfg) - now_ms) / DAY)
+    per_day = max(0.0, cfg["budget"] - state["spend"]["total_usd"]) / days_left
+    jobs = cfg["jobs"]
+    est = {n: state["jobs"][n]["last_cost_usd"] or jobs[n]["est"] for n in jobs}
+    out: dict[str, float] = {}
+    left = per_day
+    for n in JOB_ORDER:
+        want = max(jobs[n]["min_minutes"], 1440 * est[n] / left) if left > 0 else float("inf")
+        out[n] = want
+        if want != float("inf"):
+            left -= 1440 / want * est[n]
+    return out
+
+
 # ---------------------------------------------------------------- the batch round trip
 
 
-def _request(facts: dict[str, Any], cfg: dict[str, Any], effort: str | None = None, custom_id: str = CUSTOM_ID,
-             max_tokens: int = 24000) -> dict[str, Any]:
+def _request(facts: dict[str, Any], jcfg: dict[str, Any], effort: str | None = None, custom_id: str = CUSTOM_ID,
+             max_tokens: int = 24000, system: str = SYSTEM) -> dict[str, Any]:
     return {
         "custom_id": custom_id,
         "params": {
-            "model": cfg["model"],
+            "model": jcfg["model"],
             "max_tokens": max_tokens,   # thinking counts toward this
-            "system": SYSTEM,
-            "output_config": {"effort": effort or cfg["effort"], "format": {"type": "json_schema", "schema": SCHEMA}},
+            "system": system,
+            "output_config": {"effort": effort or jcfg["effort"], "format": {"type": "json_schema", "schema": SCHEMA}},
             "messages": [{"role": "user", "content": "Fact sheet:\n" + json.dumps(facts, ensure_ascii=False, indent=1)}],
         },
     }
 
 
-def _collect(client: Any, batch_id: str, state: dict[str, Any], now_ms: int, cfg: dict[str, Any]) -> str:
+def _fail(job: dict[str, Any], why: str) -> str:
+    job["failures"] += 1
+    job["last_error"] = why
+    return why
+
+
+def _collect(client: Any, name: str, state: dict[str, Any], batch_id: str, now_ms: int) -> str:
+    job = state["jobs"][name]
     for res in client.messages.batches.results(batch_id):
-        if res.custom_id != CUSTOM_ID:
+        if res.custom_id not in (name, CUSTOM_ID):
             continue
         r = res.result
         if r.type != "succeeded":
-            detail = getattr(getattr(r, "error", None), "type", "") or r.type
-            state["failures"] += 1
-            state["last_error"] = f"batch result {r.type}: {detail}"
-            return state["last_error"]
+            return _fail(job, f"batch result {r.type}: {getattr(getattr(r, 'error', None), 'type', '') or r.type}")
         msg = r.message
         text = next((b.text for b in msg.content if b.type == "text"), "")
         try:
             analysis = parse_analysis(text)
         except (ValueError, KeyError, TypeError, AttributeError) as e:
-            state["failures"] += 1
-            state["last_error"] = f"unparseable answer: {e}"
-            return state["last_error"]
-        cost = batch_cost(msg.model or cfg["model"], msg.usage.input_tokens, msg.usage.output_tokens)
-        day = state["spend"]["by_day"].setdefault(_day(now_ms), {"calls": 0, "usd": 0.0})
+            return _fail(job, f"unparseable answer ({getattr(msg, 'stop_reason', '?')}): {e}")
+        model = msg.model or "?"
+        cost = batch_cost(model, msg.usage.input_tokens, msg.usage.output_tokens)
+        sp = state["spend"]
+        day = sp["by_day"].setdefault(_day(now_ms), {"calls": 0, "usd": 0.0})
         day["calls"] += 1
         day["usd"] = round(day["usd"] + cost, 4)
-        state["spend"]["total_usd"] = round(state["spend"]["total_usd"] + cost, 4)
-        state.update(analysis=analysis, generated_ms=now_ms, model=msg.model or cfg["model"], last_cost_usd=round(cost, 4),
-                     failures=0, last_error=None)
-        return f"ok (${cost:.3f}, total ${state['spend']['total_usd']:.2f})"
-    state["failures"] += 1
-    state["last_error"] = "batch returned no result"
-    return state["last_error"]
+        sp["total_usd"] = round(sp["total_usd"] + cost, 4)
+        sp["by_job"][name] = round(sp["by_job"].get(name, 0.0) + cost, 4)
+        job.update(analysis=analysis, generated_ms=now_ms, model=model, last_cost_usd=round(cost, 4), failures=0, last_error=None)
+        return f"ok (${cost:.3f}, total ${sp['total_usd']:.2f})"
+    return _fail(job, "batch returned no result")
 
 
-def _poll(client: Any, state: dict[str, Any], now_ms: int, cfg: dict[str, Any]) -> str | None:
-    """Check the pending batch once. Returns a status message when it finished, else None."""
-    pend = state["pending"]
+def _poll(client: Any, name: str, state: dict[str, Any], now_ms: int) -> str | None:
+    """Check a job's pending batch once. Returns a status message when it finished, else None."""
+    job = state["jobs"][name]
+    pend = job["pending"]
     batch = client.messages.batches.retrieve(pend["id"])
     if batch.processing_status != "ended":
-        if now_ms - pend["submitted_ms"] > 6 * HOUR:   # something is stuck: give up and start fresh next time
+        if now_ms - pend["submitted_ms"] > 6 * HOUR:   # stuck: give up, start fresh next time
             try:
                 client.messages.batches.cancel(pend["id"])
             except Exception:
                 pass
-            state["pending"] = None
-            state["failures"] += 1
-            state["last_error"] = "batch took more than 6 h"
-            return state["last_error"]
+            job["pending"] = None
+            return _fail(job, "batch took more than 6 h")
         return None
-    state["pending"] = None
-    return _collect(client, pend["id"], state, now_ms, cfg)
+    job["pending"] = None
+    return _collect(client, name, state, pend["id"], now_ms)
 
 
-def page_info(state: dict[str, Any], status: str) -> dict[str, Any] | None:
-    if not state["analysis"] and status.startswith("off"):
-        return {"status": status, "analysis": None}
-    return {
-        "status": status,
-        "analysis": state["analysis"],
-        "generated_ms": state["generated_ms"],
-        "model": state["model"],
-        "last_cost_usd": state["last_cost_usd"],
-        "spend_total_usd": state["spend"]["total_usd"],
-    }
+def _previous_report(job: dict[str, Any]) -> dict[str, Any] | None:
+    a = job["analysis"]
+    if not a or not job["generated_ms"]:
+        return None
+    return {"generated": datetime.fromtimestamp(job["generated_ms"] / 1000, timezone.utc).strftime("%Y-%m-%d %H:%M UTC"),
+            "bias": a["bias"], "headline": a["headline"], "watch_levels": [w["level"] for w in a["watch"]]}
+
+
+def page_info(state: dict[str, Any], status: dict[str, str]) -> dict[str, Any] | None:
+    jobs = {}
+    for n in JOB_ORDER:
+        j = state["jobs"][n]
+        jobs[n] = {"analysis": j["analysis"], "generated_ms": j["generated_ms"], "model": j["model"],
+                   "last_cost_usd": j["last_cost_usd"]}
+    return {"status": status, "spend_total_usd": state["spend"]["total_usd"], **jobs}
 
 
 def run(
@@ -313,65 +372,79 @@ def run(
     fetch: Callable[[], dict[str, Any]] = fetch_timeframes,
     sleep: Callable[[float], None] = time.sleep,
 ) -> dict[str, Any] | None:
-    """Advance the AI-commentary state machine by one build; returns what the page should show."""
+    """Advance the AI state machine (hourly note + deep report) by one build; returns what the page should show."""
     now_ms = now_ms or int(time.time() * 1000)
     cfg = _cfg()
     path = out_dir / STATE_NAME
     state = load_state(path)
     if mode == "off":
-        return page_info(state, "off: disabled (--ai off)")
+        return page_info(state, {"all": "off: disabled (--ai off)"})
     client = client or make_client()
     if client is None:
-        return page_info(state, f"off: no API key (set ANTHROPIC_API_KEY or put it in {KEY_FILE})")
+        return page_info(state, {"all": f"off: no API key (set ANTHROPIC_API_KEY or put it in {KEY_FILE})"})
 
-    msg = ""
-    try:
-        if state["pending"]:
-            msg = _poll(client, state, now_ms, cfg) or "batch still running"
-        if not state["pending"]:
+    status: dict[str, str] = {}
+    pace = plan(state, cfg, now_ms)
+    facts: dict[str, Any] | None = None
+    for name in JOB_ORDER:
+        job, jc = state["jobs"][name], cfg["jobs"][name]
+        try:
+            if job["pending"]:
+                status[name] = _poll(client, name, state, now_ms) or "batch still running"
+            if job["pending"]:
+                continue
             today = state["spend"]["by_day"].get(_day(now_ms), {"calls": 0, "usd": 0.0})
-            est = state["last_cost_usd"] or 0.15
-            due = mode == "force" or now_ms - state["last_submit_ms"] >= cfg["min_minutes"] * 60_000
-            if now_ms < state["pause_until_ms"]:
-                msg = msg or "paused after repeated failures"
+            est = job["last_cost_usd"] or jc["est"]
+            due = mode == "force" or now_ms - job["last_submit_ms"] >= pace[name] * 60_000
+            if now_ms >= _expiry_ms(cfg):
+                status[name] = f"credit window over ({cfg['expires']})"
+            elif now_ms < job["pause_until_ms"]:
+                status[name] = status.get(name) or "paused after repeated failures"
             elif not due:
-                msg = msg or "not due yet"
+                status[name] = status.get(name) or ("not due yet" if pace[name] != float("inf") else "over budget pace")
             elif today["calls"] >= cfg["max_calls_day"]:
-                msg = msg or f"daily call cap reached ({cfg['max_calls_day']})"
+                status[name] = f"daily call cap reached ({cfg['max_calls_day']})"
             elif state["spend"]["total_usd"] + est > cfg["budget"]:
-                msg = msg or f"budget cap reached (${state['spend']['total_usd']:.2f} of ${cfg['budget']:.0f})"
+                status[name] = f"budget cap reached (${state['spend']['total_usd']:.2f} of ${cfg['budget']:.0f})"
             else:
-                facts = market_facts(payload, fetch())
-                batch = client.messages.batches.create(requests=[_request(facts, cfg)])
-                state["pending"] = {"id": batch.id, "submitted_ms": now_ms}
-                state["last_submit_ms"] = now_ms
-                msg = "submitted"
-                t0 = time.time()
-                deadline = t0 + cfg["wait_sec"]
-                msg = "submitted (result will be collected by the next build)"
-                while True:   # most batches finish within minutes
-                    sleep(5)
-                    done = _poll(client, state, now_ms + int((time.time() - t0) * 1000), cfg)
-                    if done is not None:
-                        msg = done
-                        break
-                    if time.time() >= deadline:
-                        break
-    except Exception as e:   # never let AI break the chart build
-        state["failures"] += 1
-        state["last_error"] = f"{type(e).__name__}: {str(e)[:200]}"
-        msg = state["last_error"]
-    if state["failures"] >= 3 and now_ms >= state["pause_until_ms"]:
-        state["pause_until_ms"] = now_ms + 6 * HOUR   # e.g. credit used up / expired: stop hammering the API
-        state["failures"] = 0
-        msg += " | 3 failures in a row: pausing 6 h"
+                facts = facts or market_facts(payload, fetch())
+                sheet = {**facts, "previous_report": _previous_report(job)} if name == "deep" else facts
+                req = _request(sheet, jc, None, name, jc["max_tokens"], jc["system"])
+                job["pending"] = {"id": client.messages.batches.create(requests=[req]).id, "submitted_ms": now_ms}
+                job["last_submit_ms"] = now_ms
+                status[name] = "submitted"
+        except Exception as e:   # never let AI break the chart build
+            status[name] = _fail(job, f"{type(e).__name__}: {str(e)[:200]}")
+
+    t0 = time.time()   # most batches finish within minutes: wait a little for all of them together
+    while any(state["jobs"][n]["pending"] and status.get(n) == "submitted" for n in JOB_ORDER):
+        sleep(5)
+        for name in JOB_ORDER:
+            if state["jobs"][name]["pending"] and status.get(name) == "submitted":
+                try:
+                    done = _poll(client, name, state, now_ms + int((time.time() - t0) * 1000))
+                except Exception as e:
+                    done = _fail(state["jobs"][name], f"{type(e).__name__}: {str(e)[:200]}")
+                if done is not None:
+                    status[name] = done
+        if time.time() >= t0 + cfg["wait_sec"]:
+            break
+    for name in JOB_ORDER:
+        job = state["jobs"][name]
+        if status.get(name) == "submitted" and job["pending"]:
+            status[name] = "submitted (result will be collected by the next build)"
+        if job["failures"] >= 3 and now_ms >= job["pause_until_ms"]:
+            job["pause_until_ms"] = now_ms + 6 * HOUR   # e.g. credit used up / expired: stop hammering the API
+            job["failures"] = 0
+            status[name] = status.get(name, "") + " | 3 failures in a row: pausing 6 h"
     try:
         out_dir.mkdir(parents=True, exist_ok=True)
         path.write_text(json.dumps(state, ensure_ascii=False, indent=1), encoding="utf-8")
     except OSError as e:
         print(f"[ai] could not save state: {e}", file=sys.stderr)
-    print(f"[ai] {msg}", file=sys.stderr)
-    return page_info(state, msg)
+    for n in JOB_ORDER:
+        print(f"[ai] {n}: {status.get(n, '-')}", file=sys.stderr)
+    return page_info(state, status)
 
 
 def compare(
@@ -446,10 +519,17 @@ def _compare_md(rows: dict[str, Any], efforts: tuple[str, ...]) -> str:
 
 def status(out_dir: Path) -> str:
     st = load_state(out_dir / STATE_NAME)
+    cfg, now = _cfg(), int(time.time() * 1000)
     sp = st["spend"]
-    today = sp["by_day"].get(_day(int(time.time() * 1000)), {"calls": 0, "usd": 0.0})
-    return (f"spent ${sp['total_usd']:.2f} total (budget ${_cfg()['budget']:.0f}); today {today['calls']} calls ${today['usd']:.2f}; "
-            f"last cost {st['last_cost_usd']}; pending={bool(st['pending'])}; last error: {st['last_error']}")
+    today = sp["by_day"].get(_day(now), {"calls": 0, "usd": 0.0})
+    pace = plan(st, cfg, now)
+    lines = [f"spent ${sp['total_usd']:.2f} of ${cfg['budget']:.0f} (by job: {sp['by_job']}); today {today['calls']} calls ${today['usd']:.2f}"]
+    for n in JOB_ORDER:
+        j = st["jobs"][n]
+        every = "never" if pace[n] == float("inf") else f"every {pace[n] / 60:.1f} h"
+        lines.append(f"  {n}: {cfg['jobs'][n]['model']} {cfg['jobs'][n]['effort']}, {every}, last cost {j['last_cost_usd']}, "
+                     f"pending={bool(j['pending'])}, last error: {j['last_error']}")
+    return "\n".join(lines)
 
 
 if __name__ == "__main__":

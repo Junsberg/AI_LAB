@@ -154,6 +154,12 @@
   .ai .wl { padding: 8px 10px; margin: 6px 0; border-radius: 12px; border-left: 3px solid var(--s5);
     background: color-mix(in srgb, var(--s5) 9%, transparent); } .ai .wl b { display: block; font-variant-numeric: tabular-nums; }
   .ai .wl span { color: var(--fg2); font-size: 13px; }
+  .aib { border-top: 1px solid var(--rule); padding: 10px 0; } .aib:first-of-type { border-top: 0; padding-top: 0; }
+  .aib summary { display: flex; align-items: center; gap: 10px; cursor: pointer; list-style: none; }
+  .aib summary::-webkit-details-marker { display: none; }
+  .aib summary::after { content: '▾'; margin-left: auto; color: var(--mute); transition: transform .15s; } .aib:not([open]) summary::after { transform: rotate(-90deg); }
+  .aib .bias { margin: 0; white-space: nowrap; } .aih { color: var(--mute); font-size: 12.5px; } .aih b { color: var(--fg); }
+  .aib h3 { margin-top: 10px; }
   .ai .foot { margin-top: 14px; padding-top: 10px; border-top: 1px solid var(--rule); color: var(--mute); font-size: 11.5px; }
 
   /* timeframe + live */
@@ -628,19 +634,27 @@ function paintKpis() {
 }
 let kpiSig = '', fvgSig = '';
 /** Claude's commentary from the last build (the page never calls an API itself, so no key is exposed here). */
-function paintAi() {
-  const a = D.ai && D.ai.analysis; if (!a) return;
+const AI_JOBS = [['deep', '심층 리포트'], ['hourly', '시간별 코멘트']];
+const aiModel = m => { const x = /(opus|sonnet|haiku|fable)-(\d+)(?:-(\d+))?/.exec(m || ''); return x ? x[1][0].toUpperCase() + x[1].slice(1) + ' ' + x[2] + (x[3] ? '.' + x[3] : '') : (m || ''); };
+const aiAge = ms => { const m = Math.max(0, Math.round((Date.now() - ms) / 60000)); return m < 2 ? '방금' : m < 90 ? `${m}분 전` : m < 2880 ? `${Math.round(m / 60)}시간 전` : `${Math.round(m / 1440)}일 전`; };
+function aiBlock(j, label, open) {
+  const a = j && j.analysis; if (!a) return '';
   const li = x => `<li>${esc(x)}</li>`, cls = a.bias.includes('상승') ? 'up' : a.bias.includes('하락') ? 'down' : '';
   const tfs = ['15m', '1h', '4h', '1d'].filter(k => a.timeframes[k]).map(k => `<b>${k}</b><span>${esc(a.timeframes[k])}</span>`).join('');
-  $('aibody').innerHTML =
-    `<span class="bias ${cls}">${esc(a.bias)}</span><h3>${esc(a.headline)}</h3><ul>${a.summary.map(li).join('')}</ul>` +
+  return `<details class="aib"${open ? ' open' : ''}><summary><span class="bias ${cls}">${esc(a.bias)}</span><span class="aih"><b>${label}</b> · ${esc(aiModel(j.model))}${j.generated_ms ? ' · ' + aiAge(j.generated_ms) : ''}</span></summary>` +
+    `<h3>${esc(a.headline)}</h3><ul>${a.summary.map(li).join('')}</ul>` +
     (tfs ? `<h4>타임프레임별</h4><div class="tfa">${tfs}</div>` : '') +
     (a.flow ? `<h4>수급 종합</h4><p>${esc(a.flow)}</p>` : '') +
     (a.watch.length ? `<h4>지켜볼 가격대</h4>${a.watch.map(w => `<div class="wl"><b>${esc(w.level)}</b><span>${esc(w.why)}</span></div>`).join('')}` : '') +
-    (a.caveats.length ? `<h4>참고</h4><ul>${a.caveats.map(li).join('')}</ul>` : '') +
-    `<div class="foot">Claude(${esc(D.ai.model || '')})가 위 데이터 요약만 보고 쓴 해설이에요 · 투자 조언이 아니고 예측도 아니에요</div>`;
-  const ageMin = D.ai.generated_ms ? Math.max(0, Math.round((Date.now() - D.ai.generated_ms) / 60000)) : null;
-  $('aisub').textContent = ageMin == null ? '' : ageMin < 90 ? `${ageMin}분 전 생성` : `${Math.round(ageMin / 60)}시간 전 생성`;
+    (a.caveats.length ? `<h4>참고</h4><ul>${a.caveats.map(li).join('')}</ul>` : '') + '</details>';
+}
+function paintAi() {
+  const ai = D.ai; if (!ai) return;
+  const blocks = AI_JOBS.map(([k, label], i) => aiBlock(ai[k], label, i === 0 || !(ai[AI_JOBS[0][0]] && ai[AI_JOBS[0][0]].analysis)));
+  if (!blocks.some(Boolean)) return;
+  $('aibody').innerHTML = blocks.join('') + '<div class="foot">Claude가 위 데이터 요약만 보고 쓴 해설이에요 · 투자 조언이 아니고 예측도 아니에요</div>';
+  const newest = Math.max(...AI_JOBS.map(([k]) => (ai[k] && ai[k].generated_ms) || 0));
+  $('aisub').textContent = newest ? `${aiAge(newest)} 갱신` : '';
   $('ai').hidden = false; $('aitab').hidden = false;
 }
 function paintFvg(T) { const h = fvgList(T); if (h !== fvgSig) { fvgSig = h; $('fvgmap').innerHTML = h; } }
@@ -913,7 +927,7 @@ document.addEventListener('visibilitychange', () => {
 /* ---------- boot ---------- */
 const t0 = lsGet('btc-theme', ''); if (t0) document.documentElement.dataset.theme = t0;
 paintAi();
-const tab0 = lsGet('btc-tab', 'chart'); if (['chart', 'flow', 'fvg', ...(D.ai && D.ai.analysis ? ['ai'] : [])].includes(tab0)) setTab(tab0);
+const tab0 = lsGet('btc-tab', 'chart'); if (['chart', 'flow', 'fvg', ...($('aitab').hidden ? [] : ['ai'])].includes(tab0)) setTab(tab0);
 paintControls();
 getJSON(`${BN}/api/v3/ticker/24hr?symbol=BTCUSDT`).then(t => { if (!tick) { tick = { c: +t.lastPrice, o: +t.openPrice, h: +t.highPrice, l: +t.lowPrice }; paintHero(); paintKpis(); } }).catch(() => {});
 connect();

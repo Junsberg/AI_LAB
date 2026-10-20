@@ -8,7 +8,7 @@ import pytest
 from btc_chart import ai
 from btc_chart.sources import Candle, HOUR
 
-NOW = 1_800_000_000_000
+NOW = 1792584000000
 ANSWER = {
     "headline": "단기 횡보, 수급은 현물 우위",
     "bias": "중립·혼조",
@@ -22,7 +22,7 @@ ANSWER = {
 
 @pytest.fixture(autouse=True)
 def env(monkeypatch):
-    for k in ("BTC_AI_MODEL", "BTC_AI_EFFORT", "BTC_AI_MIN_MINUTES", "BTC_AI_MAX_CALLS_PER_DAY", "BTC_AI_BUDGET_USD"):
+    for k in ("BTC_AI_MODEL", "BTC_AI_EFFORT", "BTC_AI_MIN_MINUTES", "BTC_AI_MAX_CALLS_PER_DAY", "BTC_AI_BUDGET_USD", "BTC_AI_EXPIRES", "BTC_AI_DEEP_MODEL", "BTC_AI_DEEP_EFFORT", "BTC_AI_DEEP_MIN_MINUTES"):
         monkeypatch.delenv(k, raising=False)
     monkeypatch.setenv("BTC_AI_WAIT_SEC", "0")
 
@@ -45,28 +45,36 @@ def tf_facts():
 
 
 def message(text, model="claude-opus-5-5", i=3000, o=2000):
-    return NS(content=[NS(type="thinking"), NS(type="text", text=text)], model=model, usage=NS(input_tokens=i, output_tokens=o))
+    return NS(content=[NS(type="thinking"), NS(type="text", text=text)], model=model, usage=NS(input_tokens=i, output_tokens=o),
+              stop_reason="end_turn")
 
 
 class FakeClient:
+    """Minimal stand-in for anthropic.Anthropic().messages.batches; remembers what each batch contained."""
+
     def __init__(self, ended=True, result_type="succeeded", text=None, fail_create=None):
         self.ended, self.result_type, self.fail_create = ended, result_type, fail_create
         self.text = json.dumps(ANSWER, ensure_ascii=False) if text is None else text
-        self.created = []
+        self.created = []            # one list of requests per batch
         self.messages = NS(batches=NS(create=self.create, retrieve=self.retrieve, results=self.results, cancel=lambda i: None))
 
     def create(self, requests):
         if self.fail_create:
             raise self.fail_create
         self.created.append(requests)
-        return NS(id="msgbatch_1")
+        return NS(id=f"msgbatch_{len(self.created)}")
 
     def retrieve(self, id):
         return NS(processing_status="ended" if self.ended else "in_progress")
 
     def results(self, id):
-        r = NS(type=self.result_type, message=message(self.text), error=NS(type="invalid_request"))
-        return [NS(custom_id=ai.CUSTOM_ID, result=r)]
+        reqs = self.created[int(id.split("_")[1]) - 1]
+        return [NS(custom_id=r["custom_id"], result=NS(type=self.result_type, message=message(self.text, model=r["params"]["model"],
+                o=1000 if r["params"]["model"].startswith("claude-fable") else 2000), error=NS(type="invalid_request")))
+                for r in reqs]
+
+    def jobs(self):
+        return [r["custom_id"] for reqs in self.created for r in reqs]
 
 
 def run(tmp_path, client, **kw):
@@ -94,61 +102,101 @@ def test_parse_analysis_trims_and_requires_headline():
 def test_batch_cost_is_half_price():
     assert ai.batch_cost("claude-opus-5-5", 1_000_000, 0) == pytest.approx(2.0)
     assert ai.batch_cost("claude-opus-5-5", 0, 1_000_000) == pytest.approx(10.0)
+    assert ai.batch_cost("claude-fable-5-1", 1_000_000, 1_000_000) == pytest.approx(30.0)
 
 
 def test_no_key_means_off_and_never_crashes(tmp_path, monkeypatch):
     monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
     monkeypatch.setattr(ai, "KEY_FILE", tmp_path / "nokey.txt")
     info = ai.run(payload(), tmp_path, now_ms=NOW, fetch=tf_facts)
-    assert info["analysis"] is None and info["status"].startswith("off")
+    assert info["hourly"]["analysis"] is None and info["status"]["all"].startswith("off")
 
 
 def test_mode_off_skips_everything(tmp_path):
     c = FakeClient()
-    assert ai.run(payload(), tmp_path, mode="off", client=c)["status"].startswith("off")
+    assert ai.run(payload(), tmp_path, mode="off", client=c)["status"]["all"].startswith("off")
     assert not c.created
 
 
-def test_submit_collect_and_budget_tracking(tmp_path):
+def test_first_build_submits_both_jobs_with_their_own_model_and_collects(tmp_path):
     c = FakeClient()
     info = run(tmp_path, c)
-    assert info["analysis"]["headline"] == ANSWER["headline"]
-    req = c.created[0][0]
-    assert req["custom_id"] == "analysis" and req["params"]["model"] == "claude-opus-5-5"
-    assert req["params"]["output_config"]["format"]["type"] == "json_schema"
-    assert "thinking" not in req["params"] and "temperature" not in req["params"]
+    assert c.jobs() == ["deep", "hourly"]
+    by = {r["custom_id"]: r["params"] for reqs in c.created for r in reqs}
+    assert by["hourly"]["model"] == "claude-opus-5-5" and by["deep"]["model"] == "claude-fable-5-1"
+    assert by["hourly"]["output_config"]["effort"] == "xhigh" and by["hourly"]["max_tokens"] == 24000
+    assert by["deep"]["max_tokens"] == 32000 and "in-depth report" in by["deep"]["system"]
+    assert "in-depth report" not in by["hourly"]["system"]
+    assert by["hourly"]["output_config"]["format"]["type"] == "json_schema"
+    assert "thinking" not in by["hourly"] and "temperature" not in by["hourly"]
+    assert info["hourly"]["analysis"]["headline"] == ANSWER["headline"] and info["deep"]["model"] == "claude-fable-5-1"
     st = ai.load_state(tmp_path / "ai.json")
-    assert st["pending"] is None and st["spend"]["total_usd"] == pytest.approx(0.026, abs=1e-6)  # (3000*4+2000*20)/1e6/2
+    assert st["jobs"]["hourly"]["pending"] is None
+    assert st["spend"]["by_job"]["hourly"] == pytest.approx(0.026, abs=1e-6)      # (3000*4+2000*20)/1e6/2
+    assert st["spend"]["by_job"]["deep"] == pytest.approx(0.04, abs=1e-6)         # (3000*10+1000*50)/1e6/2
+    assert st["spend"]["total_usd"] == pytest.approx(0.066, abs=1e-6)
 
 
-def test_not_due_again_within_min_interval(tmp_path):
+def test_jobs_run_on_their_own_schedules(tmp_path):
     c = FakeClient()
     run(tmp_path, c)
-    again = run(tmp_path, c, now_ms=NOW + 10 * 60_000)
-    assert len(c.created) == 1 and again["analysis"] is not None
-    run(tmp_path, c, now_ms=NOW + 56 * 60_000)
-    assert len(c.created) == 2
+    run(tmp_path, c, now_ms=NOW + 10 * 60_000)
+    assert len(c.jobs()) == 2                                  # nothing due yet
+    run(tmp_path, c, now_ms=NOW + 60 * 60_000)
+    assert c.jobs() == ["deep", "hourly", "hourly"]            # only the hourly note
+    run(tmp_path, c, now_ms=NOW + 12 * HOUR)
+    assert c.jobs()[-2:] == ["deep", "hourly"]
+
+
+def test_deep_request_carries_previous_report(tmp_path):
+    c = FakeClient()
+    run(tmp_path, c)
+    run(tmp_path, c, now_ms=NOW + 12 * HOUR)
+    deep = [r for reqs in c.created for r in reqs if r["custom_id"] == "deep"]
+    assert "previous_report" in deep[1]["params"]["messages"][0]["content"]
+    assert ANSWER["headline"] in deep[1]["params"]["messages"][0]["content"]
+    assert "\"previous_report\": null" in deep[0]["params"]["messages"][0]["content"]
 
 
 def test_pending_batch_is_collected_by_next_build(tmp_path):
     c = FakeClient(ended=False)
     first = run(tmp_path, c)
-    assert first["analysis"] is None and ai.load_state(tmp_path / "ai.json")["pending"]["id"] == "msgbatch_1"
+    assert first["hourly"]["analysis"] is None
+    assert ai.load_state(tmp_path / "ai.json")["jobs"]["hourly"]["pending"]["id"] == "msgbatch_2"
     c.ended = True
     second = run(tmp_path, c, now_ms=NOW + 30 * 60_000)
-    assert second["analysis"]["bias"] == "중립·혼조" and len(c.created) == 1
+    assert second["hourly"]["analysis"]["bias"] == "중립·혼조" and second["deep"]["analysis"] and len(c.jobs()) == 2
+
+
+def test_plan_slows_down_when_calls_get_more_expensive_and_stops_when_broke():
+    cfg, now = ai._cfg(), NOW
+    st = ai._empty_state()
+    base = ai.plan(st, cfg, now)
+    assert base["hourly"] == 55 and base["deep"] == 660
+    st["jobs"]["hourly"]["last_cost_usd"] = 0.6                 # e.g. many more facts / tokens
+    slower = ai.plan(st, cfg, now)
+    assert slower["hourly"] > 55 and slower["deep"] == 660      # the deep report keeps its slot
+    st["spend"]["total_usd"] = 89.9
+    assert ai.plan(st, cfg, now)["hourly"] == float("inf")
 
 
 def test_daily_call_cap_and_total_budget(tmp_path, monkeypatch):
-    monkeypatch.setenv("BTC_AI_MAX_CALLS_PER_DAY", "1")
+    monkeypatch.setenv("BTC_AI_MAX_CALLS_PER_DAY", "2")
     c = FakeClient()
     run(tmp_path, c)
     info = run(tmp_path, c, now_ms=NOW + 2 * HOUR)
-    assert len(c.created) == 1 and "daily call cap" in info["status"]
+    assert len(c.jobs()) == 2 and "daily call cap" in info["status"]["hourly"]
     monkeypatch.setenv("BTC_AI_MAX_CALLS_PER_DAY", "99")
-    monkeypatch.setenv("BTC_AI_BUDGET_USD", "0.01")
+    monkeypatch.setenv("BTC_AI_BUDGET_USD", "0.07")
     info = run(tmp_path, c, now_ms=NOW + 3 * HOUR)
-    assert len(c.created) == 1 and "budget cap" in info["status"]
+    assert len(c.jobs()) == 2 and ("budget" in info["status"]["hourly"] or "pace" in info["status"]["hourly"])
+
+
+def test_nothing_is_submitted_after_the_credit_expires(tmp_path, monkeypatch):
+    monkeypatch.setenv("BTC_AI_EXPIRES", "2026-10-01")
+    c = FakeClient()
+    info = run(tmp_path, c)                      # NOW is after the expiry date
+    assert not c.created and "credit window over" in info["status"]["hourly"]
 
 
 def test_failures_keep_old_text_and_pause_after_three(tmp_path):
@@ -156,18 +204,25 @@ def test_failures_keep_old_text_and_pause_after_three(tmp_path):
     bad = FakeClient(fail_create=RuntimeError("credit balance too low"))
     for k in range(3):
         info = run(tmp_path, bad, now_ms=NOW + (k + 1) * 2 * HOUR)
-    assert info["analysis"]["headline"] == ANSWER["headline"]       # last good text stays
-    assert "pausing" in info["status"]
+    assert info["hourly"]["analysis"]["headline"] == ANSWER["headline"]       # last good text stays
+    assert "pausing" in info["status"]["hourly"]
     ok = FakeClient()
     paused = run(tmp_path, ok, now_ms=NOW + 8 * HOUR)
-    assert not ok.created and "paused" in paused["status"]
+    assert "paused" in paused["status"]["hourly"]
     run(tmp_path, ok, now_ms=NOW + 13 * HOUR)
-    assert len(ok.created) == 1
+    assert "hourly" in ok.jobs()
+
+
+def test_old_single_job_state_file_is_migrated(tmp_path):
+    (tmp_path / "ai.json").write_text(json.dumps({"analysis": ANSWER, "generated_ms": 5, "model": "claude-opus-5-5", "pending": None,
+                                                  "last_submit_ms": 0, "spend": {"total_usd": 0.7, "by_day": {}}}), encoding="utf-8")
+    st = ai.load_state(tmp_path / "ai.json")
+    assert st["jobs"]["hourly"]["analysis"] == ANSWER and st["spend"]["total_usd"] == 0.7 and st["jobs"]["deep"]["analysis"] is None
 
 
 def test_errored_or_garbled_answer_does_not_crash(tmp_path):
-    assert run(tmp_path, FakeClient(result_type="errored"))["analysis"] is None
-    assert run(tmp_path / "b", FakeClient(text="not json"))["analysis"] is None
+    assert run(tmp_path, FakeClient(result_type="errored"))["hourly"]["analysis"] is None
+    assert run(tmp_path / "b", FakeClient(text="not json"))["hourly"]["analysis"] is None
 
 
 # --- the real SDK against a local stub of the Batches API: checks the actual HTTP shape ---
@@ -182,6 +237,7 @@ def batch(status, port=0):
 
 class Stub(BaseHTTPRequestHandler):
     log = []
+    ids = []
 
     def _send(self, body, ctype="application/json"):
         b = body.encode()
@@ -192,17 +248,20 @@ class Stub(BaseHTTPRequestHandler):
         self.wfile.write(b)
 
     def do_POST(self):
-        Stub.log.append((self.path, json.loads(self.rfile.read(int(self.headers["content-length"])))))
+        body = json.loads(self.rfile.read(int(self.headers["content-length"])))
+        Stub.log.append((self.path, body))
+        Stub.ids += [(r["custom_id"], r["params"]["model"]) for r in body["requests"]]
         self._send(json.dumps(batch("in_progress")))
 
     def do_GET(self):
         Stub.log.append((self.path, None))
         if self.path.endswith("/results"):
-            line = {"custom_id": "analysis", "result": {"type": "succeeded", "message": {
-                "id": "msg_1", "type": "message", "role": "assistant", "model": "claude-opus-5-5", "stop_reason": "end_turn",
+            lines = [{"custom_id": cid, "result": {"type": "succeeded", "message": {
+                "id": "msg_1", "type": "message", "role": "assistant", "model": model, "stop_reason": "end_turn",
                 "stop_sequence": None, "content": [{"type": "text", "text": json.dumps(ANSWER, ensure_ascii=False)}],
-                "usage": {"input_tokens": 3000, "output_tokens": 2000}}}}
-            self._send(json.dumps(line) + "\n", "application/x-jsonl")
+                "usage": {"input_tokens": 3000, "output_tokens": 2000}}}} for cid, model in Stub.ids]
+            nl = chr(10)
+            self._send(nl.join(json.dumps(x) for x in lines) + nl, "application/x-jsonl")
         else:
             self._send(json.dumps(batch("ended", self.server.server_port)))
 
@@ -220,10 +279,13 @@ def test_real_sdk_round_trip_against_stub_server(tmp_path, monkeypatch):
         info = ai.run(payload(), tmp_path, now_ms=NOW, client=client, fetch=tf_facts, sleep=lambda s: None)
     finally:
         srv.shutdown()
-    assert info["analysis"]["headline"] == ANSWER["headline"], info["status"]
-    path, body = Stub.log[0]
-    assert path == "/v1/messages/batches"
-    params = body["requests"][0]["params"]
+    assert info["hourly"]["analysis"]["headline"] == ANSWER["headline"], info["status"]
+    assert info["deep"]["analysis"]["headline"] == ANSWER["headline"], info["status"]
+    posts = [(p, b) for p, b in Stub.log if b]
+    assert all(p == "/v1/messages/batches" for p, _ in posts) and len(posts) == 2
+    by_job = {b["requests"][0]["custom_id"]: b["requests"][0]["params"] for _, b in posts}
+    assert by_job["deep"]["model"] == "claude-fable-5-1"
+    params = by_job["hourly"]
     assert params["output_config"]["effort"] == "xhigh" and params["max_tokens"] == 24000
     assert "Fact sheet" in params["messages"][0]["content"]
 
