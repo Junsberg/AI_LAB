@@ -618,6 +618,7 @@ function paintKpis() {
   if (!S) return;
   const px = tick ? tick.c : lastPrice(), rows = [];
   if (tick) rows.push(kpi('24h 고가', fmtP0(tick.h), sgn((tick.h / px - 1) * 100, v => v.toFixed(2)) + '%', 'flat'), kpi('24h 저가', fmtP0(tick.l), sgn((tick.l / px - 1) * 100, v => v.toFixed(2)) + '%', 'flat'));
+  if (dom) for (const [k, v] of [['BTC', dom.btc], ['ETH', dom.eth], ['USDT', dom.usdt], ['기타', dom.oth]]) if (v != null) rows.push(kpi(k + ' 도미넌스', v.toFixed(2) + '%', k === '기타' ? '상위 10 밖 시총 비중' : '전체 시총 비중', 'flat'));
   const oi = P.binance_oi.data.values, pr = P.cb_premium.data.values;
   if (anyVal(oi)) { const v = lastOf(oi), cut = Date.now() - 24 * HOUR, j = S.times.findIndex(t => t >= cut), a = j >= 0 ? oi[j] : null, c = a && TFS[S.tf] <= 4 * HOUR ? (v / a - 1) * 100 : null;
     rows.push(kpi('OI · Binance 선물', '$' + fmtBig(v, 2), c == null ? '' : `${arrow(c)} ${Math.abs(c).toFixed(2)}% · 24h`, c == null ? '' : dir(c))); }
@@ -748,6 +749,14 @@ async function loadAux(d) {
   loadPanelData();
   const T = theme(); if (shown('flow')) for (const key in P) paintPanel(key, T, true);
   paintKpis();
+}
+let dom = null;   // market-cap dominance (CoinGecko global): BTC / ETH / USDT / everything outside the top 10
+async function loadDom() {
+  try {
+    const p = (await getJSON('https://api.coingecko.com/api/v3/global')).data.market_cap_percentage;
+    dom = { btc: p.btc, eth: p.eth, usdt: p.usdt, oth: Math.max(0, 100 - Object.values(p).reduce((a, b) => a + b, 0)) };
+    if (S) paintKpis();
+  } catch (e) { /* keep the last values; the tiles just stay hidden if it never loaded */ }
 }
 async function loadHtf() {
   try {
@@ -934,6 +943,7 @@ connect();
 loadTF(state.tf);
 setInterval(() => { if (!document.hidden && S && !state.fallback) loadAux(S); }, 20000);    // futures CVD / OI / premium for the forming bar
 setInterval(() => { if (!document.hidden && S && !state.fallback) loadHtf(); }, 60000);     // 4H / 1D candles -> FVG fills
+loadDom(); setInterval(() => { if (!document.hidden) loadDom(); }, 120000);   // dominance: CoinGecko's free tier is rate limited, so every 2 min
 </script>
 </body>
 </html>
