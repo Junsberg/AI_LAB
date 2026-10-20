@@ -121,7 +121,9 @@ def build(hours: int, out_path: Path, utc_offset: int, skip: set[str], fvg_per_t
         "extra": extra,
         "ai": None,
     }
-    if ai_mode != "off":
+    if ai_mode == "compare":   # one-off: same facts at several effort levels, report in out/ai_compare.md
+        ai.compare(payload, out_dir)
+    elif ai_mode != "off":
         payload["ai"] = ai.run(payload, out_dir, mode=ai_mode, now_ms=now_ms)
     html = (HERE / "template.html").read_text(encoding="utf-8")
     # "</" is escaped so exchange error text can never close the <script> block early.
@@ -144,8 +146,8 @@ def main(argv: list[str] | None = None) -> None:
         "--publish", action="store_true", help="push the built page to the gh-pages branch"
     )
     ap.add_argument(
-        "--ai", choices=["auto", "off", "force"], default="auto",
-        help="Claude market commentary via the Batches API (needs an API key; auto = when due, force = now)",
+        "--ai", choices=["auto", "off", "force", "compare"], default="auto",
+        help="Claude market commentary via the Batches API (needs an API key; auto = when due, force = now, compare = effort comparison report)",
     )
     args = ap.parse_args(argv)
 

@@ -224,5 +224,26 @@ def test_real_sdk_round_trip_against_stub_server(tmp_path, monkeypatch):
     path, body = Stub.log[0]
     assert path == "/v1/messages/batches"
     params = body["requests"][0]["params"]
-    assert params["output_config"]["effort"] == "high" and params["max_tokens"] == 16000
+    assert params["output_config"]["effort"] == "xhigh" and params["max_tokens"] == 24000
     assert "Fact sheet" in params["messages"][0]["content"]
+
+
+def test_compare_sends_one_request_per_effort_and_writes_report(tmp_path):
+    class Cmp(FakeClient):
+        def results(self, id):
+            out = []
+            for r in self.created[0]:
+                e = r["custom_id"]
+                tokens = {"effort-high": 5000, "effort-xhigh": 9000, "effort-max": 14000}[e]
+                out.append(NS(custom_id=e, result=NS(type="succeeded", message=message(self.text, o=tokens), error=None)))
+            return out
+
+    c = Cmp()
+    rows = ai.compare(payload(), tmp_path, client=c, fetch=tf_facts, sleep=lambda s: None)
+    reqs = c.created[0]
+    assert [r["params"]["output_config"]["effort"] for r in reqs] == ["high", "xhigh", "max"]
+    assert all(r["params"]["max_tokens"] == 32000 for r in reqs)
+    assert rows["max"]["cost_usd"] > rows["high"]["cost_usd"] > 0
+    md = (tmp_path / "ai_compare.md").read_text(encoding="utf-8")
+    assert "## xhigh" in md and ANSWER["headline"] in md
+    assert ai.load_state(tmp_path / "ai.json")["spend"]["total_usd"] == pytest.approx(sum(r["cost_usd"] for r in rows.values()))

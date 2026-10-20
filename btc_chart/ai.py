@@ -183,7 +183,7 @@ def _cfg() -> dict[str, Any]:
     e = os.environ.get
     return {
         "model": e("BTC_AI_MODEL", "claude-opus-5-5"),
-        "effort": e("BTC_AI_EFFORT", "high"),
+        "effort": e("BTC_AI_EFFORT", "xhigh"),
         "min_minutes": float(e("BTC_AI_MIN_MINUTES", "55")),
         "max_calls_day": int(e("BTC_AI_MAX_CALLS_PER_DAY", "24")),
         "budget": float(e("BTC_AI_BUDGET_USD", "90")),
@@ -226,14 +226,15 @@ def make_client() -> Any | None:
 # ---------------------------------------------------------------- the batch round trip
 
 
-def _request(facts: dict[str, Any], cfg: dict[str, Any]) -> dict[str, Any]:
+def _request(facts: dict[str, Any], cfg: dict[str, Any], effort: str | None = None, custom_id: str = CUSTOM_ID,
+             max_tokens: int = 24000) -> dict[str, Any]:
     return {
-        "custom_id": CUSTOM_ID,
+        "custom_id": custom_id,
         "params": {
             "model": cfg["model"],
-            "max_tokens": 16000,   # thinking counts toward this
+            "max_tokens": max_tokens,   # thinking counts toward this
             "system": SYSTEM,
-            "output_config": {"effort": cfg["effort"], "format": {"type": "json_schema", "schema": SCHEMA}},
+            "output_config": {"effort": effort or cfg["effort"], "format": {"type": "json_schema", "schema": SCHEMA}},
             "messages": [{"role": "user", "content": "Fact sheet:\n" + json.dumps(facts, ensure_ascii=False, indent=1)}],
         },
     }
@@ -371,6 +372,75 @@ def run(
         print(f"[ai] could not save state: {e}", file=sys.stderr)
     print(f"[ai] {msg}", file=sys.stderr)
     return page_info(state, msg)
+
+
+def compare(
+    payload: dict[str, Any],
+    out_dir: Path,
+    efforts: tuple[str, ...] = ("high", "xhigh", "max"),
+    *,
+    client: Any | None = None,
+    fetch: Callable[[], dict[str, Any]] = fetch_timeframes,
+    sleep: Callable[[float], None] = time.sleep,
+    wait_sec: float = 1800,
+) -> dict[str, Any]:
+    """One batch, the same fact sheet at several effort levels; writes out/ai_compare.json and .md."""
+    cfg = _cfg()
+    client = client or make_client()
+    if client is None:
+        raise RuntimeError(f"no API key (set ANTHROPIC_API_KEY or put it in {KEY_FILE})")
+    facts = market_facts(payload, fetch())
+    reqs = [_request(facts, cfg, e, f"effort-{e}", 32000) for e in efforts]
+    batch = client.messages.batches.create(requests=reqs)
+    print(f"[ai] compare batch {batch.id} submitted ({', '.join(efforts)})", file=sys.stderr)
+    t0 = time.time()
+    while client.messages.batches.retrieve(batch.id).processing_status != "ended":
+        if time.time() - t0 > wait_sec:
+            raise TimeoutError(f"batch {batch.id} still running; results stay available for 29 days")
+        sleep(15)
+    rows: dict[str, Any] = {}
+    for res in client.messages.batches.results(batch.id):
+        e = res.custom_id.removeprefix("effort-")
+        r = res.result
+        if r.type != "succeeded":
+            rows[e] = {"error": f"{r.type}: {getattr(getattr(r, 'error', None), 'type', '')}"}
+            continue
+        m = r.message
+        text = next((b.text for b in m.content if b.type == "text"), "")
+        row: dict[str, Any] = {"model": m.model, "input_tokens": m.usage.input_tokens, "output_tokens": m.usage.output_tokens,
+                               "stop_reason": getattr(m, "stop_reason", None),
+                               "cost_usd": round(batch_cost(m.model or cfg["model"], m.usage.input_tokens, m.usage.output_tokens), 4)}
+        try:
+            row["analysis"] = parse_analysis(text)
+        except (ValueError, KeyError, TypeError, AttributeError) as err:
+            row["error"] = f"unparseable answer: {err}"
+        rows[e] = row
+    state = load_state(out_dir / STATE_NAME)   # keep the budget tracker honest
+    spent = sum(r.get("cost_usd", 0) for r in rows.values())
+    state["spend"]["total_usd"] = round(state["spend"]["total_usd"] + spent, 4)
+    out_dir.mkdir(parents=True, exist_ok=True)
+    (out_dir / STATE_NAME).write_text(json.dumps(state, ensure_ascii=False, indent=1), encoding="utf-8")
+    (out_dir / "ai_compare.json").write_text(json.dumps({"facts": facts, "results": rows}, ensure_ascii=False, indent=1), encoding="utf-8")
+    (out_dir / "ai_compare.md").write_text(_compare_md(rows, efforts), encoding="utf-8")
+    return rows
+
+
+def _compare_md(rows: dict[str, Any], efforts: tuple[str, ...]) -> str:
+    out = ["# AI effort comparison", "", "| effort | output tokens | cost (batch) | stop |", "|---|---|---|---|"]
+    for e in efforts:
+        r = rows.get(e, {})
+        out.append(f"| {e} | {r.get('output_tokens', '-')} | ${r.get('cost_usd', 0):.3f} | {r.get('stop_reason') or r.get('error', '-')} |")
+    for e in efforts:
+        a = rows.get(e, {}).get("analysis")
+        out += ["", f"## {e}", ""]
+        if not a:
+            out.append(f"(no result: {rows.get(e, {}).get('error')})")
+            continue
+        out += [f"**{a['bias']}** - {a['headline']}", ""] + [f"- {x}" for x in a["summary"]]
+        out += ["", "### Timeframes"] + [f"- {k}: {v}" for k, v in a["timeframes"].items()]
+        out += ["", "### Flow", a["flow"], "", "### Watch"] + [f"- {w['level']}: {w['why']}" for w in a["watch"]]
+        out += ["", "### Caveats"] + [f"- {x}" for x in a["caveats"]]
+    return "\n".join(out) + "\n"
 
 
 def status(out_dir: Path) -> str:
