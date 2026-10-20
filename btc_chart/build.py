@@ -21,16 +21,16 @@ HERE = Path(__file__).parent
 
 # key, title, colour — order is the order of the panels on the page.
 CVD_PANELS = (
-    ("binance_spot", "Binance 현물 CVD", "#4d9d86"),
-    ("binance_fut", "Binance 선물 CVD", "#b5546f"),
-    ("coinbase", "Coinbase 현물 CVD", "#4a65a8"),
-    ("okx", "OKX 선물 CVD", "#b98a3c"),
+    ("binance_spot", "Binance 현물 CVD", "s1"),
+    ("binance_fut", "Binance 선물 CVD", "s2"),
+    ("coinbase", "Coinbase 현물 CVD", "s3"),
+    ("okx", "OKX 선물 CVD", "s4"),
 )
 
 # Non-CVD panels: key, title, colour, subtitle, value format ("big" = 1.2M, "pct" = 0.05%).
 EXTRA_PANELS = (
-    ("binance_oi", "Binance 선물 미결제약정", "#7a6bb5", "USD · 시점 값", "big"),
-    ("cb_premium", "Coinbase 프리미엄", "#c4683c", "Coinbase(USD) − Binance(USDT) 종가 %", "pct"),
+    ("binance_oi", "Binance 선물 미결제약정", "s5", "시점 값 · USD", "big"),
+    ("cb_premium", "Coinbase 프리미엄", "s3", "Coinbase(USD) − Binance(USDT) 종가 %", "pct"),
 )
 
 
@@ -110,6 +110,7 @@ def build(hours: int, out_path: Path, utc_offset: int, skip: set[str], fvg_per_t
     tz = timezone(timedelta(hours=utc_offset))
     payload = {
         "generated": datetime.now(tz).strftime("%Y. %m. %d. %H:%M:%S"),
+        "generated_ms": now_ms,
         "tz": f"UTC{utc_offset:+d}",
         "utc_offset": utc_offset,
         "candles": [[b.t, b.open, b.high, b.low, b.close] for b in view],

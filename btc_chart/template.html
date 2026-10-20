@@ -2,87 +2,192 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#f4f5f8">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="BTC">
 <title>BTC Chart</title>
 <style>
   :root {
-    --bg: #f3f1ec; --card: #fcfbf9; --fg: #2b2b2e; --mute: #8a8a90; --grid: #ebe8e2; --rule: #dedbd5;
-    --up: #5aa68c; --down: #c0587a;
+    color-scheme: light; --mode: light;
+    --bg: #f4f5f8; --card: #ffffff; --fg: #14161c; --fg2: #4a5060; --mute: #7b8190;
+    --grid: #eef0f4; --rule: #e4e7ed; --shadow: 0 1px 2px rgba(20,22,28,.04), 0 6px 18px rgba(20,22,28,.05);
+    --up: #2f9e7c; --down: #d1496f;
     --e20: #2c7a8c; --e50: #8e5ba8; --e100: #b9812f; --e200: #4a5fb5;
-    --bull: #4d9d86; --bear: #c0587a;
+    --bull: #2f9e7c; --bear: #d1496f;
+    --s1: #2a78d6; --s2: #eb6834; --s3: #1baf7a; --s4: #eda100; --s5: #6250d6;
+    --glow1: rgba(42,120,214,.16); --glow2: rgba(98,80,214,.12);
   }
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) {
-      --bg: #101114; --card: #17181c; --fg: #e6e4df; --mute: #8f9096; --grid: #26272c; --rule: #2f3137;
-      --up: #5fbf9f; --down: #d4688a;
+      color-scheme: dark; --mode: dark;
+      --bg: #0b0d12; --card: #14171e; --fg: #eceef3; --fg2: #b6bccb; --mute: #8b92a3;
+      --grid: #1f232c; --rule: #262b36; --shadow: 0 1px 2px rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.35);
+      --up: #4cc9a0; --down: #ee6a8f;
       --e20: #4fb0c4; --e50: #b284cc; --e100: #d9a14d; --e200: #7b8fe0;
-      --bull: #5fbf9f; --bear: #d4688a;
+      --bull: #4cc9a0; --bear: #ee6a8f;
+      --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c98500; --s5: #9085e9;
+      --glow1: rgba(57,135,229,.22); --glow2: rgba(144,133,233,.16);
     }
   }
   :root[data-theme="dark"] {
-    --bg: #101114; --card: #17181c; --fg: #e6e4df; --mute: #8f9096; --grid: #26272c; --rule: #2f3137;
-    --up: #5fbf9f; --down: #d4688a;
+    color-scheme: dark; --mode: dark;
+    --bg: #0b0d12; --card: #14171e; --fg: #eceef3; --fg2: #b6bccb; --mute: #8b92a3;
+    --grid: #1f232c; --rule: #262b36; --shadow: 0 1px 2px rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.35);
+    --up: #4cc9a0; --down: #ee6a8f;
     --e20: #4fb0c4; --e50: #b284cc; --e100: #d9a14d; --e200: #7b8fe0;
-    --bull: #5fbf9f; --bear: #d4688a;
+    --bull: #4cc9a0; --bear: #ee6a8f;
+    --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c98500; --s5: #9085e9;
+    --glow1: rgba(57,135,229,.22); --glow2: rgba(144,133,233,.16);
   }
-  * { box-sizing: border-box; }
-  body { margin: 0; background: var(--bg); color: var(--fg);
-    font: 13px/1.45 -apple-system, "Segoe UI", "Malgun Gothic", "Noto Sans KR", sans-serif; }
-  .page { max-width: 1560px; margin: 0 auto; padding: 20px 16px 32px; }
-  header { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 10px 28px; margin-bottom: 14px; }
-  h1 { margin: 0; font-size: 26px; font-weight: 500; letter-spacing: .01em; }
-  .price { font-size: 26px; font-weight: 500; font-variant-numeric: tabular-nums; }
-  .chg { font-size: 14px; font-variant-numeric: tabular-nums; margin-left: 8px; }
-  .stamp { color: var(--mute); font-size: 12px; }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html { -webkit-text-size-adjust: 100%; }
+  body { margin: 0; color: var(--fg); min-height: 100vh;
+    background: radial-gradient(900px 420px at 12% -8%, var(--glow1), transparent 70%),
+                radial-gradient(760px 380px at 96% -4%, var(--glow2), transparent 70%), var(--bg);
+    background-repeat: no-repeat; background-attachment: fixed;
+    font: 14px/1.45 -apple-system, "Segoe UI", "Apple SD Gothic Neo", "Malgun Gothic", "Noto Sans KR", sans-serif; }
+  .page { max-width: 1560px; margin: 0 auto; padding: max(14px, env(safe-area-inset-top)) max(14px, env(safe-area-inset-right)) max(28px, env(safe-area-inset-bottom)) max(14px, env(safe-area-inset-left)); }
+
+  /* hero */
+  .top { display: flex; align-items: center; gap: 10px; color: var(--mute); font-size: 12px; }
+  .brand { display: inline-flex; align-items: center; gap: 8px; color: var(--fg2); font-weight: 600; letter-spacing: .01em; font-size: 13px; }
+  .brand .logo { width: 22px; height: 22px; border-radius: 7px; display: grid; place-items: center; color: #fff; font-size: 12px; font-weight: 700;
+    background: linear-gradient(135deg, var(--s2), var(--s4)); }
+  .brand small { color: var(--mute); font-weight: 400; }
   .spacer { flex: 1; }
-  button { font: inherit; color: var(--mute); background: var(--card); border: 1px solid var(--rule);
-    border-radius: 8px; padding: 5px 10px; cursor: pointer; }
-  button:hover { color: var(--fg); }
-  .layout { display: grid; grid-template-columns: minmax(0, 1fr) 420px; gap: 16px; align-items: start; }
-  @media (max-width: 960px) { .layout { grid-template-columns: 1fr; } }
-  .col { display: grid; gap: 16px; min-width: 0; }
-  .card { background: var(--card); border: 1px solid var(--rule); border-radius: 14px; padding: 12px 14px; min-width: 0; }
-  .card h2 { margin: 0 0 2px; font-size: 13px; font-weight: 500; display: flex; justify-content: space-between; gap: 8px; }
-  .card h2 small { color: var(--mute); font-weight: 400; font-size: 12px; }
-  #main { height: 620px; }
-  .cvd { height: 150px; }
-  .none { height: 150px; display: flex; align-items: center; color: var(--mute); font-size: 12px; }
-  table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
-  td { padding: 5px 4px; border-top: 1px solid var(--grid); }
-  td.r { text-align: right; }
-  tr.now td { color: var(--fg); font-weight: 600; background: color-mix(in srgb, var(--mute) 10%, transparent); }
-  .tag { display: inline-block; min-width: 26px; text-align: center; font-size: 11px; padding: 0 5px;
-    border-radius: 4px; border: 1px solid currentColor; margin-right: 6px; }
+  .stamp { display: inline-flex; align-items: center; gap: 6px; }
+  .live { width: 7px; height: 7px; border-radius: 50%; background: var(--up); box-shadow: 0 0 0 3px color-mix(in srgb, var(--up) 22%, transparent); }
+  .stale .live { background: var(--s4); box-shadow: 0 0 0 3px color-mix(in srgb, var(--s4) 25%, transparent); }
+  .icon { width: 34px; height: 34px; padding: 0; display: grid; place-items: center; border-radius: 11px; color: var(--fg2); background: var(--card);
+    border: 1px solid var(--rule); cursor: pointer; box-shadow: var(--shadow); }
+  .icon svg { width: 17px; height: 17px; }
+  .pxrow { display: flex; align-items: baseline; flex-wrap: wrap; gap: 6px 12px; margin: 12px 0 0; }
+  .price { font-size: clamp(38px, 11vw, 54px); font-weight: 650; letter-spacing: -.025em; line-height: 1.05; font-variant-numeric: tabular-nums; }
+  .price small { font-size: .42em; font-weight: 500; color: var(--mute); margin-left: 6px; letter-spacing: 0; }
+  .pill { display: inline-flex; align-items: center; gap: 4px; font-size: 13px; font-weight: 600; padding: 3px 10px; border-radius: 999px;
+    font-variant-numeric: tabular-nums; }
+  .pill.up, .d.up { color: var(--up); } .pill.down, .d.down { color: var(--down); }
+  .pill.up { background: color-mix(in srgb, var(--up) 14%, transparent); }
+  .pill.down { background: color-mix(in srgb, var(--down) 14%, transparent); }
+  .hl { color: var(--mute); font-size: 12.5px; font-variant-numeric: tabular-nums; }
+  .kpis { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(128px, 1fr); gap: 10px; margin: 12px -14px 0; padding: 2px 14px 6px;
+    overflow-x: auto; scroll-snap-type: x proximity; scrollbar-width: none; }
+  .kpis::-webkit-scrollbar { display: none; }
+  .kpi { scroll-snap-align: start; background: var(--card); border: 1px solid var(--rule); border-radius: 16px; padding: 9px 12px; box-shadow: var(--shadow); }
+  .kpi .k { display: block; color: var(--mute); font-size: 11.5px; }
+  .kpi b { display: block; font-size: 17px; font-weight: 650; letter-spacing: -.01em; margin-top: 1px; font-variant-numeric: tabular-nums; }
+  .kpi .d { font-size: 12px; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .kpi .d.flat { color: var(--mute); font-weight: 500; }
+
+  /* tabs */
+  .tabs { position: sticky; top: 0; z-index: 20; display: flex; gap: 4px; margin: 10px -14px 12px; padding: 8px 14px;
+    background: color-mix(in srgb, var(--bg) 82%, transparent); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); }
+  .tabs button { flex: 1; font: inherit; font-weight: 600; font-size: 14px; color: var(--mute); background: transparent; border: 0; padding: 10px 0;
+    border-radius: 12px; cursor: pointer; transition: background .15s, color .15s; }
+  .tabs button.on { color: var(--fg); background: var(--card); box-shadow: var(--shadow); }
+
+  /* cards */
+  .layout { display: grid; grid-template-columns: 1fr; gap: 14px; align-items: start; }
+  .col { display: grid; gap: 14px; min-width: 0; }
+  .card { background: var(--card); border: 1px solid var(--rule); border-radius: 20px; padding: 14px 14px 12px; min-width: 0; box-shadow: var(--shadow); }
+  .card h2 { margin: 0; font-size: 14px; font-weight: 650; }
+  .card .sub { color: var(--mute); font-size: 12px; margin-top: 1px; }
+  .chead { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+  .tools { display: flex; align-items: center; gap: 8px; margin: 10px -14px 4px; padding: 0 14px; overflow-x: auto; scrollbar-width: none; }
+  .tools::-webkit-scrollbar { display: none; }
+  .tools > * { flex: none; }
+  .seg { display: inline-flex; background: color-mix(in srgb, var(--mute) 12%, transparent); border-radius: 10px; padding: 2px; }
+  .seg button, .chip { font: inherit; font-size: 12.5px; font-weight: 600; color: var(--mute); background: transparent; border: 0; border-radius: 8px;
+    padding: 5px 11px; cursor: pointer; }
+  .seg button.on { color: var(--fg); background: var(--card); box-shadow: 0 1px 3px rgba(0,0,0,.12); }
+  .chip { display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--rule); border-radius: 999px; padding: 4px 10px; font-weight: 500; }
+  .chip i { width: 14px; height: 3px; border-radius: 2px; background: var(--c); }
+  .chip, .seg button { white-space: nowrap; }
+  .chip:not(.on) { opacity: .45; } .chip:not(.on) i { background: var(--mute); }
+  #main { height: clamp(340px, 54vh, 500px); touch-action: pan-y; }
+  .cvd { height: 170px; touch-action: pan-y; }
+  .none { padding: 26px 0 18px; color: var(--mute); font-size: 12.5px; }
+  .pan .chead .l { display: flex; align-items: center; gap: 8px; min-width: 0; }
+  .swatch { width: 10px; height: 10px; border-radius: 3px; background: var(--c); flex: none; }
+  .pval { text-align: right; flex: none; }
+  .pval b { display: block; font-size: 18px; font-weight: 650; letter-spacing: -.01em; font-variant-numeric: tabular-nums; line-height: 1.15; }
+  .pval .d { font-size: 12px; font-weight: 600; }
+
+  /* FVG */
+  .fvg { display: grid; gap: 6px; margin-top: 10px; }
+  .fr { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 10px; padding: 9px 12px; border-radius: 12px;
+    background: color-mix(in srgb, var(--c) 9%, transparent); border-left: 3px solid var(--c); font-variant-numeric: tabular-nums; }
+  .fr .tf { font-size: 11px; font-weight: 700; padding: 1px 7px; border-radius: 6px; color: var(--c); border: 1px solid currentColor; }
+  .fr .rg { color: var(--fg); font-size: 13px; }
+  .fr .rg small { display: block; color: var(--mute); font-size: 11px; }
+  .fr .ds { color: var(--c); font-weight: 700; font-size: 13px; }
+  .now { display: flex; justify-content: space-between; align-items: center; padding: 10px 12px; border-radius: 12px; font-weight: 700;
+    color: #fff; background: linear-gradient(135deg, var(--s1), var(--s5)); font-variant-numeric: tabular-nums; }
+  .now span:first-child { font-weight: 500; opacity: .9; }
+
+  /* phone: one section at a time */
+  @media (max-width: 959px) {
+    [data-sec] { display: none; }
+    body[data-tab="chart"] [data-sec="chart"], body[data-tab="fvg"] [data-sec="fvg"] { display: block; }
+    body[data-tab="flow"] [data-sec="flow"] { display: grid; }
+  }
+  @media (min-width: 960px) {
+    .page { padding-top: 22px; }
+    .tabs { display: none; }
+    .layout { grid-template-columns: minmax(0, 1fr) 430px; gap: 16px; margin-top: 14px; }
+    .kpis { margin: 16px 0 0; padding: 2px 2px 6px; grid-auto-flow: row; grid-template-columns: repeat(auto-fit, minmax(124px, 1fr)); overflow: visible; }
+    #main { height: 600px; }
+  }
 </style>
 </head>
-<body>
+<body data-tab="chart">
 <div class="page">
   <header>
-    <h1>BTC · 1H</h1>
-    <div><span class="price" id="px"></span><span class="chg" id="chg"></span></div>
-    <div class="stamp" id="stamp"></div>
-    <div class="spacer"></div>
-    <button id="theme" title="라이트/다크 전환">테마</button>
+    <div class="top">
+      <div class="brand"><span class="logo">₿</span>BTC<small>· 1H · Binance 현물</small></div>
+      <div class="spacer"></div>
+      <div class="stamp" id="stamp"><span class="live"></span><span id="ago"></span></div>
+      <button class="icon" id="theme" aria-label="라이트/다크 전환" title="라이트/다크 전환"></button>
+    </div>
+    <div class="pxrow"><div class="price" id="px"></div><span class="pill" id="chg"></span></div>
+    <div class="kpis" id="kpis"></div>
   </header>
+
+  <nav class="tabs" id="tabs" aria-label="화면 전환">
+    <button data-tab="chart" class="on">차트</button>
+    <button data-tab="flow">수급</button>
+    <button data-tab="fvg">FVG</button>
+  </nav>
+
   <div class="layout">
     <div class="col">
-      <div class="card"><h2>가격 · EMA · FVG <small>휠: 확대/축소 · 드래그: 이동</small></h2><div id="main"></div></div>
-      <div class="card"><h2>FVG 맵 <small>4H · 1D, 미채움 구간</small></h2><div id="fvgmap"></div></div>
+      <section class="card" data-sec="chart">
+        <div class="chead"><div><h2>가격 · EMA · FVG</h2><div class="sub" id="hint"></div></div></div>
+        <div class="tools"><div class="seg" id="ranges"></div><div id="emachips" style="display:contents"></div></div>
+        <div id="main"></div>
+      </section>
+      <section class="card" data-sec="fvg">
+        <div class="chead"><div><h2>FVG 맵</h2><div class="sub">4H · 1D, 아직 채워지지 않은 구간</div></div></div>
+        <div id="fvgmap"></div>
+      </section>
     </div>
-    <div class="col" id="panels"></div>
+    <div class="col" id="panels" data-sec="flow"></div>
   </div>
 </div>
 <script>/*__ECHARTS__*/</script>
 <script>
 const D = /*__DATA__*/null;
 const HOUR = 3600e3, n = D.candles.length, t0 = D.candles[0][0];
-const FONT = '-apple-system, "Segoe UI", "Malgun Gothic", "Noto Sans KR", sans-serif';
+const FONT = '-apple-system, "Segoe UI", "Apple SD Gothic Neo", "Malgun Gothic", "Noto Sans KR", sans-serif';
 const EMA_VARS = { 20: '--e20', 50: '--e50', 100: '--e100', 200: '--e200' };
 const css = k => getComputedStyle(document.documentElement).getPropertyValue(k).trim();
 const pad2 = v => String(v).padStart(2, '0');
+const coarse = matchMedia('(pointer: coarse)').matches;
+const $ = id => document.getElementById(id);
 function fmtT(ms) {
   const d = new Date(ms + D.utc_offset * HOUR);
-  return `${pad2(d.getUTCDate())}/${pad2(d.getUTCMonth() + 1)}, ${pad2(d.getUTCHours())}:00`;
+  return `${pad2(d.getUTCMonth() + 1)}/${pad2(d.getUTCDate())} ${pad2(d.getUTCHours())}:00`;
 }
 function fmtBig(v, dec = 2) {
   const a = Math.abs(v), s = v < 0 ? '-' : '';
@@ -94,143 +199,252 @@ function fmtBig(v, dec = 2) {
 const fmtP = v => v.toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
 const fmtP0 = v => v.toLocaleString('en-US', { maximumFractionDigits: 0 });
 const esc = s => String(s).replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
+const sgn = (v, f) => (v > 0 ? '+' : v < 0 ? '−' : '') + f(Math.abs(v));
+const arrow = v => v > 0 ? '▲' : v < 0 ? '▼' : '–';
+const dir = v => v > 0 ? 'up' : v < 0 ? 'down' : 'flat';
 const labels = D.candles.map(c => fmtT(c[0]));
 const last = D.candles[n - 1][4], lastUp = last >= D.candles[n - 1][1];
-
-/* header */
-const ref = D.candles[Math.max(0, n - 25)][4], chg = (last / ref - 1) * 100;
-document.getElementById('px').textContent = fmtP(last);
-const chgEl = document.getElementById('chg');
-chgEl.textContent = `${chg >= 0 ? '+' : ''}${chg.toFixed(2)}% (24h)`;
-chgEl.style.color = `var(${chg >= 0 ? '--up' : '--down'})`;
-document.getElementById('stamp').textContent = `${D.generated} ${D.tz}`;
-
-/* layout: main chart + one card per CVD source, then the extra (OI, premium) panels */
-const GROUP = 'btc';
 const PANELS = D.cvd.concat(D.extra || []);
-const fmtPanel = (p, v, dec) => p.fmt === 'pct' ? (v > 0 ? '+' : '') + v.toFixed(3) + '%' : fmtBig(v, dec);
-document.getElementById('panels').innerHTML = PANELS.map(p =>
-  `<div class="card"><h2><span style="color:${p.color}">${esc(p.title)}</span><small>${p.values ? (p.sub || '누적 · 창 시작=0') : ''}</small></h2>` +
-  (p.values ? `<div class="cvd" id="c-${p.key}"></div>` : `<div class="none">데이터 없음 — ${esc((p.error || '').slice(0, 120))}</div>`) + '</div>').join('');
+const isCvd = p => D.cvd.includes(p);
+const lastVal = p => { for (let i = n - 1; i >= 0; i--) if (p.values[i] != null) return [i, p.values[i]]; return [-1, null]; };
+const ago24 = p => p.values[Math.max(0, n - 25)];     // value 24 bars back (index n-25 vs n-1 = 24h)
+const fmtPanel = (p, v, dec) => p.fmt === 'pct' ? (v > 0 ? '+' : v < 0 ? '−' : '') + Math.abs(v).toFixed(3) + '%' : fmtBig(v, dec);
 
-const main = echarts.init(document.getElementById('main'));
+/* ---------- hero ---------- */
+const ref = D.candles[Math.max(0, n - 25)][4], chg = (last / ref - 1) * 100;
+$('px').innerHTML = fmtP(last) + '<small>USDT</small>';
+$('chg').className = 'pill ' + dir(chg);
+$('chg').textContent = `${arrow(chg)} ${Math.abs(chg).toFixed(2)}% · 24h`;
+const day = D.candles.slice(-24), hi24 = Math.max(...day.map(c => c[2])), lo24 = Math.min(...day.map(c => c[3]));
+
+function kpi(k, v, d, cls) { return `<div class="kpi"><span class="k">${k}</span><b>${v}</b>${d ? `<span class="d ${cls || ''}">${d}</span>` : ''}</div>`; }
+(function () {
+  const rows = [kpi('24h 고가', fmtP0(hi24), `${sgn((hi24 / last - 1) * 100, v => v.toFixed(2))}%`, 'flat'),
+                kpi('24h 저가', fmtP0(lo24), `${sgn((lo24 / last - 1) * 100, v => v.toFixed(2))}%`, 'flat')];
+  for (const p of D.extra || []) {
+    if (!p.values) continue;
+    const [, v] = lastVal(p);
+    if (p.fmt === 'pct') rows.push(kpi(p.title, fmtPanel(p, v), 'Coinbase − Binance', 'flat'));
+    else { const a = ago24(p), c = a ? (v / a - 1) * 100 : 0;
+      rows.push(kpi('OI · Binance 선물', '$' + fmtBig(v, 2), `${arrow(c)} ${Math.abs(c).toFixed(2)}% · 24h`, dir(c))); }
+  }
+  for (const p of D.cvd) if (p.values) { const [, v] = lastVal(p), a = ago24(p) ?? 0, c = v - a;
+    rows.push(kpi(p.title.replace(' CVD', '') + ' 24h', sgn(c, x => fmtBig(x, 1)), `${arrow(c)} ${c >= 0 ? '순매수' : '순매도'}`, dir(c))); }
+  $('kpis').innerHTML = rows.join('');
+})();
+
+/* "n분 전" — also flags a build that has gone stale (PC off) */
+const builtAt = D.generated_ms || null, loadedAt = Date.now();
+function tickAgo() {
+  const el = $('ago');
+  if (!builtAt) { el.textContent = `${D.generated} ${D.tz}`; return; }
+  const m = Math.max(0, Math.round((Date.now() - builtAt) / 60000));
+  el.textContent = m < 1 ? '방금 갱신' : m < 60 ? `${m}분 전 갱신` : m < 1440 ? `${Math.floor(m / 60)}시간 전 갱신` : `${Math.floor(m / 1440)}일 전 갱신`;
+  $('stamp').classList.toggle('stale', m > 90);
+  $('stamp').title = `${D.generated} ${D.tz}` + (m > 90 ? ' — 오래된 데이터 (PC가 꺼져 있었을 수 있어요)' : '');
+}
+tickAgo(); setInterval(tickAgo, 30000);
+document.addEventListener('visibilitychange', () => {   // coming back to a stale tab: pick up the newest publish
+  if (document.visibilityState === 'visible' && Date.now() - loadedAt > 10 * 60000) location.reload();
+});
+
+/* ---------- state & layout ---------- */
+const GROUP = 'btc';
+const state = { i0: Math.max(0, n - (innerWidth < 720 ? Math.min(48, n) : n)), i1: n - 1, ema: { 20: 1, 50: 1, 100: 1, 200: 1 } };
+$('hint').textContent = coarse ? '핀치: 확대/축소 · 좌우로 밀어 이동 · 길게 눌러 값 보기' : '휠: 확대/축소 · 드래그: 이동';
+
+$('panels').innerHTML = PANELS.map((p, k) => {
+  const c = `var(--${p.color})`;
+  if (!p.values) return `<section class="card pan" style="--c:${c}"><div class="chead"><div class="l"><span class="swatch"></span><h2>${esc(p.title)}</h2></div></div><div class="none">데이터 없음 — ${esc((p.error || '').slice(0, 120))}</div></section>`;
+  const [, v] = lastVal(p);
+  let big, d = '', sub;
+  if (isCvd(p)) { const ch = v - (ago24(p) ?? 0); big = sgn(ch, x => fmtBig(x, 1)); d = `<span class="d ${dir(ch)}">${arrow(ch)} ${ch >= 0 ? '순매수' : '순매도'} · 24h</span>`; sub = `누적 · 창 시작=0 (현재 ${fmtBig(v, 1)})`; }
+  else if (p.fmt === 'pct') { big = fmtPanel(p, v); sub = p.sub; }
+  else { big = '$' + fmtBig(v, 2); const a = ago24(p), ch = a ? (v / a - 1) * 100 : 0; d = `<span class="d ${dir(ch)}">${arrow(ch)} ${Math.abs(ch).toFixed(2)}% · 24h</span>`; sub = p.sub; }
+  return `<section class="card pan" style="--c:${c}"><div class="chead"><div class="l"><span class="swatch"></span><div><h2>${esc(p.title)}</h2><div class="sub">${esc(sub)}</div></div></div>` +
+    `<div class="pval"><b>${big}</b>${d}</div></div><div class="cvd" id="c-${p.key}"></div></section>`;
+}).join('');
+
+const main = echarts.init($('main'));
 main.group = GROUP;
 const cvdCharts = {};
-for (const p of PANELS) if (p.values) { const c = echarts.init(document.getElementById('c-' + p.key)); c.group = GROUP; cvdCharts[p.key] = c; }
+for (const p of PANELS) if (p.values) { const c = echarts.init($('c-' + p.key)); c.group = GROUP; cvdCharts[p.key] = c; }
 echarts.connect(GROUP);
+
+const ranges = [24, 48, 72].filter(r => r < n).concat([n]);
+$('ranges').innerHTML = ranges.map(r => `<button data-r="${r}">${r === n && n > 72 ? '전체' : r + 'H'}</button>`).join('');
+$('emachips').innerHTML = Object.keys(EMA_VARS).map(k => `<button class="chip on" data-ema="${k}" style="--c:var(${EMA_VARS[k]})"><i></i>EMA ${k}</button>`).join('');
+function markRange() {
+  const len = state.i1 - state.i0 + 1;
+  let best = null;
+  for (const b of $('ranges').children) { const on = Math.abs(len - +b.dataset.r) <= 1; b.classList.toggle('on', on); if (on) best = b; }
+}
+$('ranges').addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b) return;
+  state.i0 = Math.max(0, n - +b.dataset.r); state.i1 = n - 1;
+  main.dispatchAction({ type: 'dataZoom', startValue: state.i0, endValue: state.i1 });
+  refreshY(); markRange();
+});
+$('emachips').addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b) return;
+  state.ema[b.dataset.ema] ^= 1; b.classList.toggle('on', !!state.ema[b.dataset.ema]);
+  render();
+});
+$('tabs').addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b) return;
+  setTab(b.dataset.tab);
+});
+function setTab(t) {
+  document.body.dataset.tab = t;
+  for (const b of $('tabs').children) b.classList.toggle('on', b.dataset.tab === t);
+  try { localStorage.setItem('btc-tab', t); } catch (e) {}
+  requestAnimationFrame(() => { resizeAll(); scrollTo({ top: Math.min(scrollY, $('tabs').offsetTop), behavior: 'instant' }); });
+}
+function resizeAll() { main.resize(); Object.values(cvdCharts).forEach(c => c.resize()); }
 
 function theme() {
   return { fg: css('--fg'), mute: css('--mute'), grid: css('--grid'), rule: css('--rule'), card: css('--card'),
     up: css('--up'), down: css('--down'), bull: css('--bull'), bear: css('--bear') };
 }
-
 function tipRow(k, v, col) {
-  return `<div style="display:flex;justify-content:space-between;gap:16px"><span style="color:${col || 'inherit'};opacity:${col ? 1 : .65}">${k}</span><b style="font-weight:500">${v}</b></div>`;
+  return `<div style="display:flex;justify-content:space-between;gap:16px"><span style="color:${col || 'inherit'};opacity:${col ? 1 : .65}">${k}</span><b style="font-weight:600">${v}</b></div>`;
 }
 function mainTip(i) {
   const c = D.candles[i];
   let h = `<div style="margin-bottom:3px"><b>${labels[i]}</b></div>` +
     tipRow('O', fmtP(c[1])) + tipRow('H', fmtP(c[2])) + tipRow('L', fmtP(c[3])) + tipRow('C', fmtP(c[4]));
-  for (const [per, a] of Object.entries(D.ema)) if (a[i] != null) h += tipRow('EMA ' + per, fmtP(a[i]), css(EMA_VARS[per]));
-  for (const p of D.cvd) if (p.values && p.values[i] != null) h += tipRow(p.title.replace(' CVD', ''), fmtBig(p.values[i]), p.color);
+  for (const [per, a] of Object.entries(D.ema)) if (state.ema[per] && a[i] != null) h += tipRow('EMA ' + per, fmtP(a[i]), css(EMA_VARS[per]));
   return h;
 }
-
-function mainOption(T) {
-  const lo = Math.min(...D.candles.map(c => c[3])), hi = Math.max(...D.candles.map(c => c[2]));
-  const pad = (hi - lo) * 0.06, ymin = lo - pad, ymax = hi + pad;
-  const zones = D.fvg.filter(z => z.hi > ymin && z.lo < ymax).map(z => {
+function yRange() {
+  let lo = Infinity, hi = -Infinity;
+  for (let i = state.i0; i <= state.i1; i++) { lo = Math.min(lo, D.candles[i][3]); hi = Math.max(hi, D.candles[i][2]); }
+  const pad = (hi - lo) * 0.08 || 1;
+  return [lo - pad, hi + pad];
+}
+function zones(T, ymin, ymax, narrow) {
+  return D.fvg.filter(z => z.hi > ymin && z.lo < ymax).map(z => {
     const col = z.kind === 'bull' ? T.bull : T.bear, i0 = Math.max(0, Math.round((z.t - t0) / HOUR));
     return [
-      { xAxis: labels[i0], yAxis: Math.max(z.lo, ymin),
-        itemStyle: { color: col, opacity: 0.16, borderColor: col, borderType: 'dashed', borderWidth: 1 },
-        label: { show: true, position: 'insideTopRight', color: col, fontSize: 11, formatter: `FVG ${z.tf} ${z.kind === 'bull' ? '▲' : '▼'}` } },
+      { xAxis: labels[Math.min(i0, n - 1)], yAxis: Math.max(z.lo, ymin),
+        itemStyle: { color: col, opacity: 0.15, borderColor: col, borderType: 'dashed', borderWidth: 1 },
+        label: { show: true, position: 'insideTopRight', color: col, fontSize: narrow ? 10 : 11, fontWeight: 600, formatter: `FVG ${z.tf} ${z.kind === 'bull' ? '▲' : '▼'}` } },
       { xAxis: labels[n - 1], yAxis: Math.min(z.hi, ymax) },
     ];
   });
+}
+function mainOption(T) {
+  const narrow = main.getWidth() < 560, [ymin, ymax] = yRange();
   const lc = lastUp ? T.up : T.down;
-  const emaSeries = Object.entries(D.ema).map(([per, arr]) => ({
+  const emaSeries = Object.entries(D.ema).filter(([per]) => state.ema[per]).map(([per, arr]) => ({
     name: 'EMA ' + per, type: 'line', data: arr, showSymbol: false, silent: true, z: 3,
     lineStyle: { width: 1.6, color: css(EMA_VARS[per]) }, itemStyle: { color: css(EMA_VARS[per]) },
   }));
   return {
     animation: false, textStyle: { fontFamily: FONT },
-    legend: { top: 0, left: 0, icon: 'roundRect', itemWidth: 16, itemHeight: 3, itemGap: 16, textStyle: { color: T.mute, fontSize: 12 },
-      data: emaSeries.map(s => s.name) },
-    grid: { left: 62, right: 14, top: main.getWidth() < 460 ? 58 : 34, bottom: 62 },  // legend wraps to 2 lines on phones
+    grid: { left: narrow ? 46 : 60, right: 8, top: 14, bottom: narrow ? 26 : 56 },
     xAxis: { type: 'category', data: labels, boundaryGap: true, axisLine: { lineStyle: { color: T.rule } },
-      axisTick: { show: false }, axisLabel: { color: T.mute, hideOverlap: true }, axisPointer: { label: { show: true } } },
+      axisTick: { show: false }, axisLabel: { color: T.mute, hideOverlap: true, fontSize: narrow ? 10 : 11 }, axisPointer: { label: { show: true } } },
     yAxis: { scale: true, min: ymin, max: ymax, splitLine: { lineStyle: { color: T.grid } },
-      axisLabel: { color: T.mute, formatter: fmtP0 }, axisPointer: { label: { formatter: p => fmtP(p.value) } } },
+      axisLabel: { color: T.mute, fontSize: narrow ? 10 : 11, formatter: fmtP0 }, axisPointer: { label: { formatter: p => fmtP(p.value) } } },
     dataZoom: [
-      { type: 'inside', xAxisIndex: 0, filterMode: 'none' },
-      { type: 'slider', xAxisIndex: 0, height: 20, bottom: 12, filterMode: 'none', borderColor: T.rule,
-        fillerColor: 'rgba(120,120,130,.15)', textStyle: { color: T.mute }, dataBackground: { lineStyle: { color: T.rule }, areaStyle: { color: T.grid } } },
+      { type: 'inside', xAxisIndex: 0, filterMode: 'none', startValue: state.i0, endValue: state.i1, preventDefaultMouseMove: !coarse },
+      ...(narrow ? [] : [{ type: 'slider', xAxisIndex: 0, height: 20, bottom: 12, filterMode: 'none', borderColor: T.rule, startValue: state.i0, endValue: state.i1,
+        fillerColor: 'rgba(120,120,130,.15)', textStyle: { color: T.mute }, dataBackground: { lineStyle: { color: T.rule }, areaStyle: { color: T.grid } } }]),
     ],
-    tooltip: { trigger: 'axis', axisPointer: { type: 'cross', lineStyle: { type: 'dashed', color: T.mute }, crossStyle: { color: T.mute },
+    tooltip: { trigger: 'axis', confine: true, axisPointer: { type: 'cross', lineStyle: { type: 'dashed', color: T.mute }, crossStyle: { color: T.mute },
         label: { backgroundColor: T.mute } },
-      backgroundColor: T.card, borderColor: T.rule, textStyle: { color: T.fg, fontSize: 12 },
-      formatter: ps => mainTip(ps[0].dataIndex) },
+      backgroundColor: T.card, borderColor: T.rule, borderWidth: 1, padding: [8, 10], extraCssText: 'border-radius:12px;box-shadow:0 6px 20px rgba(0,0,0,.18)',
+      textStyle: { color: T.fg, fontSize: 12 }, formatter: ps => mainTip(ps[0].dataIndex) },
     series: [
       { name: 'BTC', type: 'candlestick', data: D.candles.map(c => [c[1], c[4], c[3], c[2]]),
         itemStyle: { color: T.up, color0: T.down, borderColor: T.up, borderColor0: T.down },
-        markArea: { silent: true, data: zones },
+        markArea: { silent: true, data: zones(T, ymin, ymax, narrow) },
         markLine: { silent: true, symbol: 'none', lineStyle: { color: lc, type: 'dotted' },
-          label: { position: 'insideEndTop', formatter: fmtP(last), color: '#fff', backgroundColor: lc, padding: [3, 6], borderRadius: 3 },
+          label: { position: 'insideEndTop', formatter: fmtP(last), color: '#fff', backgroundColor: lc, padding: [3, 7], borderRadius: 6, fontWeight: 600 },
           data: [{ yAxis: last }] } },
       ...emaSeries,
     ],
   };
 }
-
-function cvdOption(p, T) {
-  const vs = p.values.filter(v => v != null), lo = Math.min(...vs), hi = Math.max(...vs);
-  return {
+function panelOption(p, T) {
+  const col = css('--' + p.color), vs = p.values.filter(v => v != null), lo = Math.min(...vs), hi = Math.max(...vs), narrow = main.getWidth() < 560;
+  const common = {
     animation: false, textStyle: { fontFamily: FONT },
-    grid: { left: 62, right: 12, top: 10, bottom: 22 },
-    xAxis: { type: 'category', data: labels, boundaryGap: false, axisLine: { lineStyle: { color: T.rule } }, axisTick: { show: false },
-      axisLabel: { color: T.mute, hideOverlap: true, fontSize: 11 }, axisPointer: { label: { show: false } } },
+    grid: { left: narrow ? 46 : 56, right: 8, top: 10, bottom: 22 },
+    xAxis: { type: 'category', data: labels, boundaryGap: p.fmt === 'pct', axisLine: { lineStyle: { color: T.rule } }, axisTick: { show: false },
+      axisLabel: { color: T.mute, hideOverlap: true, fontSize: 10 }, axisPointer: { label: { show: false } } },
     yAxis: { scale: true, splitNumber: 2, splitLine: { lineStyle: { color: T.grid } },
-      axisLabel: { color: T.mute, fontSize: 11, formatter: v => fmtPanel(p, v, p.fmt === 'pct' ? 2 : 1) }, axisPointer: { label: { show: false } } },
-    dataZoom: [{ type: 'inside', xAxisIndex: 0, filterMode: 'none' }],
-    tooltip: { trigger: 'axis', axisPointer: { type: 'line', lineStyle: { type: 'dashed', color: T.mute } },
-      backgroundColor: T.card, borderColor: T.rule, textStyle: { color: T.fg, fontSize: 12 },
-      formatter: ps => `<b>${labels[ps[0].dataIndex]}</b><br><span style="color:${p.color}">●</span> ${ps[0].value == null ? '–' : fmtPanel(p, ps[0].value)}` },
-    series: [{ type: 'line', data: p.values, showSymbol: false, smooth: false, lineStyle: { width: 1.8, color: p.color }, itemStyle: { color: p.color },
-      areaStyle: { color: { type: 'linear', x: 0, y: 0, x2: 0, y2: 1, colorStops: [{ offset: 0, color: p.color + '33' }, { offset: 1, color: p.color + '00' }] } },
-      markLine: lo < 0 && hi > 0 ? { silent: true, symbol: 'none', label: { show: false }, lineStyle: { color: T.mute, type: 'dashed', opacity: .5 }, data: [{ yAxis: 0 }] } : undefined }],
+      axisLabel: { color: T.mute, fontSize: 10, formatter: v => fmtPanel(p, v, p.fmt === 'pct' ? 2 : 1) }, axisPointer: { label: { show: false } } },
+    dataZoom: [{ type: 'inside', xAxisIndex: 0, filterMode: 'none', startValue: state.i0, endValue: state.i1, preventDefaultMouseMove: !coarse }],
+    tooltip: { trigger: 'axis', confine: true, axisPointer: { type: 'line', lineStyle: { type: 'dashed', color: T.mute } },
+      backgroundColor: T.card, borderColor: T.rule, borderWidth: 1, padding: [6, 10], extraCssText: 'border-radius:12px;box-shadow:0 6px 20px rgba(0,0,0,.18)',
+      textStyle: { color: T.fg, fontSize: 12 },
+      formatter: ps => `<b>${labels[ps[0].dataIndex]}</b><br><span style="color:${col}">●</span> ${ps[0].value == null ? '–' : fmtPanel(p, ps[0].value)}` },
   };
+  if (p.fmt === 'pct') {   // sign carries meaning here, so bars take the up/down colours
+    // bars are measured from zero, so the axis must include it (no scale:true) or negative bars look like they hang from the top
+    return { ...common, yAxis: { ...common.yAxis, scale: false }, series: [{ type: 'bar', barMaxWidth: 7,
+      data: p.values.map(v => v == null ? null : { value: v, itemStyle: { color: v >= 0 ? T.up : T.down, borderRadius: v >= 0 ? [2, 2, 0, 0] : [0, 0, 2, 2] } }),
+      markLine: { silent: true, symbol: 'none', label: { show: false }, lineStyle: { color: T.mute, type: 'dashed', opacity: .5 }, data: [{ yAxis: 0 }] } }] };
+  }
+  return { ...common, series: [{ type: 'line', data: p.values, showSymbol: false, smooth: false, lineStyle: { width: 2, color: col }, itemStyle: { color: col },
+    areaStyle: { color: { type: 'linear', x: 0, y: 0, x2: 0, y2: 1, colorStops: [{ offset: 0, color: col + '40' }, { offset: 1, color: col + '00' }] } },
+    markLine: lo < 0 && hi > 0 ? { silent: true, symbol: 'none', label: { show: false }, lineStyle: { color: T.mute, type: 'dashed', opacity: .5 }, data: [{ yAxis: 0 }] } : undefined }] };
 }
 
-function fvgTable(T) {
+function fvgList(T) {
   const rows = D.fvg.map(z => ({ z, mid: (z.lo + z.hi) / 2 })).sort((a, b) => b.mid - a.mid);
   const line = ({ z, mid }) => {
     const col = z.kind === 'bull' ? T.bull : T.bear, pct = (mid / last - 1) * 100;
-    return `<tr><td style="color:${col}"><span class="tag">${z.tf}</span>${z.kind === 'bull' ? '상승 ▲' : '하락 ▼'}</td>` +
-      `<td class="r">${fmtP(z.lo)} – ${fmtP(z.hi)}</td><td class="r" style="color:${col}">${pct > 0 ? '+' : ''}${pct.toFixed(1)}%</td></tr>`;
+    return `<div class="fr" style="--c:${col}"><span class="tf">${z.tf}</span>` +
+      `<span class="rg">${fmtP(z.lo)} – ${fmtP(z.hi)}<small>${z.kind === 'bull' ? '상승 갭 ▲ · 지지 후보' : '하락 갭 ▼ · 저항 후보'}</small></span>` +
+      `<span class="ds">${sgn(pct, v => v.toFixed(1))}%</span></div>`;
   };
   const i = rows.findIndex(r => r.mid < last), cut = i < 0 ? rows.length : i;
-  const now = `<tr class="now"><td colspan="2">현재가</td><td class="r">${fmtP(last)}</td></tr>`;
-  return '<table>' + rows.slice(0, cut).map(line).join('') + now + rows.slice(cut).map(line).join('') + '</table>';
+  const now = `<div class="now"><span>현재가</span><span>${fmtP(last)}</span></div>`;
+  return '<div class="fvg">' + rows.slice(0, cut).map(line).join('') + now + rows.slice(cut).map(line).join('') + '</div>';
 }
+
+let rafY = 0;
+function refreshY() {      // keep price axis + FVG boxes fitted to the visible window
+  cancelAnimationFrame(rafY);
+  rafY = requestAnimationFrame(() => {
+    const T = theme(), [ymin, ymax] = yRange();
+    main.setOption({ yAxis: { min: ymin, max: ymax }, series: [{ markArea: { silent: true, data: zones(T, ymin, ymax, main.getWidth() < 560) } }] });
+  });
+}
+main.on('datazoom', () => {
+  const dz = main.getOption().dataZoom[0], i0 = Math.round(dz.start / 100 * (n - 1)), i1 = Math.round(dz.end / 100 * (n - 1));
+  if (i0 === state.i0 && i1 === state.i1) return;
+  state.i0 = Math.max(0, i0); state.i1 = Math.min(n - 1, i1); refreshY(); markRange();
+});
 
 function render() {
   const T = theme();
   main.setOption(mainOption(T), true);
-  for (const p of PANELS) if (cvdCharts[p.key]) cvdCharts[p.key].setOption(cvdOption(p, T), true);
-  document.getElementById('fvgmap').innerHTML = fvgTable(T);
+  for (const p of PANELS) if (cvdCharts[p.key]) cvdCharts[p.key].setOption(panelOption(p, T), true);
+  $('fvgmap').innerHTML = fvgList(T);
+  $('theme').innerHTML = css('--mode') === 'dark'
+    ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M18.7 5.3l-1.6 1.6M6.9 17.1l-1.6 1.6"/></svg>'
+    : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.5 14.2A8.5 8.5 0 0 1 9.8 3.5a8.5 8.5 0 1 0 10.7 10.7z"/></svg>';
+  document.querySelector('meta[name="theme-color"]').content = css('--bg');
+  markRange();
 }
 render();
 
-window.addEventListener('resize', () => { main.resize(); Object.values(cvdCharts).forEach(c => c.resize()); render(); });
+window.addEventListener('resize', () => { resizeAll(); render(); });
 matchMedia('(prefers-color-scheme: dark)').addEventListener('change', render);
-document.getElementById('theme').addEventListener('click', () => {
-  const root = document.documentElement, dark = getComputedStyle(root).getPropertyValue('--bg').trim() === '#101114';
+$('theme').addEventListener('click', () => {
+  const root = document.documentElement, dark = css('--mode') === 'dark';
   root.dataset.theme = dark ? 'light' : 'dark';
   try { localStorage.setItem('btc-theme', root.dataset.theme); } catch (e) {}
   render();
 });
-try { const t = localStorage.getItem('btc-theme'); if (t) { document.documentElement.dataset.theme = t; render(); } } catch (e) {}
+try {
+  const t = localStorage.getItem('btc-theme'); if (t) { document.documentElement.dataset.theme = t; render(); }
+  const tab = localStorage.getItem('btc-tab'); if (tab && ['chart', 'flow', 'fvg'].includes(tab)) setTab(tab);
+} catch (e) {}
 </script>
 </body>
 </html>
