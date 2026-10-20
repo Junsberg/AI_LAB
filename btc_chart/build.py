@@ -10,7 +10,7 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 from . import sources as src
-from . import ai
+from . import ai, context
 from .publish import PublishError, origin_url, publish
 from .indicators import align, cumulate, ema, find_fvgs, nearest, premium_pct
 from .sources import HOUR, SourceError
@@ -119,8 +119,13 @@ def build(hours: int, out_path: Path, utc_offset: int, skip: set[str], fvg_per_t
         "fvg": fvgs,
         "cvd": panels,
         "extra": extra,
+        "market": {},
+        "market_rows": [],
         "ai": None,
     }
+    if "context" not in skip:
+        payload["market"] = context.collect(skip)   # a failing free API only blanks its own group
+        payload["market_rows"] = context.display_rows(payload["market"])
     if ai_mode == "compare":   # one-off: same facts at several effort levels, report in out/ai_compare.md
         ai.compare(payload, out_dir)
     elif ai_mode != "off":

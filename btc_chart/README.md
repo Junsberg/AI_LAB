@@ -57,6 +57,18 @@ never calls an API, so no key is ever published: only the resulting text goes in
   Fable 5.1: high $0.11, xhigh $0.13.
 - Needs `pip install anthropic`.
 
+## Market context (free public APIs, no keys)
+
+`btc_chart/context.py` collects, at build time and each group independently (one flaky API only blanks its own
+group; `--skip context` or a group name skips it): **derivatives** (Binance futures funding, long/short account
+and top-trader ratios, perp basis, taker ratio), **on-chain** (CoinMetrics community API: MVRV, exchange
+inflow/outflow/balance, active addresses, hashrate; daily, newest day is preliminary), **network** (mempool.space
+fees and difficulty adjustment), **stablecoin supply** (DefiLlama), **Fear & Greed** (alternative.me) and
+**dominance** (CoinGecko: BTC / USDT / everything outside the top 10). They are shown as the "시장 지표" card on the
+수급 tab, fed to the AI as `market_context`, and the AI writes a `context` paragraph about them. The header also
+shows live dominance tiles (browser fetches CoinGecko every 2 min). Some CoinMetrics metrics (realized cap, NVT,
+long-term holder supply) are paid and not used.
+
 ## What it shows
 
 The page talks to the exchanges **directly from the browser** (public endpoints, no keys, no server), so it is live

@@ -48,6 +48,7 @@ SCHEMA: dict[str, Any] = {
             "additionalProperties": False,
         },
         "flow": {"type": "string"},
+        "context": {"type": "string"},
         "watch": {
             "type": "array",
             "items": {
@@ -59,7 +60,7 @@ SCHEMA: dict[str, Any] = {
         },
         "caveats": {"type": "array", "items": {"type": "string"}},
     },
-    "required": ["headline", "bias", "summary", "timeframes", "flow", "watch", "caveats"],
+    "required": ["headline", "bias", "summary", "timeframes", "flow", "context", "watch", "caveats"],
     "additionalProperties": False,
 }
 
@@ -69,7 +70,8 @@ You receive a JSON fact sheet (numbers already computed). Rules:
 - Describe what the data shows now and what would change the picture. Do not predict prices, give targets, or tell the reader to buy or sell.
 - Be concrete and brief: every sentence should carry a number or a condition. Plain Korean, no hype, no emoji.
 - timeframes: one or two sentences per chart timeframe (15m, 1h, 4h, 1d) on trend vs EMAs and spot CVD.
-- flow: how spot/futures CVD, open interest and the Coinbase premium fit together (or conflict).
+- flow: how spot/futures CVD, open interest, the Coinbase premium and derivatives positioning (funding, long/short ratios, perp basis, taker ratio) fit together (or conflict).
+- context: the slower backdrop from market_context - dominance (BTC/USDT/others), on-chain (MVRV, exchange netflow and balance, active addresses, hashrate), stablecoin supply, Fear & Greed, network fees/difficulty. On-chain is daily and its newest day is preliminary; say so when you lean on it. Reading aids: positive exchange netflow = more coins deposited than withdrawn (possible sell pressure, not proof); positive funding = longs pay shorts; MVRV gauges valuation, not timing; rising USDT dominance = money moving to the sidelines.
 - watch: 2-4 price zones taken from the fact sheet (FVG zones, EMAs, range edges) and why each matters.
 - caveats: data limits worth knowing (e.g. CVD windows, USD/USDT basis in the premium). Keep it to what is true.
 - headline: one line. summary: 3-5 bullets."""
@@ -137,6 +139,7 @@ def market_facts(payload: dict[str, Any], timeframes: dict[str, Any]) -> dict[st
             "now": round(prem[-1], 3) if prem else None,
             "avg_24h": round(sum(prem) / len(prem), 3) if prem else None,
         },
+        "market_context": {k: v for k, v in (payload.get("market") or {}).items() if k != "errors"},
         "unfilled_fvg_zones": [
             {
                 "tf": z["tf"],
@@ -166,6 +169,7 @@ def parse_analysis(text: str) -> dict[str, Any]:
         "summary": [s(x) for x in d.get("summary", [])][:6],
         "timeframes": {tf: s(tfs.get(tf, "")) for tf in TFS},
         "flow": s(d.get("flow", ""), 900),
+        "context": s(d.get("context", ""), 900),
         "watch": [{"level": s(w.get("level", ""), 80), "why": s(w.get("why", ""), 300)} for w in d.get("watch", [])][:5],
         "caveats": [s(x, 300) for x in d.get("caveats", [])][:5],
     }
@@ -512,7 +516,7 @@ def _compare_md(rows: dict[str, Any], efforts: tuple[str, ...]) -> str:
             continue
         out += [f"**{a['bias']}** - {a['headline']}", ""] + [f"- {x}" for x in a["summary"]]
         out += ["", "### Timeframes"] + [f"- {k}: {v}" for k, v in a["timeframes"].items()]
-        out += ["", "### Flow", a["flow"], "", "### Watch"] + [f"- {w['level']}: {w['why']}" for w in a["watch"]]
+        out += ["", "### Flow", a["flow"], "", "### Context", a.get("context", ""), "", "### Watch"] + [f"- {w['level']}: {w['why']}" for w in a["watch"]]
         out += ["", "### Caveats"] + [f"- {x}" for x in a["caveats"]]
     return "\n".join(out) + "\n"
 

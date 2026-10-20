@@ -140,6 +140,14 @@
     #main { height: 600px; }
   }
 
+  /* market indicators */
+  .mkt h4 { margin: 12px 0 6px; font-size: 12px; font-weight: 600; letter-spacing: .02em; color: var(--mute); }
+  .mg { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+  .mt { background: color-mix(in srgb, var(--fg) 4%, transparent); border-radius: 12px; padding: 8px 10px; min-width: 0; }
+  .mt .k { display: block; color: var(--mute); font-size: 11.5px; }
+  .mt b { display: block; font-size: 16px; font-weight: 650; font-variant-numeric: tabular-nums; }
+  .mt .d { display: block; color: var(--mute); font-size: 11px; overflow-wrap: anywhere; }
+
   /* AI commentary */
   .ai[hidden], #aitab[hidden] { display: none; }
   .ai .bias { display: inline-block; font-size: 12px; font-weight: 700; padding: 2px 10px; border-radius: 999px; margin-bottom: 6px;
@@ -436,7 +444,13 @@ const GROUP = 'btc';
 const main = echarts.init($('main'));
 main.group = GROUP;
 const P = {};   // panel key -> { def, card, charts, data }
-$('panels').innerHTML = PANEL_DEFS.map(d => `<section class="card pan" id="p-${d.key}" style="--c:var(--${d.color})">
+const mktCard = () => {
+  const rows = D.market_rows || []; if (!rows.length) return '';
+  const groups = [...new Set(rows.map(r => r.g))];
+  return `<section class="card mkt"><div class="chead"><div><h2>시장 지표</h2><div class="sub">파생 · 온체인 · 자금 · 심리 (빌드 시점, 온체인은 일봉)</div></div></div>` +
+    groups.map(g => `<h4>${esc(g)}</h4><div class="mg">${rows.filter(r => r.g === g).map(r => `<div class="mt"><span class="k">${esc(r.k)}</span><b>${esc(r.v)}</b><span class="d">${esc(r.d)}</span></div>`).join('')}</div>`).join('') + '</section>';
+};
+$('panels').innerHTML = mktCard() + PANEL_DEFS.map(d => `<section class="card pan" id="p-${d.key}" style="--c:var(--${d.color})">
   <div class="chead"><div class="l"><span class="swatch"></span><div><h2>${esc(d.title)}</h2><div class="sub" id="ps-${d.key}"></div></div></div>
   <div class="pval" id="pv-${d.key}"></div></div><div class="cvd" id="c-${d.key}"></div><div class="none" id="pn-${d.key}" hidden></div></section>`).join('');
 for (const d of PANEL_DEFS) { const c = echarts.init($('c-' + d.key)); c.group = GROUP; P[d.key] = { def: d, chart: c, data: {} }; }
@@ -646,6 +660,7 @@ function aiBlock(j, label, open) {
     `<h3>${esc(a.headline)}</h3><ul>${a.summary.map(li).join('')}</ul>` +
     (tfs ? `<h4>타임프레임별</h4><div class="tfa">${tfs}</div>` : '') +
     (a.flow ? `<h4>수급 종합</h4><p>${esc(a.flow)}</p>` : '') +
+    (a.context ? `<h4>시장 맥락 (도미넌스·온체인·심리)</h4><p>${esc(a.context)}</p>` : '') +
     (a.watch.length ? `<h4>지켜볼 가격대</h4>${a.watch.map(w => `<div class="wl"><b>${esc(w.level)}</b><span>${esc(w.why)}</span></div>`).join('')}` : '') +
     (a.caveats.length ? `<h4>참고</h4><ul>${a.caveats.map(li).join('')}</ul>` : '') + '</details>';
 }

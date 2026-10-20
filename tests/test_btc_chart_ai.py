@@ -15,6 +15,7 @@ ANSWER = {
     "summary": ["a", "b", "c"],
     "timeframes": {"15m": "x", "1h": "y", "4h": "z", "1d": "w"},
     "flow": "현물 CVD 우위",
+    "context": "도미넌스 59.6%, MVRV 1.52",
     "watch": [{"level": "100,000", "why": "EMA50"}],
     "caveats": ["CVD는 24시간 창"],
 }
