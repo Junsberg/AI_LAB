@@ -655,12 +655,11 @@ const aiAge = ms => { const m = Math.max(0, Math.round((Date.now() - ms) / 60000
 function aiBlock(j, label, open) {
   const a = j && j.analysis; if (!a) return '';
   const li = x => `<li>${esc(x)}</li>`, cls = a.bias.includes('상승') ? 'up' : a.bias.includes('하락') ? 'down' : '';
-  const tfs = ['15m', '1h', '4h', '1d'].filter(k => a.timeframes[k]).map(k => `<b>${k}</b><span>${esc(a.timeframes[k])}</span>`).join('');
+  const tfs = ['4h', '1d'].filter(k => a.timeframes[k]).map(k => `<b>${k}</b><span>${esc(a.timeframes[k])}</span>`).join('');
   return `<details class="aib"${open ? ' open' : ''}><summary><span class="bias ${cls}">${esc(a.bias)}</span><span class="aih"><b>${label}</b> · ${esc(aiModel(j.model))}${j.generated_ms ? ' · ' + aiAge(j.generated_ms) : ''}</span></summary>` +
     `<h3>${esc(a.headline)}</h3><ul>${a.summary.map(li).join('')}</ul>` +
     (tfs ? `<h4>타임프레임별</h4><div class="tfa">${tfs}</div>` : '') +
-    (a.flow ? `<h4>수급 종합</h4><p>${esc(a.flow)}</p>` : '') +
-    (a.context ? `<h4>시장 맥락 (도미넌스·온체인·심리)</h4><p>${esc(a.context)}</p>` : '') +
+    (a.flow ? `<h4>종합</h4><p>${esc(a.flow)}</p>` : '') +
     (a.watch.length ? `<h4>지켜볼 가격대</h4>${a.watch.map(w => `<div class="wl"><b>${esc(w.level)}</b><span>${esc(w.why)}</span></div>`).join('')}` : '') +
     (a.caveats.length ? `<h4>참고</h4><ul>${a.caveats.map(li).join('')}</ul>` : '') + '</details>';
 }

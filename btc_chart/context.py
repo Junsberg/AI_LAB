@@ -63,6 +63,10 @@ def parse_derivatives(prem: dict, funding: list, glob_ls: list, top_ls: list, ta
 
 def parse_onchain(rows: list[dict]) -> dict[str, Any]:
     """CoinMetrics community rows, oldest first. The newest day is preliminary ('flash') -> flagged in the output."""
+    rows = list(rows)
+    while rows and rows[-1].get("CapMVRVCur") is None:   # the day after UTC rollover arrives half-empty: use the last complete day
+        rows.pop()
+    rows = rows[-8:]
     if not rows:
         return {}
     last, week_ago = rows[-1], rows[0]
@@ -143,7 +147,7 @@ def _derivatives() -> dict[str, Any]:
 
 
 def _onchain() -> dict[str, Any]:
-    res = src.http_json(COINMETRICS, {"assets": "btc", "metrics": CM_METRICS, "frequency": "1d", "limit_per_asset": 8, "paging_from": "end"})
+    res = src.http_json(COINMETRICS, {"assets": "btc", "metrics": CM_METRICS, "frequency": "1d", "limit_per_asset": 9, "paging_from": "end"})
     return parse_onchain(res.get("data") or [])
 
 

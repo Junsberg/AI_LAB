@@ -126,8 +126,8 @@ def test_first_build_submits_both_jobs_with_their_own_model_and_collects(tmp_pat
     by = {r["custom_id"]: r["params"] for reqs in c.created for r in reqs}
     assert by["hourly"]["model"] == "claude-opus-5-5" and by["deep"]["model"] == "claude-fable-5-1"
     assert by["hourly"]["output_config"]["effort"] == "xhigh" and by["hourly"]["max_tokens"] == 24000
-    assert by["deep"]["max_tokens"] == 32000 and "in-depth report" in by["deep"]["system"]
-    assert "in-depth report" not in by["hourly"]["system"]
+    assert by["deep"]["max_tokens"] == 32000 and "deeper briefing" in by["deep"]["system"]
+    assert "deeper briefing" not in by["hourly"]["system"]
     assert by["hourly"]["output_config"]["format"]["type"] == "json_schema"
     assert "thinking" not in by["hourly"] and "temperature" not in by["hourly"]
     assert info["hourly"]["analysis"]["headline"] == ANSWER["headline"] and info["deep"]["model"] == "claude-fable-5-1"

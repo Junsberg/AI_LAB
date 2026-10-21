@@ -47,6 +47,12 @@ def test_parse_onchain_netflow_balance_and_flags():
     assert context.parse_onchain([]) == {}
 
 
+def test_parse_onchain_skips_a_half_empty_newest_day():
+    partial = {"time": "2026-10-20T00:00:00.000000000Z", "CapMVRVCur": None, "FlowInExUSD": None, "AdrActCnt": "648048", "HashRate": "1153000000"}
+    o = context.parse_onchain(rows() + [partial])
+    assert o["as_of"] == "2026-10-19" and o["mvrv"] == 1.57 and o["exchange_netflow_usd_latest_day"] == 107
+
+
 def test_parse_other_groups():
     assert context.parse_network({"fastestFee": 5, "hourFee": 1}, {"progressPercent": 29.31, "difficultyChange": 5.38, "remainingBlocks": 1425}) == {
         "fee_fastest_sat_vb": 5, "fee_hour_sat_vb": 1, "difficulty_epoch_progress_pct": 29.3, "expected_difficulty_change_pct": 5.38, "blocks_to_retarget": 1425}
@@ -86,8 +92,8 @@ def test_display_rows_cover_each_group_and_survive_missing_data():
 
 def test_ai_fact_sheet_carries_market_context_without_errors():
     payload = {"generated": "g", "tz": "UTC+9", "candles": [[0, 1, 2, 0, 100]] * 30, "cvd": [], "extra": [], "fvg": [],
-               "market": {"dominance": {"btc_pct": 59.6}, "errors": {"onchain": "boom"}}}
+               "market": {"dominance": {"btc_pct": 59.6}, "sentiment": {"now": 55}, "errors": {"onchain": "boom"}}}
     tf = {"15m": {}}
     facts = ai.market_facts(payload, tf)
-    assert facts["market_context"] == {"dominance": {"btc_pct": 59.6}}
-    assert "market_context" in ai.SYSTEM and "context" in ai.SCHEMA["required"]
+    assert facts["market_context"] == {"sentiment": {"now": 55}}   # dominance is not analysed, errors are not sent
+    assert "market_context" not in ai.SYSTEM and set(ai.SCHEMA["properties"]["timeframes"]["required"]) == {"4h", "1d"}

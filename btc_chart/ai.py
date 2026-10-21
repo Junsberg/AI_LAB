@@ -33,7 +33,7 @@ PRICES = {
     "claude-haiku-5-5": (0.10, 0.50),
     "claude-fable-5-1": (10.0, 50.0),
 }
-TFS = ("15m", "1h", "4h", "1d")
+TFS = ("4h", "1d")   # the only chart timeframes the commentary covers
 
 SCHEMA: dict[str, Any] = {
     "type": "object",
@@ -48,7 +48,6 @@ SCHEMA: dict[str, Any] = {
             "additionalProperties": False,
         },
         "flow": {"type": "string"},
-        "context": {"type": "string"},
         "watch": {
             "type": "array",
             "items": {
@@ -60,21 +59,22 @@ SCHEMA: dict[str, Any] = {
         },
         "caveats": {"type": "array", "items": {"type": "string"}},
     },
-    "required": ["headline", "bias", "summary", "timeframes", "flow", "context", "watch", "caveats"],
+    "required": ["headline", "bias", "summary", "timeframes", "flow", "watch", "caveats"],
     "additionalProperties": False,
 }
 
-SYSTEM = """You write a short Korean market commentary for a personal BTC dashboard.
+SYSTEM = """You write a short Korean market briefing for a personal BTC dashboard. The reader wants ONE integrated view, not a list of separate analyses.
 You receive a JSON fact sheet (numbers already computed). Rules:
 - Use ONLY numbers present in the fact sheet. Never invent prices, levels or statistics.
-- Describe what the data shows now and what would change the picture. Do not predict prices, give targets, or tell the reader to buy or sell.
-- Be concrete and brief: every sentence should carry a number or a condition. Plain Korean, no hype, no emoji.
-- timeframes: one or two sentences per chart timeframe (15m, 1h, 4h, 1d) on trend vs EMAs and spot CVD.
-- flow: how spot/futures CVD, open interest, the Coinbase premium and derivatives positioning (funding, long/short ratios, perp basis, taker ratio) fit together (or conflict).
-- context: the slower backdrop from market_context - dominance (BTC/USDT/others), on-chain (MVRV, exchange netflow and balance, active addresses, hashrate), stablecoin supply, Fear & Greed, network fees/difficulty. On-chain is daily and its newest day is preliminary; say so when you lean on it. Reading aids: positive exchange netflow = more coins deposited than withdrawn (possible sell pressure, not proof); positive funding = longs pay shorts; MVRV gauges valuation, not timing; rising USDT dominance = money moving to the sidelines.
-- watch: 2-4 price zones taken from the fact sheet (FVG zones, EMAs, range edges) and why each matters.
-- caveats: data limits worth knowing (e.g. CVD windows, USD/USDT basis in the premium). Keep it to what is true.
-- headline: one line. summary: 3-5 bullets."""
+- Synthesize: weigh price/EMA structure, spot and futures flows, positioning (funding, long/short ratios, basis, OI), the Coinbase premium and the on-chain / stablecoin / sentiment backdrop together, and say what they add up to. Mention an indicator only when it changes the conclusion; skip the rest. Never walk through the data source by source.
+- Do not discuss dominance. Do not predict prices, give targets, or tell the reader to buy or sell.
+- Plain Korean, short sentences, no jargon pile-up, no hype, no emoji. Few numbers per sentence (the ones that matter).
+- headline: one line with the overall call. bias: the overall lean.
+- summary: exactly 3 bullets: (1) what is happening now, (2) why - the two or three signals that matter most and how they fit or conflict, (3) what would change the picture.
+- timeframes: one short sentence each for 4h and 1d (trend vs EMAs, and anything notable).
+- flow: at most 3 sentences tying flows, positioning and the backdrop into one reading. On-chain is daily and its newest day is preliminary; say so only if you lean on it.
+- watch: 2-3 price zones from the fact sheet (FVG, EMAs, range edges), each with a short reason.
+- caveats: at most 2, only limits that affect how to read this briefing."""
 
 
 # ---------------------------------------------------------------- facts
@@ -139,7 +139,7 @@ def market_facts(payload: dict[str, Any], timeframes: dict[str, Any]) -> dict[st
             "now": round(prem[-1], 3) if prem else None,
             "avg_24h": round(sum(prem) / len(prem), 3) if prem else None,
         },
-        "market_context": {k: v for k, v in (payload.get("market") or {}).items() if k != "errors"},
+        "market_context": {k: v for k, v in (payload.get("market") or {}).items() if k not in ("errors", "dominance")},
         "unfilled_fvg_zones": [
             {
                 "tf": z["tf"],
@@ -169,7 +169,6 @@ def parse_analysis(text: str) -> dict[str, Any]:
         "summary": [s(x) for x in d.get("summary", [])][:6],
         "timeframes": {tf: s(tfs.get(tf, "")) for tf in TFS},
         "flow": s(d.get("flow", ""), 900),
-        "context": s(d.get("context", ""), 900),
         "watch": [{"level": s(w.get("level", ""), 80), "why": s(w.get("why", ""), 300)} for w in d.get("watch", [])][:5],
         "caveats": [s(x, 300) for x in d.get("caveats", [])][:5],
     }
@@ -186,11 +185,10 @@ DAY = 24 * HOUR
 JOB_ORDER = ("deep", "hourly")   # the rarer, pricier job gets the budget first
 
 DEEP_ADDENDUM = """
-This is the in-depth report, written a few times a day. Go deeper than the hourly note:
-- summary: 5-6 bullets; watch: 3-5 zones; explain where indicators conflict and what would resolve it.
-- If the fact sheet has previous_report, say briefly what changed since it (levels reached, bias flips).
-- Separate what the data shows from what is only inferred (e.g. an OI drop is not proof of liquidations).
-- Never mention JSON field names (like previous_report); if there is no earlier report just do not compare."""
+This is the deeper briefing, written a few times a day. Same rules and format, but explain the reasoning behind the call a little more and say how confident the read is. Stay readable: each summary bullet at most 3 sentences and 4 numbers, no long chains of figures.
+- If the fact sheet has previous_report, add one short clause on what changed since it (levels reached, bias flips).
+- Separate what the data shows from what is only inferred (an OI drop is not proof of liquidations).
+- Never mention JSON field names; if there is no earlier report just do not compare."""
 
 
 def _cfg() -> dict[str, Any]:
@@ -516,7 +514,7 @@ def _compare_md(rows: dict[str, Any], efforts: tuple[str, ...]) -> str:
             continue
         out += [f"**{a['bias']}** - {a['headline']}", ""] + [f"- {x}" for x in a["summary"]]
         out += ["", "### Timeframes"] + [f"- {k}: {v}" for k, v in a["timeframes"].items()]
-        out += ["", "### Flow", a["flow"], "", "### Context", a.get("context", ""), "", "### Watch"] + [f"- {w['level']}: {w['why']}" for w in a["watch"]]
+        out += ["", "### Flow", a["flow"], "", "### Watch"] + [f"- {w['level']}: {w['why']}" for w in a["watch"]]
         out += ["", "### Caveats"] + [f"- {x}" for x in a["caveats"]]
     return "\n".join(out) + "\n"
 
