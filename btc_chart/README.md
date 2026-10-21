@@ -36,8 +36,9 @@ and turn Pages off in the repo settings.
 The hourly build asks Claude for Korean market commentary, shown in the page's **AI** tab. The page itself
 never calls an API, so no key is ever published: only the resulting text goes into `index.html`.
 
-- Two jobs: **hourly note** (Opus 5.5, effort `xhigh`, about every hour) and **deep report** (Fable 5.1,
-  `xhigh`, about every 11 h so ~2/day, told what changed since the previous deep report).
+- One job by default: the **briefing** (Fable 5.1, effort `xhigh`, about every hour; `plan()` stretches the
+  interval if it would overspend). A second **deep** job exists but is off (`BTC_AI_DEEP=on` turns it on, with
+  `BTC_AI_DEEP_MODEL`/`_EFFORT`/`_MIN_MINUTES`); set `BTC_AI_MODEL=claude-opus-5-5` for a cheaper hourly note.
 - Uses the **Message Batches API** (50 % cheaper) because the Console promo credit applies to Batch API /
   Agent SDK / Playground / Managed Agents, not to plain real-time Messages calls. A build waits ~2 minutes for
   its batches; unfinished ones are collected by the next build.
@@ -48,8 +49,8 @@ never calls an API, so no key is ever published: only the resulting text goes in
   `BTC_AI_EXPIRES` (2026-11-18) using each job's measured last cost. If calls get pricier (more facts in the
   fact sheet -> more tokens) the hourly note automatically slows down instead of overspending; the deep report
   keeps its slot. Also a daily call cap, and 3 failures in a row pause a job for 6 h (e.g. credit used up).
-- Env knobs: `BTC_AI_MODEL`/`BTC_AI_EFFORT`/`BTC_AI_MIN_MINUTES` (hourly), `BTC_AI_DEEP_MODEL`/
-  `BTC_AI_DEEP_EFFORT`/`BTC_AI_DEEP_MIN_MINUTES` (deep), `BTC_AI_MAX_CALLS_PER_DAY` (30).
+- Env knobs: `BTC_AI_MODEL`/`BTC_AI_EFFORT`/`BTC_AI_MIN_MINUTES` (hourly), `BTC_AI_DEEP*` (deep, off by default),
+  `BTC_AI_MAX_CALLS_PER_DAY` (30).
 - `python -m btc_chart.ai` prints spend and the current schedule (state is in `out/ai.json`).
 - `python -m btc_chart --ai compare` runs one batch with the same facts at `BTC_AI_COMPARE_EFFORTS`
   (default `high,xhigh,max`) for `BTC_AI_MODEL` and writes `out/ai_compare_<model>.md`. Measured so far

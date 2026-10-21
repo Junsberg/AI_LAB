@@ -194,21 +194,25 @@ This is the deeper briefing, written a few times a day. Same rules and format, b
 def _cfg() -> dict[str, Any]:
     e = os.environ.get
     return {
-        "model": e("BTC_AI_MODEL", "claude-opus-5-5"),   # also what `--ai compare` uses
+        "model": e("BTC_AI_MODEL", "claude-fable-5-1"),   # also what `--ai compare` uses
         "effort": e("BTC_AI_EFFORT", "xhigh"),
         "budget": float(e("BTC_AI_BUDGET_USD", "90")),
         "expires": e("BTC_AI_EXPIRES", "2026-11-18"),
         "max_calls_day": int(e("BTC_AI_MAX_CALLS_PER_DAY", "30")),
         "wait_sec": float(e("BTC_AI_WAIT_SEC", "120")),
         "jobs": {
-            "hourly": {"model": e("BTC_AI_MODEL", "claude-opus-5-5"), "effort": e("BTC_AI_EFFORT", "xhigh"),
-                       "min_minutes": float(e("BTC_AI_MIN_MINUTES", "55")), "max_tokens": 24000, "est": 0.06,
+            "hourly": {"enabled": True, "model": e("BTC_AI_MODEL", "claude-fable-5-1"), "effort": e("BTC_AI_EFFORT", "xhigh"),
+                       "min_minutes": float(e("BTC_AI_MIN_MINUTES", "55")), "max_tokens": 24000, "est": 0.15,
                        "system": SYSTEM},
-            "deep": {"model": e("BTC_AI_DEEP_MODEL", "claude-fable-5-1"), "effort": e("BTC_AI_DEEP_EFFORT", "xhigh"),
+            "deep": {"enabled": e("BTC_AI_DEEP", "off") == "on", "model": e("BTC_AI_DEEP_MODEL", "claude-fable-5-1"), "effort": e("BTC_AI_DEEP_EFFORT", "xhigh"),
                      "min_minutes": float(e("BTC_AI_DEEP_MIN_MINUTES", "660")), "max_tokens": 32000, "est": 0.15,
                      "system": SYSTEM + DEEP_ADDENDUM},
         },
     }
+
+
+def _order(cfg: dict[str, Any]) -> tuple[str, ...]:
+    return tuple(n for n in JOB_ORDER if cfg["jobs"][n]["enabled"])
 
 
 def _empty_job() -> dict[str, Any]:
@@ -269,9 +273,9 @@ def plan(state: dict[str, Any], cfg: dict[str, Any], now_ms: int) -> dict[str, f
     per_day = max(0.0, cfg["budget"] - state["spend"]["total_usd"]) / days_left
     jobs = cfg["jobs"]
     est = {n: state["jobs"][n]["last_cost_usd"] or jobs[n]["est"] for n in jobs}
-    out: dict[str, float] = {}
+    out: dict[str, float] = {n: float("inf") for n in jobs}
     left = per_day
-    for n in JOB_ORDER:
+    for n in _order(cfg):
         want = max(jobs[n]["min_minutes"], 1440 * est[n] / left) if left > 0 else float("inf")
         out[n] = want
         if want != float("inf"):
@@ -355,10 +359,10 @@ def _previous_report(job: dict[str, Any]) -> dict[str, Any] | None:
             "bias": a["bias"], "headline": a["headline"], "watch_levels": [w["level"] for w in a["watch"]]}
 
 
-def page_info(state: dict[str, Any], status: dict[str, str]) -> dict[str, Any] | None:
+def page_info(state: dict[str, Any], status: dict[str, str], order: tuple[str, ...] = JOB_ORDER) -> dict[str, Any] | None:
     jobs = {}
     for n in JOB_ORDER:
-        j = state["jobs"][n]
+        j = state["jobs"][n] if n in order else _empty_job()   # a switched-off job disappears from the page
         jobs[n] = {"analysis": j["analysis"], "generated_ms": j["generated_ms"], "model": j["model"],
                    "last_cost_usd": j["last_cost_usd"]}
     return {"status": status, "spend_total_usd": state["spend"]["total_usd"], **jobs}
@@ -380,15 +384,16 @@ def run(
     path = out_dir / STATE_NAME
     state = load_state(path)
     if mode == "off":
-        return page_info(state, {"all": "off: disabled (--ai off)"})
+        return page_info(state, {"all": "off: disabled (--ai off)"}, _order(cfg))
     client = client or make_client()
     if client is None:
-        return page_info(state, {"all": f"off: no API key (set ANTHROPIC_API_KEY or put it in {KEY_FILE})"})
+        return page_info(state, {"all": f"off: no API key (set ANTHROPIC_API_KEY or put it in {KEY_FILE})"}, _order(cfg))
 
     status: dict[str, str] = {}
     pace = plan(state, cfg, now_ms)
     facts: dict[str, Any] | None = None
-    for name in JOB_ORDER:
+    order = _order(cfg)
+    for name in order:
         job, jc = state["jobs"][name], cfg["jobs"][name]
         try:
             if job["pending"]:
@@ -419,9 +424,9 @@ def run(
             status[name] = _fail(job, f"{type(e).__name__}: {str(e)[:200]}")
 
     t0 = time.time()   # most batches finish within minutes: wait a little for all of them together
-    while any(state["jobs"][n]["pending"] and status.get(n) == "submitted" for n in JOB_ORDER):
+    while any(state["jobs"][n]["pending"] and status.get(n) == "submitted" for n in order):
         sleep(5)
-        for name in JOB_ORDER:
+        for name in order:
             if state["jobs"][name]["pending"] and status.get(name) == "submitted":
                 try:
                     done = _poll(client, name, state, now_ms + int((time.time() - t0) * 1000))
@@ -431,7 +436,7 @@ def run(
                     status[name] = done
         if time.time() >= t0 + cfg["wait_sec"]:
             break
-    for name in JOB_ORDER:
+    for name in order:
         job = state["jobs"][name]
         if status.get(name) == "submitted" and job["pending"]:
             status[name] = "submitted (result will be collected by the next build)"
@@ -444,9 +449,9 @@ def run(
         path.write_text(json.dumps(state, ensure_ascii=False, indent=1), encoding="utf-8")
     except OSError as e:
         print(f"[ai] could not save state: {e}", file=sys.stderr)
-    for n in JOB_ORDER:
+    for n in order:
         print(f"[ai] {n}: {status.get(n, '-')}", file=sys.stderr)
-    return page_info(state, status)
+    return page_info(state, status, order)
 
 
 def compare(
@@ -526,7 +531,7 @@ def status(out_dir: Path) -> str:
     today = sp["by_day"].get(_day(now), {"calls": 0, "usd": 0.0})
     pace = plan(st, cfg, now)
     lines = [f"spent ${sp['total_usd']:.2f} of ${cfg['budget']:.0f} (by job: {sp['by_job']}); today {today['calls']} calls ${today['usd']:.2f}"]
-    for n in JOB_ORDER:
+    for n in _order(cfg):
         j = st["jobs"][n]
         every = "never" if pace[n] == float("inf") else f"every {pace[n] / 60:.1f} h"
         lines.append(f"  {n}: {cfg['jobs'][n]['model']} {cfg['jobs'][n]['effort']}, {every}, last cost {j['last_cost_usd']}, "

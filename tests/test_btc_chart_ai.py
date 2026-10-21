@@ -23,9 +23,11 @@ ANSWER = {
 
 @pytest.fixture(autouse=True)
 def env(monkeypatch):
-    for k in ("BTC_AI_MODEL", "BTC_AI_EFFORT", "BTC_AI_MIN_MINUTES", "BTC_AI_MAX_CALLS_PER_DAY", "BTC_AI_BUDGET_USD", "BTC_AI_EXPIRES", "BTC_AI_DEEP_MODEL", "BTC_AI_DEEP_EFFORT", "BTC_AI_DEEP_MIN_MINUTES"):
+    for k in ("BTC_AI_MODEL", "BTC_AI_EFFORT", "BTC_AI_MIN_MINUTES", "BTC_AI_MAX_CALLS_PER_DAY", "BTC_AI_BUDGET_USD", "BTC_AI_EXPIRES", "BTC_AI_DEEP_MODEL", "BTC_AI_DEEP_EFFORT", "BTC_AI_DEEP_MIN_MINUTES", "BTC_AI_DEEP"):
         monkeypatch.delenv(k, raising=False)
     monkeypatch.setenv("BTC_AI_WAIT_SEC", "0")
+    monkeypatch.setenv("BTC_AI_MODEL", "claude-opus-5-5")   # most tests exercise the two-job (Opus hourly + Fable deep) setup
+    monkeypatch.setenv("BTC_AI_DEEP", "on")
 
 
 def payload():
@@ -138,6 +140,17 @@ def test_first_build_submits_both_jobs_with_their_own_model_and_collects(tmp_pat
     assert st["spend"]["total_usd"] == pytest.approx(0.066, abs=1e-6)
 
 
+def test_default_is_one_fable_job_and_the_deep_job_is_off(tmp_path, monkeypatch):
+    monkeypatch.delenv("BTC_AI_MODEL")
+    monkeypatch.delenv("BTC_AI_DEEP")
+    c = FakeClient()
+    info = run(tmp_path, c)
+    assert c.jobs() == ["hourly"]
+    assert c.created[0][0]["params"]["model"] == "claude-fable-5-1"
+    assert info["hourly"]["analysis"] and info["deep"]["analysis"] is None
+    assert ai.plan(ai._empty_state(), ai._cfg(), NOW)["deep"] == float("inf")
+
+
 def test_jobs_run_on_their_own_schedules(tmp_path):
     c = FakeClient()
     run(tmp_path, c)
@@ -172,6 +185,7 @@ def test_pending_batch_is_collected_by_next_build(tmp_path):
 def test_plan_slows_down_when_calls_get_more_expensive_and_stops_when_broke():
     cfg, now = ai._cfg(), NOW
     st = ai._empty_state()
+    st["jobs"]["hourly"]["last_cost_usd"], st["jobs"]["deep"]["last_cost_usd"] = 0.06, 0.15   # Opus hourly + Fable deep
     base = ai.plan(st, cfg, now)
     assert base["hourly"] == 55 and base["deep"] == 660
     st["jobs"]["hourly"]["last_cost_usd"] = 0.6                 # e.g. many more facts / tokens
