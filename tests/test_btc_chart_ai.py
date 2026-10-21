@@ -156,7 +156,7 @@ def test_jobs_run_on_their_own_schedules(tmp_path):
     run(tmp_path, c)
     run(tmp_path, c, now_ms=NOW + 10 * 60_000)
     assert len(c.jobs()) == 2                                  # nothing due yet
-    run(tmp_path, c, now_ms=NOW + 60 * 60_000)
+    run(tmp_path, c, now_ms=NOW + 4 * HOUR)
     assert c.jobs() == ["deep", "hourly", "hourly"]            # only the hourly note
     run(tmp_path, c, now_ms=NOW + 12 * HOUR)
     assert c.jobs()[-2:] == ["deep", "hourly"]
@@ -187,10 +187,10 @@ def test_plan_slows_down_when_calls_get_more_expensive_and_stops_when_broke():
     st = ai._empty_state()
     st["jobs"]["hourly"]["last_cost_usd"], st["jobs"]["deep"]["last_cost_usd"] = 0.06, 0.15   # Opus hourly + Fable deep
     base = ai.plan(st, cfg, now)
-    assert base["hourly"] == 55 and base["deep"] == 660
+    assert base["hourly"] == 235 and base["deep"] == 660
     st["jobs"]["hourly"]["last_cost_usd"] = 0.6                 # e.g. many more facts / tokens
     slower = ai.plan(st, cfg, now)
-    assert slower["hourly"] > 55 and slower["deep"] == 660      # the deep report keeps its slot
+    assert slower["hourly"] > 235 and slower["deep"] == 660      # the deep report keeps its slot
     st["spend"]["total_usd"] = 89.9
     assert ai.plan(st, cfg, now)["hourly"] == float("inf")
 
@@ -199,11 +199,11 @@ def test_daily_call_cap_and_total_budget(tmp_path, monkeypatch):
     monkeypatch.setenv("BTC_AI_MAX_CALLS_PER_DAY", "2")
     c = FakeClient()
     run(tmp_path, c)
-    info = run(tmp_path, c, now_ms=NOW + 2 * HOUR)
+    info = run(tmp_path, c, now_ms=NOW + 5 * HOUR)
     assert len(c.jobs()) == 2 and "daily call cap" in info["status"]["hourly"]
     monkeypatch.setenv("BTC_AI_MAX_CALLS_PER_DAY", "99")
     monkeypatch.setenv("BTC_AI_BUDGET_USD", "0.07")
-    info = run(tmp_path, c, now_ms=NOW + 3 * HOUR)
+    info = run(tmp_path, c, now_ms=NOW + 6 * HOUR)
     assert len(c.jobs()) == 2 and ("budget" in info["status"]["hourly"] or "pace" in info["status"]["hourly"])
 
 
@@ -218,13 +218,13 @@ def test_failures_keep_old_text_and_pause_after_three(tmp_path):
     run(tmp_path, FakeClient())
     bad = FakeClient(fail_create=RuntimeError("credit balance too low"))
     for k in range(3):
-        info = run(tmp_path, bad, now_ms=NOW + (k + 1) * 2 * HOUR)
+        info = run(tmp_path, bad, now_ms=NOW + (k + 1) * 5 * HOUR)
     assert info["hourly"]["analysis"]["headline"] == ANSWER["headline"]       # last good text stays
     assert "pausing" in info["status"]["hourly"]
     ok = FakeClient()
-    paused = run(tmp_path, ok, now_ms=NOW + 8 * HOUR)
+    paused = run(tmp_path, ok, now_ms=NOW + 17 * HOUR)
     assert "paused" in paused["status"]["hourly"]
-    run(tmp_path, ok, now_ms=NOW + 13 * HOUR)
+    run(tmp_path, ok, now_ms=NOW + 22 * HOUR)
     assert "hourly" in ok.jobs()
 
 

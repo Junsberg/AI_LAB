@@ -202,7 +202,7 @@ def _cfg() -> dict[str, Any]:
         "wait_sec": float(e("BTC_AI_WAIT_SEC", "120")),
         "jobs": {
             "hourly": {"enabled": True, "model": e("BTC_AI_MODEL", "claude-fable-5-1"), "effort": e("BTC_AI_EFFORT", "xhigh"),
-                       "min_minutes": float(e("BTC_AI_MIN_MINUTES", "55")), "max_tokens": 24000, "est": 0.15,
+                       "min_minutes": float(e("BTC_AI_MIN_MINUTES", "235")), "max_tokens": 24000, "est": 0.15,
                        "system": SYSTEM},
             "deep": {"enabled": e("BTC_AI_DEEP", "off") == "on", "model": e("BTC_AI_DEEP_MODEL", "claude-fable-5-1"), "effort": e("BTC_AI_DEEP_EFFORT", "xhigh"),
                      "min_minutes": float(e("BTC_AI_DEEP_MIN_MINUTES", "660")), "max_tokens": 32000, "est": 0.15,

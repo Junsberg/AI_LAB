@@ -36,8 +36,8 @@ and turn Pages off in the repo settings.
 The hourly build asks Claude for Korean market commentary, shown in the page's **AI** tab. The page itself
 never calls an API, so no key is ever published: only the resulting text goes into `index.html`.
 
-- One job by default: the **briefing** (Fable 5.1, effort `xhigh`, about every hour; `plan()` stretches the
-  interval if it would overspend). A second **deep** job exists but is off (`BTC_AI_DEEP=on` turns it on, with
+- One job by default: the **briefing** (Fable 5.1, effort `xhigh`, every 4 hours (`BTC_AI_MIN_MINUTES`, default 235 so
+  every 4th hourly build); `plan()` stretches the interval if it would overspend). A second **deep** job exists but is off (`BTC_AI_DEEP=on` turns it on, with
   `BTC_AI_DEEP_MODEL`/`_EFFORT`/`_MIN_MINUTES`); set `BTC_AI_MODEL=claude-opus-5-5` for a cheaper hourly note.
 - Uses the **Message Batches API** (50 % cheaper) because the Console promo credit applies to Batch API /
   Agent SDK / Playground / Managed Agents, not to plain real-time Messages calls. A build waits ~2 minutes for

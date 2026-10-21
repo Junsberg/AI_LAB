@@ -649,7 +649,7 @@ function paintKpis() {
 }
 let kpiSig = '', fvgSig = '';
 /** Claude's commentary from the last build (the page never calls an API itself, so no key is exposed here). */
-const AI_JOBS = [['deep', '심층 리포트'], ['hourly', '시간별 코멘트']];
+const AI_JOBS = [['deep', '심층 리포트'], ['hourly', '시황 브리핑']];
 const aiModel = m => { const x = /(opus|sonnet|haiku|fable)-(\d+)(?:-(\d+))?/.exec(m || ''); return x ? x[1][0].toUpperCase() + x[1].slice(1) + ' ' + x[2] + (x[3] ? '.' + x[3] : '') : (m || ''); };
 const aiAge = ms => { const m = Math.max(0, Math.round((Date.now() - ms) / 60000)); return m < 2 ? '방금' : m < 90 ? `${m}분 전` : m < 2880 ? `${Math.round(m / 60)}시간 전` : `${Math.round(m / 1440)}일 전`; };
 function aiBlock(j, label, open) {
