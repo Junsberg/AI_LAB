@@ -109,7 +109,7 @@
   .cvd { height: 170px; touch-action: pan-y; }
   .subs { margin-top: 2px; border-top: 1px solid var(--rule); }
   .sub1 { position: relative; border-bottom: 1px solid var(--rule); } .sub1:last-child { border-bottom: 0; }
-  .subc { height: 116px; touch-action: pan-y; }
+  .subc { height: 150px; touch-action: pan-y; }
   .slab { position: absolute; left: 10px; top: 4px; z-index: 2; pointer-events: none; font-size: 11.5px; color: var(--mute); font-variant-numeric: tabular-nums; }
   .slab b { color: var(--fg); font-weight: 650; margin-left: 4px; } .slab .up { color: var(--up); } .slab .down { color: var(--down); }
   .none { padding: 26px 0 18px; color: var(--mute); font-size: 12.5px; }
@@ -503,7 +503,7 @@ function zoneBoxes(T, ymin, ymax) {
     const col = z.kind === 'bull' ? T.bull : T.bear;
     return [
       { xAxis: S.labels[i0], yAxis: Math.max(z.lo, ymin), itemStyle: { color: col, opacity: 0.15, borderColor: col, borderType: 'dashed', borderWidth: 1 },
-        label: { show: true, position: 'insideTopRight', color: col, fontSize: tiny ? 10 : 11, fontWeight: 600, formatter: `FVG ${z.tf} ${z.kind === 'bull' ? '▲' : '▼'}` } },
+        label: { show: true, position: z.tf === '1D' ? 'insideBottomRight' : 'insideTopRight', color: col, fontSize: tiny ? 10 : 11, fontWeight: 600, formatter: `FVG ${z.tf} ${z.kind === 'bull' ? '▲' : '▼'}` } },
       { xAxis: S.labels[n - 1], yAxis: Math.min(z.hi, ymax) },
     ];
   }).filter(Boolean);
@@ -531,8 +531,8 @@ function mainOption(T) {
     ],
     tooltip: { trigger: 'axis', showContent: false, axisPointer: { type: 'cross', lineStyle: { type: 'dashed', color: T.mute }, crossStyle: { color: T.mute }, label: { backgroundColor: T.mute } } },   // crosshair + price label on the left axis only (no OHLC box)
     series: [
-      { id: 'k', name: 'BTC', type: 'candlestick', data: candleData(),
-        itemStyle: { color: T.up, color0: T.down, borderColor: T.up, borderColor0: T.down },
+      { id: 'k', name: 'BTC', type: 'candlestick', data: candleData(), barWidth: '72%', barMinWidth: 2, barMaxWidth: 16,   // real bodies, not hairlines
+        itemStyle: { color: T.up, color0: T.down, borderColor: T.up, borderColor0: T.down, borderWidth: 1 },
         markArea: { silent: true, data: zoneBoxes(T, ymin, ymax) }, markLine: priceLine(T) },
       ...EMA_PERIODS.map(p => ({ id: 'e' + p, name: 'EMA ' + p, type: 'line', data: state.ema[p] ? S.ema[p] : [], showSymbol: false, silent: true, z: 3,
         lineStyle: { width: 1.6, color: css(EMA_VARS[p]) }, itemStyle: { color: css(EMA_VARS[p]) } })),
@@ -647,7 +647,7 @@ function subOption(kind, T, view, live) {
     lo = Math.min(lo, cand ? v[2] : v); hi = Math.max(hi, cand ? v[3] : v);
   }
   if (!oi) { lo = Math.min(lo, 0); hi = Math.max(hi, 0); }
-  const pad = (hi - lo) * 0.12 || Math.abs(hi) * 0.01 || 1;
+  const pad = (hi - lo) * (oi ? 0.05 : 0.12) || Math.abs(hi) * 0.01 || 1;   // tight autoscale like TradingView so OI bodies are visible
   const opt = {
     animation: false, textStyle: { fontFamily: FONT },
     grid: { left: nr ? 46 : 60, right: 8, top: 26, bottom: 6 },   // same left/right as the price chart so the candles line up
@@ -657,7 +657,7 @@ function subOption(kind, T, view, live) {
     dataZoom: [{ type: 'inside', xAxisIndex: 0, zoomLock: true, zoomOnMouseWheel: false, moveOnMouseWheel: false, filterMode: 'none', startValue: state.i0, endValue: state.i1, minValueSpan: 10, preventDefaultMouseMove: !coarse }],
     tooltip: { trigger: 'axis', showContent: false, axisPointer: { type: 'cross', lineStyle: { type: 'dashed', color: T.mute }, crossStyle: { color: T.mute }, label: { show: false } } },
     series: [cand
-      ? { id: 's', type: 'candlestick', data: view, itemStyle: { color: T.up, color0: T.down, borderColor: T.up, borderColor0: T.down } }
+      ? { id: 's', type: 'candlestick', data: view, barWidth: '72%', barMinWidth: 2, barMaxWidth: 16, itemStyle: { color: T.up, color0: T.down, borderColor: T.up, borderColor0: T.down, borderWidth: 1 } }
       : oi ? { id: 's', type: 'line', data: view, showSymbol: false, lineStyle: { width: 1.8, color: col }, itemStyle: { color: col },
           areaStyle: { color: { type: 'linear', x: 0, y: 0, x2: 0, y2: 1, colorStops: [{ offset: 0, color: col + '40' }, { offset: 1, color: col + '00' }] } } }
       : { id: 's', type: 'line', step: 'end', data: view, showSymbol: false, lineStyle: { width: 1.8, color: col }, itemStyle: { color: col },
