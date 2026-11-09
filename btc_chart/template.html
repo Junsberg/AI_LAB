@@ -482,7 +482,7 @@ const mktCard = () => {
 const stbCard = () => (D.derivs && D.derivs.stable && D.derivs.stable.length > 30) ? `<section class="card stb"><div class="chead"><div><h2>스테이블코인 시장 유동성</h2><div class="sub">USD 스테이블코인 전체 공급량 · DefiLlama (일봉)</div></div><div class="pval" id="stb-val"></div></div>
   <div class="tools"><div class="seg" id="stb-rng"><button data-d="90">3개월</button><button data-d="365">1년</button><button data-d="1095">3년</button></div></div><div class="cvd" id="stb-chart"></div></section>` : '';
 const flowCards = () => (D.flow && D.flow.t && D.flow.t.length > 24) ? `
-  <section class="card flc"><div class="chead"><div><h2>주문 크기별 CVD</h2><div class="sub">Binance 선물 체결을 주문 크기($)로 나눈 누적 순매수 · 0~1 정규화 · 최근 ${Math.round(D.flow.t.length / 24)}일</div></div></div><div class="flcv" id="flow-cvd"></div></section>` : '';
+  <section class="card flc"><div class="chead"><div><h2>주문 크기별 CVD</h2><div class="sub">큰 주문(1만 달러 이상)만 · Binance 선물 체결 누적 순매수 · 0~1 정규화 · 최근 ${Math.round(D.flow.t.length / 24)}일</div></div></div><div class="flcv" id="flow-cvd"></div></section>` : '';
 $('panels').innerHTML = flowCards() + mktCard() + stbCard() + PANEL_DEFS.filter(d => !d.hidden).map(d => `<section class="card pan" id="p-${d.key}" style="--c:var(--${d.color})">
   <div class="chead"><div class="l"><span class="swatch"></span><div><h2>${esc(d.title)}</h2><div class="sub" id="ps-${d.key}"></div></div></div>
   <div class="pval" id="pv-${d.key}"></div></div><div class="cvd" id="c-${d.key}"></div><div class="none" id="pn-${d.key}" hidden></div></section>`).join('');
@@ -752,20 +752,20 @@ function paintStb(T) {
 if ($('stb-rng')) $('stb-rng').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; stbDays = +b.dataset.d; lsSet('btc-stb', stbDays); paintStb(theme()); });
 
 /* ---------- order-size CVD (hourly, from the build; own time axis) ---------- */
-const FLOW_COLORS = ['--fg2', '--s1', '--s3', '--s4', '--s2', '--s5'];
+// only the orders big enough to move the market (retail-size buckets are left out); colours follow the reference chart: red, purple, brown
+const FLOW_SHOW = { '$10k – $100k': '#d9484f', '$100k – $1M': '#9b7be6', '$1M +': '#a9744f' };
 function paintFlow(T) {
   if (!FLC || !shown('flow')) return;
-  const F = D.flow, nr = narrow(), fs = nr ? 10 : 12.5, labels = F.t.map(t => fmtT(t, '1h')), asof = new Date(F.asof);
+  const F = D.flow, nr = narrow(), fs = nr ? 10 : 12.5, labels = F.t.map(t => fmtT(t, '1h')), show = F.labels.filter(l => FLOW_SHOW[l]);
   FLC.setOption({
     animation: false, textStyle: { fontFamily: FONT },
-    legend: { top: 0, left: 0, textStyle: { color: T.fg, fontSize: fs }, itemWidth: 14, itemHeight: 3, icon: 'roundRect', itemGap: 10, data: F.labels.map(l => l === 'all' ? '전체' : l) },
-    grid: { left: 40, right: 8, top: nr ? 62 : 40, bottom: 24 },
+    legend: { top: 0, left: 0, textStyle: { color: T.fg, fontSize: fs }, itemWidth: 14, itemHeight: 3, icon: 'roundRect', itemGap: 10, data: show },
+    grid: { left: 40, right: 8, top: 34, bottom: 24 },
     xAxis: { type: 'category', data: labels, boundaryGap: false, axisLine: { lineStyle: { color: T.rule } }, axisTick: { show: false }, axisLabel: { color: T.mute, fontSize: fs, hideOverlap: true } },
     yAxis: { type: 'value', min: 0, max: 1, splitNumber: 4, splitLine: { lineStyle: { color: T.grid } }, axisLabel: { color: T.mute, fontSize: fs, formatter: v => v.toFixed(1) } },
     tooltip: { trigger: 'axis', confine: true, backgroundColor: T.card, borderColor: T.rule, borderWidth: 1, textStyle: { color: T.fg, fontSize: 12 }, extraCssText: 'border-radius:12px',
       axisPointer: { type: 'line', lineStyle: { type: 'dashed', color: T.mute } } },
-    series: F.labels.map((l, i) => ({ name: l === 'all' ? '전체' : l, type: 'line', data: F.series[l], showSymbol: false, smooth: false,
-      lineStyle: { width: i === 0 ? 2.4 : 1.6, color: css(FLOW_COLORS[i]) }, itemStyle: { color: css(FLOW_COLORS[i]) }, z: i === 0 ? 5 : 3 })),
+    series: show.map(l => ({ name: l, type: 'line', data: F.series[l], showSymbol: false, smooth: false, lineStyle: { width: 2, color: FLOW_SHOW[l] }, itemStyle: { color: FLOW_SHOW[l] } })),
   }, true);
 }
 
