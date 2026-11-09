@@ -70,6 +70,17 @@ fees and difficulty adjustment), **stablecoin supply** (DefiLlama), **Fear & Gre
 shows live dominance tiles (browser fetches CoinGecko every 2 min). Some CoinMetrics metrics (realized cap, NVT,
 long-term holder supply) are paid and not used.
 
+## OI candles and funding under the price chart
+
+`btc_chart/derivs.py` (build time, ~5 s, cached): Binance publishes **5-minute open interest** as daily files on
+its public archive (`data.binance.vision/data/futures/um/daily/metrics/BTCUSDT`); the build downloads the last 200
+days (completed days cached in `out/cache/oi5m/`), fills everything after the newest archive day from the live
+`openInterestHist` API and aggregates it to open/high/low/close candles for 15m/1H/4H/1D. The page finishes the
+newest candles itself from the live 5 m feed (refreshed every 30 s). Funding is the **mean of Binance, Bybit and OKX**
+BTC-USDT perpetual settlements (8 h steps, ~150 days); if the build has none the page falls back to Binance alone.
+Both sub-charts sit under the price chart with the same candle positions, zoom and crosshair. Not available:
+TradingView's wider multi-exchange aggregate (we average three exchanges).
+
 ## What it shows
 
 The page talks to the exchanges **directly from the browser** (public endpoints, no keys, no server), so it is live
@@ -81,7 +92,7 @@ even when the PC that built it is off. Python only builds the file and supplies 
 - EMA 20/50/100/200 with an `EMA` master switch and per-line chips (choice is remembered)
 - Unfilled 4H / 1D fair value gaps, computed in the page (JS port of `indicators.find_fvgs`, kept identical by `tests/test_btc_chart.py`)
 - Cumulative CVD (net taker-buy USD, reset to 0 at the left edge of the visible range): Binance spot and futures on every timeframe. (Coinbase and OKX CVD were removed: the build only held ~72 h of them and they only fit 1H/4H, so they never matched the chart window.)
-- Binance futures open interest (USD panel, plus a BTC-unit OI chart and the 8 h funding rate under the price chart) and Coinbase premium (Coinbase USD close vs Binance USDT close, %; includes the USD/USDT basis) on every timeframe
+- Binance futures open interest (USD panel on the 수급 tab) and Coinbase premium (Coinbase USD close vs Binance USDT close, %; includes the USD/USDT basis) on every timeframe
 - If Binance is unreachable the page falls back to the last build (1H) and shows a banner; tap it to retry
 
 ## Notes

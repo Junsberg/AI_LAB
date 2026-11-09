@@ -335,6 +335,15 @@ function aggregateCloses(closesByHour, tfMs) {
 function premiumPct(priceMap, refByTime, times) {
   return times.map(t => (priceMap.has(t) && refByTime.get(t)) ? (priceMap.get(t) / refByTime.get(t) - 1) * 100 : null);
 }
+/** 5 m open-interest points [t, v] -> Map(bucketOpen -> [o, h, l, c]) on UTC-aligned buckets. */
+function ohlcFrom(rows, tfMs) {
+  const m = new Map();
+  for (const [t, v] of rows) {
+    const b = t - (t % tfMs), r = m.get(b);
+    if (!r) m.set(b, [v, v, v, v]); else { r[1] = Math.max(r[1], v); r[2] = Math.min(r[2], v); r[3] = v; }
+  }
+  return m;
+}
 /*END PURE*/
 
 const FONT = '-apple-system, "Segoe UI", "Apple SD Gothic Neo", "Malgun Gothic", "Noto Sans KR", sans-serif';
@@ -588,11 +597,20 @@ function paintPanel(key, T, live) {
   p.chart.setOption(panelOption(key, T, view, live), !live);
 }
 
-/* ---------- sub charts under the price: open interest (BTC) and funding rate ---------- */
-let fundRows = [];   // [settlementMs, ratePct] every 8 h
-async function loadFunding() {
+/* ---------- sub charts under the price: open interest candles (BTC) and exchange-averaged funding ---------- */
+let fundRows = (D.derivs && D.derivs.funding && D.derivs.funding.rows || []).map(r => [r[0], r[1]]);   // [settlementMs, mean ratePct] from the build
+const FUND_FROM_BUILD = fundRows.length > 0;
+async function loadFunding() {   // fallback only: Binance alone, when the build had no funding data
+  if (FUND_FROM_BUILD) return;
   try {
     fundRows = (await getJSON(`${FAPI}/fapi/v1/fundingRate?symbol=BTCUSDT&limit=1000`)).map(x => [x.fundingTime, +x.fundingRate * 100]);
+    if (S) paintSubs(theme(), true);
+  } catch (e) { /* keep the last rows */ }
+}
+let oi5 = [];   // newest ~41 h of 5 m open interest [t, BTC]: finishes the candles the build snapshot could not know
+async function loadOi5() {
+  try {
+    oi5 = (await getJSON(`${FAPI}/futures/data/openInterestHist?symbol=BTCUSDT&period=5m&limit=500`)).map(r => [+r.timestamp, +r.sumOpenInterest]);
     if (S) paintSubs(theme(), true);
   } catch (e) { /* keep the last rows */ }
 }
@@ -601,15 +619,29 @@ function fundingAt(times) {   // the rate in force at each candle open (step ser
   for (const t of times) { while (j + 1 < fundRows.length && fundRows[j + 1][0] <= t) j++; out.push(j >= 0 ? fundRows[j][1] : null); }
   return out;
 }
+/** ECharts candlestick rows [open, close, low, high] per candle, or null when neither the build nor the live tail has any. */
+function oiCandles() {
+  const tfMs = TFS[S.tf], m = new Map(((D.derivs && D.derivs.oi && D.derivs.oi[S.tf]) || []).map(r => [r[0], [r[1], r[2], r[3], r[4]]]));
+  if (oi5.length) {
+    const first = oi5[0][0], live = ohlcFrom(oi5, tfMs), skip = first % tfMs ? first - (first % tfMs) : -1;   // the first bucket is only partly covered
+    for (const [b, v] of live) if (b !== skip) m.set(b, v);
+  }
+  const out = S.times.map(t => { const v = m.get(t); return v ? [v[0], v[3], v[2], v[1]] : '-'; });   // ECharts wants '-' (not null) for a missing candle
+  return out.some(Array.isArray) ? out : null;
+}
 function subView(kind) {
   if (!S) return null;
-  if (kind === 'oi') return S.oi ? alignMap(new Map(S.oi.map(r => [r[0], r[2]])), S.times) : null;
+  if (kind === 'oi') return oiCandles() || (S.oi ? alignMap(new Map(S.oi.map(r => [r[0], r[2]])), S.times) : null);
   return fundRows.length ? fundingAt(S.times) : null;
 }
 function subOption(kind, T, view, live) {
   const nr = narrow(), oi = kind === 'oi', col = css(oi ? '--s5' : '--s3');
+  const cand = oi && Array.isArray(view.find(Array.isArray));   // true: candlestick rows, false: plain numbers (fallback line)
   let lo = Infinity, hi = -Infinity;
-  for (let i = state.i0; i <= state.i1; i++) { const v = view[i]; if (v != null) { lo = Math.min(lo, v); hi = Math.max(hi, v); } }
+  for (let i = state.i0; i <= state.i1; i++) {
+    const v = view[i]; if (v == null || v === '-') continue;
+    lo = Math.min(lo, cand ? v[2] : v); hi = Math.max(hi, cand ? v[3] : v);
+  }
   if (!oi) { lo = Math.min(lo, 0); hi = Math.max(hi, 0); }
   const pad = (hi - lo) * 0.12 || Math.abs(hi) * 0.01 || 1;
   const opt = {
@@ -620,8 +652,9 @@ function subOption(kind, T, view, live) {
       axisLabel: { color: T.mute, fontSize: nr ? 10 : 11, formatter: v => oi ? fmtBig(v, 1) : v.toFixed(4) + '%' }, axisPointer: { label: { show: false } } },
     dataZoom: [{ type: 'inside', xAxisIndex: 0, zoomLock: true, zoomOnMouseWheel: false, moveOnMouseWheel: false, filterMode: 'none', startValue: state.i0, endValue: state.i1, minValueSpan: 10, preventDefaultMouseMove: !coarse }],
     tooltip: { trigger: 'axis', showContent: false, axisPointer: { type: 'cross', lineStyle: { type: 'dashed', color: T.mute }, crossStyle: { color: T.mute }, label: { show: false } } },
-    series: [oi
-      ? { id: 's', type: 'line', data: view, showSymbol: false, lineStyle: { width: 1.8, color: col }, itemStyle: { color: col },
+    series: [cand
+      ? { id: 's', type: 'candlestick', data: view, itemStyle: { color: T.up, color0: T.down, borderColor: T.up, borderColor0: T.down } }
+      : oi ? { id: 's', type: 'line', data: view, showSymbol: false, lineStyle: { width: 1.8, color: col }, itemStyle: { color: col },
           areaStyle: { color: { type: 'linear', x: 0, y: 0, x2: 0, y2: 1, colorStops: [{ offset: 0, color: col + '40' }, { offset: 1, color: col + '00' }] } } }
       : { id: 's', type: 'line', step: 'end', data: view, showSymbol: false, lineStyle: { width: 1.8, color: col }, itemStyle: { color: col },
           markLine: { silent: true, symbol: 'none', label: { show: false }, lineStyle: { color: T.mute, type: 'dashed', opacity: .5 }, data: [{ yAxis: 0 }] } }],
@@ -633,13 +666,14 @@ function paintSubs(T, live) {
   if (!S || !shown('chart')) return;
   for (const kind of ['oi', 'fund']) {
     const view = subView(kind), lab = $('lab-' + kind), box = $('sub-' + kind);
-    if (!view || !anyVal(view)) { box.parentElement.hidden = true; SUB[kind].clear(); lab.textContent = ''; continue; }
+    if (!view || !view.some(v => v != null)) { box.parentElement.hidden = true; SUB[kind].clear(); lab.textContent = ''; continue; }
     box.parentElement.hidden = false;
-    const v = view[state.i1] != null ? view[state.i1] : lastOf(view);
+    const cand = kind === 'oi' && Array.isArray(view.find(Array.isArray)), pick = x => cand ? (Array.isArray(x) ? x[1] : null) : x;   // candle close
+    const v = pick(view[state.i1]) != null ? pick(view[state.i1]) : lastOf(view.map(pick));
     if (kind === 'oi') {
-      const a = view[Math.max(0, state.i0)], ch = a ? (v / a - 1) * 100 : 0;
+      const a = pick(view[Math.max(0, state.i0)]), ch = a ? (v / a - 1) * 100 : 0;
       lab.innerHTML = `OI · Binance 선물<b>${fmtBig(v, 2)} BTC</b><span class="${dir(ch)}"> ${arrow(ch)} ${Math.abs(ch).toFixed(2)}%</span>`;
-    } else lab.innerHTML = `펀딩비 (8h)<b>${sgn(v, x => x.toFixed(4))}%</b>`;
+    } else lab.innerHTML = `펀딩비 · ${FUND_FROM_BUILD ? D.derivs.funding.exchanges.length + '거래소 평균' : 'Binance'}<b>${sgn(v, x => x.toFixed(4))}%</b>`;
     SUB[kind].setOption(subOption(kind, T, view, live), !live);
   }
 }
@@ -1010,7 +1044,8 @@ connect();
 loadTF(state.tf);
 setInterval(() => { if (!document.hidden && S && !state.fallback) loadAux(S); }, 20000);    // futures CVD / OI / premium for the forming bar
 setInterval(() => { if (!document.hidden && S && !state.fallback) loadHtf(); }, 60000);     // 4H / 1D candles -> FVG fills
-loadFunding(); setInterval(() => { if (!document.hidden) loadFunding(); }, 300000);   // funding settles every 8 h; refresh every 5 min
+loadFunding(); setInterval(() => { if (!document.hidden) loadFunding(); }, 300000);   // fallback only
+loadOi5(); setInterval(() => { if (!document.hidden) loadOi5(); }, 30000);   // newest 5 m open interest -> forming OI candles
 loadDom(); setInterval(() => { if (!document.hidden) loadDom(); }, 120000);   // dominance: CoinGecko's free tier is rate limited, so every 2 min
 </script>
 </body>
