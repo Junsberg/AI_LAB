@@ -10,7 +10,7 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 from . import sources as src
-from . import ai, context, derivs
+from . import ai, context, derivs, flow
 from .publish import PublishError, origin_url, publish
 from .indicators import align, cumulate, ema, find_fvgs, nearest, premium_pct
 from .sources import HOUR, SourceError
@@ -117,10 +117,16 @@ def build(hours: int, out_path: Path, utc_offset: int, skip: set[str], fvg_per_t
         "market": {},
         "market_rows": [],
         "derivs": {},
+        "flow": {},
         "ai": None,
     }
     if "derivs" not in skip:   # OI candles (5 m archive) for the sub-chart
         payload["derivs"] = derivs.collect(out_dir / "cache", now_ms, skip)
+    if "flow" not in skip:   # order-size CVD + traded-volume heatmap from Binance aggregated trades (bounded work per build)
+        try:
+            payload["flow"] = flow.collect(out_dir / "cache", now_ms, {b.t: b.close for b in bars})
+        except Exception as e:   # a failing source must never break the chart build
+            print(f"[flow] {type(e).__name__}: {str(e)[:150]}", file=sys.stderr)
     if "context" not in skip:
         payload["market"] = context.collect(skip)   # a failing free API only blanks its own group
         payload["market_rows"] = context.display_rows(payload["market"])
