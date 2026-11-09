@@ -111,6 +111,7 @@
   .sub1 { position: relative; border-bottom: 1px solid var(--rule); } .sub1:last-child { border-bottom: 0; }
   .subc { height: 150px; touch-action: pan-y; }
   .slab { position: absolute; left: 10px; top: 4px; z-index: 2; pointer-events: none; font-size: 11.5px; color: var(--mute); font-variant-numeric: tabular-nums; }
+  .slab .cb { display: inline-flex; align-items: center; gap: 4px; margin-left: 10px; } .slab .cb i { width: 10px; height: 3px; border-radius: 2px; }
   .slab b { color: var(--fg); font-weight: 650; margin-left: 4px; } .slab .up { color: var(--up); } .slab .down { color: var(--down); }
   .none { padding: 26px 0 18px; color: var(--mute); font-size: 12.5px; }
   .pan .chead .l { display: flex; align-items: center; gap: 8px; min-width: 0; }
@@ -146,10 +147,6 @@
   }
 
   /* market indicators */
-  .pan.combo .cvd { height: 280px; }
-  .pan.combo .pval { display: flex; flex-direction: column; align-items: flex-end; gap: 1px; font-size: 14px; }
-  .pan.combo .cb { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; } .pan.combo .cb i { width: 10px; height: 3px; border-radius: 2px; }
-  .pan.combo .cb b { font-size: 16px; font-variant-numeric: tabular-nums; } .pan.combo .cb b.up { color: var(--up); } .pan.combo .cb b.down { color: var(--down); }
   .flcv { height: 300px; }
   .mkt h4 { margin: 12px 0 6px; font-size: 12px; font-weight: 600; letter-spacing: .02em; color: var(--mute); }
   .mg { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
@@ -217,7 +214,6 @@
     .slab { font-size: 13.5px; left: 14px; }
     .cvd { height: 210px; }
     .layout { grid-template-columns: minmax(0, 1fr) 500px; }
-    .pan.combo .cvd { height: 380px; }
     .flcv { height: 380px; }
     .mkt { order: 10; } .stb { order: 11; }
     .mkt h4 { font-size: 13px; } .mt { padding: 10px 12px; } .mt .k { font-size: 13px; } .mt b { font-size: 19px; } .mt .d { font-size: 12.5px; }
@@ -255,6 +251,7 @@
         <div class="tools"><div class="seg" id="counts"></div><div id="emarow" style="display:contents"></div></div>
         <div class="wrap"><div id="main"></div><div class="ld" id="ld">불러오는 중…</div></div>
         <div class="subs" id="subs">
+          <div class="sub1"><span class="slab" id="lab-cvd"></span><div class="subc" id="sub-cvd"></div></div>
           <div class="sub1"><span class="slab" id="lab-oi"></span><div class="subc" id="sub-oi"></div></div>
         </div>
         <div class="banner" id="banner" hidden></div>
@@ -456,7 +453,6 @@ function computeEma(S) { S.ema = {}; const closes = S.K.map(c => c[4]); for (con
 function computeLabels(S) { S.labels = S.K.map(c => fmtT(c[0], S.tf)); S.times = S.K.map(c => c[0]); }
 
 const PANEL_DEFS = [
-  { key: 'cvd_combo', title: 'Binance CVD · 현물 vs 선물', color: 's1', kind: 'combo' },
   { key: 'binance_spot', title: 'Binance 현물 CVD', color: 's1', kind: 'cvd', hidden: true },
   { key: 'binance_fut', title: 'Binance 선물 CVD', color: 's2', kind: 'cvd', hidden: true },
   { key: 'binance_oi', title: 'Binance 선물 미결제약정', color: 's5', kind: 'level', sub: '시점 값 · USD' },
@@ -487,11 +483,11 @@ const stbCard = () => (D.derivs && D.derivs.stable && D.derivs.stable.length > 3
   <div class="tools"><div class="seg" id="stb-rng"><button data-d="90">3개월</button><button data-d="365">1년</button><button data-d="1095">3년</button></div></div><div class="cvd" id="stb-chart"></div></section>` : '';
 const flowCards = () => (D.flow && D.flow.t && D.flow.t.length > 24) ? `
   <section class="card flc"><div class="chead"><div><h2>주문 크기별 CVD</h2><div class="sub">Binance 선물 체결을 주문 크기($)로 나눈 누적 순매수 · 0~1 정규화 · 최근 ${Math.round(D.flow.t.length / 24)}일</div></div></div><div class="flcv" id="flow-cvd"></div></section>` : '';
-$('panels').innerHTML = flowCards() + mktCard() + stbCard() + PANEL_DEFS.filter(d => !d.hidden).map(d => `<section class="card pan${d.kind === 'combo' ? ' combo' : ''}" id="p-${d.key}" style="--c:var(--${d.color})">
+$('panels').innerHTML = flowCards() + mktCard() + stbCard() + PANEL_DEFS.filter(d => !d.hidden).map(d => `<section class="card pan" id="p-${d.key}" style="--c:var(--${d.color})">
   <div class="chead"><div class="l"><span class="swatch"></span><div><h2>${esc(d.title)}</h2><div class="sub" id="ps-${d.key}"></div></div></div>
   <div class="pval" id="pv-${d.key}"></div></div><div class="cvd" id="c-${d.key}"></div><div class="none" id="pn-${d.key}" hidden></div></section>`).join('');
 for (const d of PANEL_DEFS) { const c = d.hidden ? null : echarts.init($('c-' + d.key)); if (c) c.group = GROUP; P[d.key] = { def: d, chart: c, data: {} }; }
-const SUB = { oi: echarts.init($('sub-oi')) };
+const SUB = { cvd: echarts.init($('sub-cvd')), oi: echarts.init($('sub-oi')) };
 for (const k in SUB) SUB[k].group = GROUP;
 echarts.connect(GROUP);
 const STB = $('stb-chart') ? echarts.init($('stb-chart')) : null;
@@ -617,20 +613,18 @@ function panelOption(key, T, view, live) {
     areaStyle: { color: { type: 'linear', x: 0, y: 0, x2: 0, y2: 1, colorStops: [{ offset: 0, color: col + '40' }, { offset: 1, color: col + '00' }] } },
     markLine: lo < 0 && hi > 0 ? zero : undefined }] };
 }
-function comboOption(T, sp, fu, live) {
+function comboOption(T, sp, fu, live) {   // spot vs futures cumulative CVD, laid out exactly like the price chart above it
   const nr = narrow(), fs = nr ? 10 : 12.5, c1 = css('--s1'), c2 = css('--s2');
   let lo = 0, hi = 0;
   for (const v of [sp, fu]) if (v) for (let i = state.i0; i <= state.i1; i++) if (v[i] != null) { lo = Math.min(lo, v[i]); hi = Math.max(hi, v[i]); }
   const pad = (hi - lo) * 0.08 || 1;
   const o = {
     animation: false, textStyle: { fontFamily: FONT },
-    grid: { left: nr ? 46 : 60, right: 8, top: 10, bottom: 24 },
-    xAxis: { type: 'category', data: S.labels, boundaryGap: false, axisLine: { lineStyle: { color: T.rule } }, axisTick: { show: false }, axisLabel: { color: T.mute, hideOverlap: true, fontSize: fs }, axisPointer: { label: { show: false } } },
-    yAxis: { min: lo - pad, max: hi + pad, splitNumber: 3, splitLine: { lineStyle: { color: T.grid } }, axisLabel: { color: T.mute, fontSize: fs, formatter: v => fmtBig(v, 1) }, axisPointer: { label: { show: false } } },
+    grid: { left: nr ? 46 : 60, right: 8, top: 26, bottom: 6 },   // same left/right as the price chart so the candles line up
+    xAxis: { type: 'category', data: S.labels, boundaryGap: true, axisLine: { show: false }, axisTick: { show: false }, axisLabel: { show: false }, axisPointer: { label: { show: false } } },
+    yAxis: { min: lo - pad, max: hi + pad, splitNumber: 2, splitLine: { lineStyle: { color: T.grid } }, axisLabel: { color: T.mute, fontSize: fs, formatter: v => fmtBig(v, 1) }, axisPointer: { label: { show: false } } },
     dataZoom: [{ type: 'inside', xAxisIndex: 0, zoomLock: true, zoomOnMouseWheel: false, moveOnMouseWheel: false, filterMode: 'none', startValue: state.i0, endValue: state.i1, minValueSpan: 10, preventDefaultMouseMove: !coarse }],
-    tooltip: { trigger: 'axis', confine: true, axisPointer: { type: 'line', lineStyle: { type: 'dashed', color: T.mute } }, backgroundColor: T.card, borderColor: T.rule, borderWidth: 1, padding: [6, 10],
-      textStyle: { color: T.fg, fontSize: 12 }, extraCssText: 'border-radius:12px;box-shadow:0 6px 20px rgba(0,0,0,.18)',
-      formatter: ps => `<b>${S.labels[ps[0].dataIndex]}</b>` + ps.map(x => `<br><span style="color:${x.color}">●</span> ${x.seriesName} ${x.value == null ? '–' : sgn(x.value, y => fmtBig(y, 1))}`).join('') },
+    tooltip: { trigger: 'axis', showContent: false, axisPointer: { type: 'cross', lineStyle: { type: 'dashed', color: T.mute }, crossStyle: { color: T.mute }, label: { show: false } } },
     series: [[sp, '현물', c1], [fu, '선물', c2]].filter(a => a[0]).map(([v, name, col]) => ({ name, type: 'line', data: v, showSymbol: false, lineStyle: { width: 2, color: col }, itemStyle: { color: col },
       areaStyle: { color: { type: 'linear', x: 0, y: 0, x2: 0, y2: 1, colorStops: [{ offset: 0, color: col + '26' }, { offset: 1, color: col + '00' }] } },
       markLine: name === '현물' || !sp ? { silent: true, symbol: 'none', label: { show: false }, lineStyle: { color: T.mute, type: 'dashed', opacity: .5 }, data: [{ yAxis: 0 }] } : undefined })),
@@ -638,19 +632,8 @@ function comboOption(T, sp, fu, live) {
   if (live) { delete o.dataZoom; delete o.tooltip; }
   return o;
 }
-function paintCombo(p, T, live) {
-  const key = p.def.key, sp = panelView('binance_spot'), fu = panelView('binance_fut'), none = $('pn-' + key), head = $('pv-' + key), sub = $('ps-' + key), box = $('c-' + key);
-  if (!sp && !fu) { p.chart.clear(); box.hidden = true; none.hidden = false; head.innerHTML = ''; none.textContent = P.binance_spot.data.note || P.binance_fut.data.note || '데이터 없음'; sub.textContent = ''; return; }
-  const wasHidden = box.hidden; box.hidden = false; none.hidden = true; if (wasHidden) p.chart.resize();
-  const at = v => v ? (v[state.i1] != null ? v[state.i1] : lastOf(v)) : null;
-  const part = (name, col, v) => v ? `<span class="cb"><i style="background:${col}"></i>${name} <b class="${dir(at(v))}">${sgn(at(v), x => fmtBig(x, 1))}</b></span>` : '';
-  head.innerHTML = part('현물', css('--s1'), sp) + part('선물', css('--s2'), fu);
-  sub.textContent = '보이는 구간 누적 · 시작=0 · 순매수(+) / 순매도(−)';
-  p.chart.setOption(comboOption(T, sp, fu, live), !live);
-}
 function paintPanel(key, T, live) {
   if (P[key].def.hidden) return;
-  if (P[key].def.kind === 'combo') return paintCombo(P[key], T, live);
   const p = P[key], def = p.def, view = panelView(key), none = $('pn-' + key);
   const head = $('pv-' + key), sub = $('ps-' + key);
   if (!view) {
@@ -721,8 +704,18 @@ function subOption(kind, T, view, live) {
   if (live) { delete opt.dataZoom; delete opt.tooltip; }
   return opt;
 }
+function paintCvdSub(T, live) {
+  const sp = panelView('binance_spot'), fu = panelView('binance_fut'), lab = $('lab-cvd'), box = $('sub-cvd');
+  if (!sp && !fu) { box.parentElement.hidden = true; SUB.cvd.clear(); lab.textContent = ''; return; }
+  box.parentElement.hidden = false;
+  const at = v => v ? (v[state.i1] != null ? v[state.i1] : lastOf(v)) : null;
+  const part = (name, col, v) => v ? `<span class="cb"><i style="background:${col}"></i>${name}<b class="${dir(at(v))}">${sgn(at(v), x => fmtBig(x, 1))}</b></span>` : '';
+  lab.innerHTML = 'CVD · 누적 순매수' + part('현물', css('--s1'), sp) + part('선물', css('--s2'), fu);
+  SUB.cvd.setOption(comboOption(T, sp, fu, live), !live);
+}
 function paintSubs(T, live) {
   if (!S || !shown('chart')) return;
+  paintCvdSub(T, live);
   for (const kind of ['oi']) {
     const view = subView(kind), lab = $('lab-' + kind), box = $('sub-' + kind);
     if (!view || !view.some(v => v != null)) { box.parentElement.hidden = true; SUB[kind].clear(); lab.textContent = ''; continue; }
