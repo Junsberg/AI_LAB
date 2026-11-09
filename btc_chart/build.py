@@ -24,8 +24,6 @@ HERE = Path(__file__).parent
 CVD_PANELS = (
     ("binance_spot", "Binance 현물 CVD", "s1"),
     ("binance_fut", "Binance 선물 CVD", "s2"),
-    ("coinbase", "Coinbase 현물 CVD", "s3"),
-    ("okx", "OKX 선물 CVD", "s4"),
 )
 
 # Non-CVD panels: key, title, colour, subtitle, value format ("big" = 1.2M, "pct" = 0.05%).
@@ -50,10 +48,6 @@ def collect_cvd(key: str, hours: int, now_ms: int, out_dir: Path, spot_bars: lis
     if key == "binance_fut":
         bars = src.binance_klines(src.BINANCE_FUT_KLINES, "BTCUSDT", "1h", min(hours + 2, 1000))
         return src.klines_cvd(bars)
-    if key == "coinbase":
-        return src.coinbase_cvd(hours, out_dir / "cache" / "coinbase_hourly.json", now_ms)
-    if key == "okx":
-        return src.okx_cvd()
     raise ValueError(key)
 
 
@@ -145,7 +139,7 @@ def main(argv: list[str] | None = None) -> None:
     ap.add_argument("--hours", type=int, default=72, help="visible 1H candles (default 72)")
     ap.add_argument("--out", type=Path, default=HERE / "out" / "index.html")
     ap.add_argument("--utc-offset", type=int, default=9, help="label timezone (default KST +9)")
-    ap.add_argument("--skip", default="", help="comma list of panel keys to skip, e.g. coinbase,cb_premium")
+    ap.add_argument("--skip", default="", help="comma list of panel keys to skip, e.g. cb_premium,context")
     ap.add_argument("--fvg-per-tf", type=int, default=6, help="FVG zones kept per timeframe")
     ap.add_argument(
         "--publish", action="store_true", help="push the built page to the gh-pages branch"

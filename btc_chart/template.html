@@ -419,30 +419,14 @@ function computeLabels(S) { S.labels = S.K.map(c => fmtT(c[0], S.tf)); S.times =
 const PANEL_DEFS = [
   { key: 'binance_spot', title: 'Binance 현물 CVD', color: 's1', kind: 'cvd' },
   { key: 'binance_fut', title: 'Binance 선물 CVD', color: 's2', kind: 'cvd' },
-  { key: 'coinbase', title: 'Coinbase 현물 CVD', color: 's3', kind: 'cvd', fromBuild: true },
-  { key: 'okx', title: 'OKX 선물 CVD', color: 's4', kind: 'cvd', fromBuild: true },
   { key: 'binance_oi', title: 'Binance 선물 미결제약정', color: 's5', kind: 'level', sub: '시점 값 · USD' },
   { key: 'cb_premium', title: 'Coinbase 프리미엄', color: 's3', kind: 'pct', sub: 'Coinbase(USD) − Binance(USDT) 종가 %' },
 ];
-/** Hourly deltas from the build snapshot (it stores cumulative values aligned to D.candles). */
-function buildDeltas(key) {
-  const p = D.cvd.find(x => x.key === key);
-  if (!p || !p.values) return null;
-  const m = new Map(); let prev = 0;
-  p.values.forEach((v, i) => { if (v != null) { m.set(D.candles[i][0], v - prev); prev = v; } });
-  return m;
-}
 /** Per-candle raw series for every panel on the current timeframe. */
 function buildPanelData(S) {
   const times = S.times, tfMs = TFS[S.tf], out = {};
   out.binance_spot = { deltas: S.K.map(c => 2 * c[6] - c[5]) };
   out.binance_fut = S.fut ? { deltas: alignMap(new Map(S.fut.map(c => [c[0], 2 * c[6] - c[5]])), times) } : { note: S.err.fut || '불러오는 중…' };
-  for (const key of ['coinbase', 'okx']) {
-    const hm = buildDeltas(key);
-    if (!hm) { out[key] = { note: (D.cvd.find(x => x.key === key) || {}).error || '데이터 없음' }; continue; }
-    if (tfMs > 4 * HOUR || tfMs < HOUR) { out[key] = { note: '1H · 4H 봉에서만 볼 수 있어요 (빌드 데이터 기준)' }; continue; }
-    out[key] = { deltas: alignMap(tfMs === HOUR ? hm : aggregateHourly(hm, tfMs), times) };
-  }
   out.binance_oi = S.oi ? { values: alignMap(new Map(S.oi), times) } : { note: S.err.oi || '불러오는 중…' };
   out.cb_premium = S.cb ? { values: premiumPct(S.cb, new Map(S.K.map(c => [c[0], c[4]])), times) } : { note: S.err.cb || '불러오는 중…' };
   return out;
@@ -472,7 +456,7 @@ const COUNTS = [60, 120, 240, 500];
 $('counts').innerHTML = COUNTS.map(r => `<button data-r="${r}">${r}</button>`).join('');
 $('emarow').innerHTML = `<button class="chip on" id="emaall" aria-label="EMA 전체 켜기/끄기">EMA</button>` +
   EMA_PERIODS.map(k => `<button class="chip" data-ema="${k}" style="--c:var(${EMA_VARS[k]})"><i></i>${k}</button>`).join('');
-$('hint').textContent = coarse ? '핀치: 확대/축소 · 좌우로 밀어 이동 · 길게 눌러 값 보기' : '휠: 확대/축소 · 드래그: 이동';
+$('hint').textContent = coarse ? '좌우로 밀어 이동 · 길게 눌러 값 보기 · 캔들 수는 위 버튼으로' : '드래그: 이동 · 캔들 수는 위 버튼으로';
 
 function paintControls() {
   for (const b of $('tfs').children) b.classList.toggle('on', b.dataset.tf === state.tf);
@@ -524,15 +508,13 @@ function mainOption(T) {
   const nr = narrow(), [ymin, ymax] = yRange();
   return {
     animation: false, textStyle: { fontFamily: FONT },
-    grid: { left: nr ? 46 : 60, right: 8, top: 14, bottom: nr ? 26 : 56 },
+    grid: { left: nr ? 46 : 60, right: 8, top: 14, bottom: 26 },
     xAxis: { type: 'category', data: S.labels, boundaryGap: true, axisLine: { lineStyle: { color: T.rule } },
       axisTick: { show: false }, axisLabel: { color: T.mute, hideOverlap: true, fontSize: nr ? 10 : 11 }, axisPointer: { label: { show: false } } },
     yAxis: { scale: true, min: ymin, max: ymax, splitLine: { lineStyle: { color: T.grid } },
       axisLabel: { color: T.mute, fontSize: nr ? 10 : 11, formatter: fmtP0 }, axisPointer: { label: { formatter: p => fmtP(p.value) } } },
     dataZoom: [
-      { type: 'inside', xAxisIndex: 0, filterMode: 'none', startValue: state.i0, endValue: state.i1, minValueSpan: 10, preventDefaultMouseMove: !coarse },
-      ...(nr ? [] : [{ type: 'slider', xAxisIndex: 0, height: 20, bottom: 12, filterMode: 'none', borderColor: T.rule, startValue: state.i0, endValue: state.i1,
-        fillerColor: 'rgba(120,120,130,.15)', textStyle: { color: T.mute }, dataBackground: { lineStyle: { color: T.rule }, areaStyle: { color: T.grid } } }]),
+      { type: 'inside', xAxisIndex: 0, zoomLock: true, zoomOnMouseWheel: false, moveOnMouseWheel: false, filterMode: 'none', startValue: state.i0, endValue: state.i1, minValueSpan: 10, preventDefaultMouseMove: !coarse },
     ],
     tooltip: { trigger: 'axis', showContent: false, axisPointer: { type: 'cross', lineStyle: { type: 'dashed', color: T.mute }, crossStyle: { color: T.mute }, label: { backgroundColor: T.mute } } },   // crosshair + price label on the left axis only (no OHLC box)
     series: [
@@ -566,7 +548,7 @@ function panelOption(key, T, view, live) {
       axisLabel: { color: T.mute, hideOverlap: true, fontSize: 10 }, axisPointer: { label: { show: false } } },
     yAxis: { min: lo === Infinity ? undefined : lo - padY, max: hi === -Infinity ? undefined : hi + padY, splitNumber: 2, splitLine: { lineStyle: { color: T.grid } },
       axisLabel: { color: T.mute, fontSize: 10, formatter: v => f(v, pct ? 2 : 1) }, axisPointer: { label: { show: false } } },
-    dataZoom: [{ type: 'inside', xAxisIndex: 0, filterMode: 'none', startValue: state.i0, endValue: state.i1, minValueSpan: 10, preventDefaultMouseMove: !coarse }],
+    dataZoom: [{ type: 'inside', xAxisIndex: 0, zoomLock: true, zoomOnMouseWheel: false, moveOnMouseWheel: false, filterMode: 'none', startValue: state.i0, endValue: state.i1, minValueSpan: 10, preventDefaultMouseMove: !coarse }],
     tooltip: { trigger: 'axis', confine: true, axisPointer: { type: 'line', lineStyle: { type: 'dashed', color: T.mute } },
       backgroundColor: T.card, borderColor: T.rule, borderWidth: 1, padding: [6, 10], extraCssText: 'border-radius:12px;box-shadow:0 6px 20px rgba(0,0,0,.18)',
       textStyle: { color: T.fg, fontSize: 12 },
@@ -636,7 +618,7 @@ function subOption(kind, T, view, live) {
     xAxis: { type: 'category', data: S.labels, boundaryGap: true, axisLine: { show: false }, axisTick: { show: false }, axisLabel: { show: false }, axisPointer: { label: { show: false } } },
     yAxis: { min: lo === Infinity ? undefined : lo - pad, max: hi === -Infinity ? undefined : hi + pad, splitNumber: 2, splitLine: { lineStyle: { color: T.grid } },
       axisLabel: { color: T.mute, fontSize: nr ? 10 : 11, formatter: v => oi ? fmtBig(v, 1) : v.toFixed(4) + '%' }, axisPointer: { label: { show: false } } },
-    dataZoom: [{ type: 'inside', xAxisIndex: 0, filterMode: 'none', startValue: state.i0, endValue: state.i1, minValueSpan: 10, preventDefaultMouseMove: !coarse }],
+    dataZoom: [{ type: 'inside', xAxisIndex: 0, zoomLock: true, zoomOnMouseWheel: false, moveOnMouseWheel: false, filterMode: 'none', startValue: state.i0, endValue: state.i1, minValueSpan: 10, preventDefaultMouseMove: !coarse }],
     tooltip: { trigger: 'axis', showContent: false, axisPointer: { type: 'cross', lineStyle: { type: 'dashed', color: T.mute }, crossStyle: { color: T.mute }, label: { show: false } } },
     series: [oi
       ? { id: 's', type: 'line', data: view, showSymbol: false, lineStyle: { width: 1.8, color: col }, itemStyle: { color: col },
@@ -704,7 +686,7 @@ function paintKpis() {
   if (anyVal(oi)) { const v = lastOf(oi), cut = Date.now() - 24 * HOUR, j = S.times.findIndex(t => t >= cut), a = j >= 0 ? oi[j] : null, c = a && TFS[S.tf] <= 4 * HOUR ? (v / a - 1) * 100 : null;
     rows.push(kpi('OI · Binance 선물', '$' + fmtBig(v, 2), c == null ? '' : `${arrow(c)} ${Math.abs(c).toFixed(2)}% · 24h`, c == null ? '' : dir(c))); }
   if (anyVal(pr)) rows.push(kpi('Coinbase 프리미엄', sgn(lastOf(pr), x => x.toFixed(3)) + '%', 'Coinbase − Binance', 'flat'));
-  for (const key of ['binance_spot', 'binance_fut', 'coinbase', 'okx']) {
+  for (const key of ['binance_spot', 'binance_fut']) {
     const d = P[key].data.deltas, tfMs = TFS[S.tf];
     if (!d || !anyVal(d) || tfMs > 4 * HOUR) continue;   // a 24h sum is only meaningful on <=4h bars
     const cut = Date.now() - 24 * HOUR; let s = 0;
