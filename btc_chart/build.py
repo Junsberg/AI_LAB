@@ -42,12 +42,11 @@ def collect_extra(key: str, hours: int, now_ms: int, hour_ts: list[int], spot_ba
     raise ValueError(key)
 
 
-def collect_cvd(key: str, hours: int, now_ms: int, out_dir: Path, spot_bars: list[src.Candle]):
+def collect_cvd(key: str, fut_bars: list[src.Candle], spot_bars: list[src.Candle]):
     if key == "binance_spot":
         return src.klines_cvd(spot_bars)
     if key == "binance_fut":
-        bars = src.binance_klines(src.BINANCE_FUT_KLINES, "BTCUSDT", "1h", min(hours + 2, 1000))
-        return src.klines_cvd(bars)
+        return src.klines_cvd(fut_bars)
     raise ValueError(key)
 
 
@@ -55,7 +54,9 @@ def build(hours: int, out_path: Path, utc_offset: int, skip: set[str], fvg_per_t
     now_ms = int(time.time() * 1000)
     out_dir = out_path.parent
 
-    bars = src.binance_klines(src.BINANCE_SPOT_KLINES, "BTCUSDT", "1h", min(hours + WARMUP, 1000))
+    # The chart is Binance USDT-M perpetual futures; spot is only used for the spot CVD and the Coinbase premium.
+    bars = src.binance_klines(src.BINANCE_FUT_KLINES, "BTCUSDT", "1h", min(hours + WARMUP, 1000))
+    spot_bars = src.binance_klines(src.BINANCE_SPOT_KLINES, "BTCUSDT", "1h", min(hours + WARMUP, 1000))
     closes = [b.close for b in bars]
     view = bars[-hours:]
     hour_ts = [b.t for b in view]
@@ -64,7 +65,7 @@ def build(hours: int, out_path: Path, utc_offset: int, skip: set[str], fvg_per_t
     fvgs = []
     last_price = bars[-1].close
     for label, interval, tf_ms, limit in FVG_FRAMES:
-        candles = src.binance_klines(src.BINANCE_SPOT_KLINES, "BTCUSDT", interval, limit)
+        candles = src.binance_klines(src.BINANCE_FUT_KLINES, "BTCUSDT", interval, limit)
         zones = find_fvgs(candles, label, tf_ms, now_ms)
         fvgs += [z._asdict() for z in nearest(zones, last_price, fvg_per_tf)]
 
@@ -75,7 +76,7 @@ def build(hours: int, out_path: Path, utc_offset: int, skip: set[str], fvg_per_t
             error = "건너뜀"
         else:
             try:
-                deltas = collect_cvd(key, hours, now_ms, out_dir, bars)
+                deltas = collect_cvd(key, bars, spot_bars)
                 values = cumulate(deltas, hour_ts)
             except SourceError as e:
                 error = str(e)
@@ -91,7 +92,7 @@ def build(hours: int, out_path: Path, utc_offset: int, skip: set[str], fvg_per_t
             error = "건너뜀"
         else:
             try:
-                values = collect_extra(key, hours, now_ms, hour_ts, bars)
+                values = collect_extra(key, hours, now_ms, hour_ts, spot_bars)
                 if not any(v is not None for v in values):
                     values, error = None, "데이터 없음"
             except SourceError as e:

@@ -64,7 +64,7 @@ SCHEMA: dict[str, Any] = {
 }
 
 SYSTEM = """You write a short Korean market briefing for a personal BTC dashboard. The reader wants ONE integrated view, not a list of separate analyses.
-You receive a JSON fact sheet (numbers already computed). Rules:
+You receive a JSON fact sheet (numbers already computed). The chart and its candles/EMAs are Binance USDT-M perpetual futures (BTCUSDT); net_taker_buy_usd_last_24h separates spot and futures flows. Rules:
 - Use ONLY numbers present in the fact sheet. Never invent prices, levels or statistics.
 - Synthesize: weigh price/EMA structure, spot and futures flows, positioning (funding, long/short ratios, basis, OI), the Coinbase premium and the on-chain / stablecoin / sentiment backdrop together, and say what they add up to. Mention an indicator only when it changes the conclusion; skip the rest. Never walk through the data source by source.
 - Do not discuss dominance. Do not predict prices, give targets, or tell the reader to buy or sell.
@@ -101,13 +101,13 @@ def summarize_candles(interval: str, candles: list[src.Candle]) -> dict[str, Any
         "ema": emas,
         "ema20_slope_pct_over_5_candles": slope,
         "range_last_100_candles": {"high": round(max(c.high for c in recent), 1), "low": round(min(c.low for c in recent), 1)},
-        "spot_cvd_net_usd_last_24_candles": round(sum(2 * c.tbq - c.qv for c in candles[-24:])),
+        "futures_cvd_net_usd_last_24_candles": round(sum(2 * c.tbq - c.qv for c in candles[-24:])),
     }
 
 
 def fetch_timeframes(limit: int = 500) -> dict[str, Any]:
     return {
-        tf: summarize_candles(tf, src.binance_klines(src.BINANCE_SPOT_KLINES, "BTCUSDT", tf, limit)) for tf in TFS
+        tf: summarize_candles(tf, src.binance_klines(src.BINANCE_FUT_KLINES, "BTCUSDT", tf, limit)) for tf in TFS
     }
 
 

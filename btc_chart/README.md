@@ -1,6 +1,6 @@
 # btc_chart
 
-Personal BTC 1H dashboard. Free, keyless public market data only — no account, no funds involved.
+Personal BTC dashboard (Binance USDT-M perpetual futures chart; spot only feeds the spot CVD and the Coinbase premium). Free, keyless public market data only — no account, no funds involved.
 Output is one self-contained `index.html` (ECharts is inlined, works offline).
 
 ```bash
@@ -63,8 +63,7 @@ never calls an API, so no key is ever published: only the resulting text goes in
 `btc_chart/context.py` collects, at build time and each group independently (one flaky API only blanks its own
 group; `--skip context` or a group name skips it): **derivatives** (Binance futures funding, long/short account
 and top-trader ratios, perp basis, taker ratio), **on-chain** (CoinMetrics community API: MVRV, exchange
-inflow/outflow/balance, active addresses, hashrate; daily, newest day is preliminary), **network** (mempool.space
-fees and difficulty adjustment), **stablecoin supply** (DefiLlama), **Fear & Greed** (alternative.me) and
+inflow/outflow/balance, active addresses, hashrate; daily, newest day is preliminary), **stablecoin supply** (DefiLlama), **Fear & Greed** (alternative.me) and
 **dominance** (CoinGecko: BTC / USDT / everything outside the top 10). They are shown as the "시장 지표" card on the
 수급 tab, fed to the AI as `market_context`, and the AI writes a `context` paragraph about them. The header also
 shows live dominance tiles (browser fetches CoinGecko every 2 min). Some CoinMetrics metrics (realized cap, NVT,
@@ -80,6 +79,11 @@ newest candles itself from the live 5 m feed (refreshed every 30 s). Funding is 
 BTC-USDT perpetual settlements (8 h steps, ~150 days); if the build has none the page falls back to Binance alone.
 Both sub-charts sit under the price chart with the same candle positions, zoom and crosshair. Not available:
 TradingView's wider multi-exchange aggregate (we average three exchanges).
+
+## Stablecoin liquidity
+
+The 수급 tab has a "스테이블코인 시장 유동성" chart: total USD-pegged stablecoin supply, daily, last 1100 days from DefiLlama's
+`stablecoincharts/all` (fetched at build time, `derivs.stable_supply`), with 3 month / 1 year / 3 year buttons and the 7 day change.
 
 ## What it shows
 

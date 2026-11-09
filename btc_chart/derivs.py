@@ -25,6 +25,7 @@ BINANCE_OI = "https://fapi.binance.com/futures/data/openInterestHist"
 BINANCE_FUNDING = "https://fapi.binance.com/fapi/v1/fundingRate"
 BYBIT_FUNDING = "https://api.bybit.com/v5/market/funding/history"
 OKX_FUNDING = "https://www.okx.com/api/v5/public/funding-rate-history"
+LLAMA_STABLE_CHART = "https://stablecoins.llama.fi/stablecoincharts/all"
 
 MIN = 60_000
 OI_TFS = {"15m": 15 * MIN, "1h": 60 * MIN, "4h": 240 * MIN, "1d": 1440 * MIN}
@@ -192,13 +193,30 @@ def funding(fetchers: dict[str, Callable[[], dict[int, float]]] | None = None) -
     return average_funding(series) if series else {}
 
 
+# ---------------------------------------------------------------- stablecoin liquidity
+
+
+def parse_stable_chart(rows: list[dict], keep: int = 1100) -> list[list[float]]:
+    """DefiLlama daily totals -> [[day_ms, USD-pegged stablecoin supply in billions], ...] (newest ``keep`` days)."""
+    out = []
+    for r in rows:
+        v = (r.get("totalCirculatingUSD") or {}).get("peggedUSD")
+        if v:
+            out.append([int(r["date"]) * 1000, round(v / 1e9, 2)])
+    return out[-keep:]
+
+
+def stable_supply() -> list[list[float]]:
+    return parse_stable_chart(src.http_json(LLAMA_STABLE_CHART))
+
+
 # ---------------------------------------------------------------- entry point
 
 
 def collect(cache_dir: Path, now_ms: int, skip: set[str] | None = None, days: int = 200) -> dict[str, Any]:
     out: dict[str, Any] = {}
     errors: dict[str, str] = {}
-    for name, fn in (("oi", lambda: oi_candles(days, cache_dir, now_ms)), ("funding", funding)):
+    for name, fn in (("oi", lambda: oi_candles(days, cache_dir, now_ms)), ("funding", funding), ("stable", stable_supply)):
         if skip and name in skip:
             continue
         try:

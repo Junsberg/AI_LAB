@@ -200,7 +200,7 @@
 <div class="page">
   <header>
     <div class="top">
-      <div class="brand"><span class="logo">₿</span>BTC<small>· Binance 현물</small></div>
+      <div class="brand"><span class="logo">₿</span>BTC<small>· Binance 선물</small></div>
       <div class="spacer"></div>
       <div class="stamp" id="stamp"><span class="live"></span><span id="ago">연결 중…</span></div>
       <button class="icon" id="theme" aria-label="라이트/다크 전환" title="라이트/다크 전환"></button>
@@ -429,15 +429,15 @@ const PANEL_DEFS = [
   { key: 'binance_spot', title: 'Binance 현물 CVD', color: 's1', kind: 'cvd' },
   { key: 'binance_fut', title: 'Binance 선물 CVD', color: 's2', kind: 'cvd' },
   { key: 'binance_oi', title: 'Binance 선물 미결제약정', color: 's5', kind: 'level', sub: '시점 값 · USD' },
-  { key: 'cb_premium', title: 'Coinbase 프리미엄', color: 's3', kind: 'pct', sub: 'Coinbase(USD) − Binance(USDT) 종가 %' },
+  { key: 'cb_premium', title: 'Coinbase 프리미엄', color: 's3', kind: 'pct', sub: 'Coinbase(USD) − Binance 현물(USDT) 종가 %' },
 ];
 /** Per-candle raw series for every panel on the current timeframe. */
 function buildPanelData(S) {
   const times = S.times, tfMs = TFS[S.tf], out = {};
-  out.binance_spot = { deltas: S.K.map(c => 2 * c[6] - c[5]) };
-  out.binance_fut = S.fut ? { deltas: alignMap(new Map(S.fut.map(c => [c[0], 2 * c[6] - c[5]])), times) } : { note: S.err.fut || '불러오는 중…' };
+  out.binance_fut = { deltas: S.K.map(c => 2 * c[6] - c[5]) };
+  out.binance_spot = S.spot ? { deltas: alignMap(new Map(S.spot.map(c => [c[0], 2 * c[6] - c[5]])), times) } : { note: S.err.spot || '불러오는 중…' };
   out.binance_oi = S.oi ? { values: alignMap(new Map(S.oi), times) } : { note: S.err.oi || '불러오는 중…' };
-  out.cb_premium = S.cb ? { values: premiumPct(S.cb, new Map(S.K.map(c => [c[0], c[4]])), times) } : { note: S.err.cb || '불러오는 중…' };
+  out.cb_premium = S.cb && S.spot ? { values: premiumPct(S.cb, new Map(S.spot.map(c => [c[0], c[4]])), times) } : { note: S.err.cb || S.err.spot || '불러오는 중…' };   // vs Binance SPOT closes
   return out;
 }
 
@@ -452,13 +452,17 @@ const mktCard = () => {
   return `<section class="card mkt"><div class="chead"><div><h2>시장 지표</h2><div class="sub">파생 · 온체인 · 자금 · 심리 (빌드 시점, 온체인은 일봉)</div></div></div>` +
     groups.map(g => `<h4>${esc(g)}</h4><div class="mg">${rows.filter(r => r.g === g).map(r => `<div class="mt"><span class="k">${esc(r.k)}</span><b>${esc(r.v)}</b><span class="d">${esc(r.d)}</span></div>`).join('')}</div>`).join('') + '</section>';
 };
-$('panels').innerHTML = mktCard() + PANEL_DEFS.map(d => `<section class="card pan" id="p-${d.key}" style="--c:var(--${d.color})">
+const stbCard = () => (D.derivs && D.derivs.stable && D.derivs.stable.length > 30) ? `<section class="card stb"><div class="chead"><div><h2>스테이블코인 시장 유동성</h2><div class="sub">USD 스테이블코인 전체 공급량 · DefiLlama (일봉)</div></div><div class="pval" id="stb-val"></div></div>
+  <div class="tools"><div class="seg" id="stb-rng"><button data-d="90">3개월</button><button data-d="365">1년</button><button data-d="1095">3년</button></div></div><div class="cvd" id="stb-chart"></div></section>` : '';
+$('panels').innerHTML = mktCard() + stbCard() + PANEL_DEFS.map(d => `<section class="card pan" id="p-${d.key}" style="--c:var(--${d.color})">
   <div class="chead"><div class="l"><span class="swatch"></span><div><h2>${esc(d.title)}</h2><div class="sub" id="ps-${d.key}"></div></div></div>
   <div class="pval" id="pv-${d.key}"></div></div><div class="cvd" id="c-${d.key}"></div><div class="none" id="pn-${d.key}" hidden></div></section>`).join('');
 for (const d of PANEL_DEFS) { const c = echarts.init($('c-' + d.key)); c.group = GROUP; P[d.key] = { def: d, chart: c, data: {} }; }
 const SUB = { oi: echarts.init($('sub-oi')), fund: echarts.init($('sub-fund')) };
 for (const k in SUB) SUB[k].group = GROUP;
 echarts.connect(GROUP);
+const STB = $('stb-chart') ? echarts.init($('stb-chart')) : null;
+let stbDays = +lsGet('btc-stb', 365) || 365;
 
 $('tfs').innerHTML = Object.keys(TFS).map(t => `<button data-tf="${t}">${t === '1d' ? '1D' : t === '1h' ? '1H' : t === '4h' ? '4H' : '15m'}</button>`).join('');
 const COUNTS = [60, 120, 240, 500];
@@ -678,6 +682,29 @@ function paintSubs(T, live) {
   }
 }
 
+/* ---------- stablecoin supply (daily, from the build; not tied to the candle axis) ---------- */
+function paintStb(T) {
+  if (!STB || !shown('flow')) return;
+  const all = D.derivs.stable, rows = all.slice(-stbDays), a = rows[0][1], z = rows[rows.length - 1][1], col = css('--s1');
+  const w7 = all[all.length - 8], w30 = all[all.length - 31], chg = (x, y) => y ? (x / y - 1) * 100 : 0, c7 = chg(z, w7 && w7[1]), c30 = chg(z, w30 && w30[1]);
+  $('stb-val').innerHTML = `<b>$${z.toFixed(1)}B</b><span class="d ${dir(c7)}">${arrow(c7)} ${Math.abs(c7).toFixed(2)}% · 7일</span>`;
+  for (const b of $('stb-rng').children) b.classList.toggle('on', +b.dataset.d === stbDays);
+  const lo = Math.min(...rows.map(r => r[1])), hi = Math.max(...rows.map(r => r[1])), pad = (hi - lo) * 0.1 || 1;
+  STB.setOption({
+    animation: false, textStyle: { fontFamily: FONT },
+    grid: { left: 52, right: 8, top: 10, bottom: 22 },
+    xAxis: { type: 'time', axisLine: { lineStyle: { color: T.rule } }, axisTick: { show: false }, axisLabel: { color: T.mute, fontSize: 10, hideOverlap: true,
+      formatter: v => { const d = new Date(v); return (d.getUTCMonth() + 1) + '/' + d.getUTCDate(); } }, splitLine: { show: false } },
+    yAxis: { type: 'value', min: lo - pad, max: hi + pad, splitNumber: 3, splitLine: { lineStyle: { color: T.grid } }, axisLabel: { color: T.mute, fontSize: 10, formatter: v => '$' + v.toFixed(0) + 'B' } },
+    tooltip: { trigger: 'axis', confine: true, axisPointer: { type: 'line', lineStyle: { type: 'dashed', color: T.mute } }, backgroundColor: T.card, borderColor: T.rule, borderWidth: 1,
+      padding: [6, 10], textStyle: { color: T.fg, fontSize: 12 }, extraCssText: 'border-radius:12px',
+      formatter: ps => { const d = new Date(ps[0].value[0]); return `<b>${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, '0')}-${String(d.getUTCDate()).padStart(2, '0')}</b><br>$${ps[0].value[1].toFixed(1)}B`; } },
+    series: [{ type: 'line', data: rows, showSymbol: false, lineStyle: { width: 2, color: col }, itemStyle: { color: col },
+      areaStyle: { color: { type: 'linear', x: 0, y: 0, x2: 0, y2: 1, colorStops: [{ offset: 0, color: col + '40' }, { offset: 1, color: col + '00' }] } } }],
+  }, true);
+}
+if ($('stb-rng')) $('stb-rng').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; stbDays = +b.dataset.d; lsSet('btc-stb', stbDays); paintStb(theme()); });
+
 /* ---------- FVG list ---------- */
 function fvgList(T) {
   const price = tick ? tick.c : lastPrice();
@@ -770,6 +797,7 @@ function renderAll() {
   for (const key in P) paintPanel(key, T);       // fills P[key].data first
   main.setOption(mainOption(T), true);
   paintSubs(T);
+  paintStb(T);
   paintFvg(T);
   paintHero(); paintKpis(); paintControls();
   $('theme').innerHTML = css('--mode') === 'dark'
@@ -812,10 +840,10 @@ async function loadTF(tf, opts = {}) {
   $('ld').hidden = !!d || !!S;
   if (!d) $('ld').hidden = false;
   try {
-    if (!d) d = { tf, K: await spotK(tf, 1000), fut: null, oi: null, cb: null, err: {} };
+    if (!d) d = { tf, K: await futK(tf, 1000), spot: null, oi: null, cb: null, err: {} };
     else {   // revisiting: top up everything since we last looked (a long absence needs more than 5 bars)
       d.recentN = Math.min(1000, Math.max(5, periodsSince(d) + 2));
-      d.K = mergeRows(d.K, await spotK(tf, d.recentN));
+      d.K = mergeRows(d.K, await futK(tf, d.recentN));
     }
   } catch (e) {
     if (id !== reqId) return;
@@ -837,7 +865,7 @@ async function loadTF(tf, opts = {}) {
 async function loadAux(d) {
   const tf = d.tf, n = d.recentN || 5; d.recentN = 0;
   const jobs = [
-    ['fut', () => d.fut ? futK(tf, n).then(r => mergeRows(d.fut, r)) : futK(tf, 1000)],
+    ['spot', () => d.spot ? spotK(tf, n).then(r => mergeRows(d.spot, r)) : spotK(tf, 1000)],
     ['oi', () => d.oi ? oiHist(tf, Math.min(500, n)).then(r => mergeRows(d.oi, r)) : oiHist(tf, 500)],
     ['cb', () => d.cb ? cbCloses(tf, 1, n <= 5).then(m => new Map([...d.cb, ...m])) : cbCloses(tf, tf === '4h' ? 3 : 2)],
   ];
@@ -861,7 +889,7 @@ async function loadDom() {
 async function loadHtf() {
   try {
     const first = !HTF['4h'].length;
-    const [a, b] = await Promise.all([spotK('4h', first ? 500 : 6), spotK('1d', first ? 365 : 6)]);
+    const [a, b] = await Promise.all([futK('4h', first ? 500 : 6), futK('1d', first ? 365 : 6)]);
     HTF['4h'] = first ? a : mergeRows(HTF['4h'], a);
     HTF['1d'] = HTF['1d'].length ? mergeRows(HTF['1d'], b) : b;
   } catch (e) { if (!HTF['4h'].length) return; }
@@ -872,7 +900,7 @@ async function loadHtf() {
 function useFallback(why, wanted) {
   state.fallback = true; state.tf = '1h'; retryTf = wanted || '15m';
   const K = D.candles.map(c => [c[0], c[1], c[2], c[3], c[4], 0, 0]);
-  S = { tf: '1h', K, fut: null, oi: null, cb: null, err: {} };
+  S = { tf: '1h', K, spot: null, oi: null, cb: null, err: {} };
   computeLabels(S);
   S.ema = {}; for (const p of EMA_PERIODS) S.ema[p] = D.ema[p] || D.ema[String(p)];
   fvgZones = D.fvg;
@@ -889,11 +917,11 @@ function useFallback(why, wanted) {
 
 /* ---------- live feed: miniTicker (1s) + kline of the selected timeframe ---------- */
 let ws = null, wsTries = 0, wsSubTf = null, wsReady = false, wsTimer = 0, lastMsg = 0, wasDown = false;
-const HOSTS = ['wss://data-stream.binance.vision/stream', 'wss://stream.binance.com:9443/stream'];
+const HOSTS = ['wss://fstream.binance.com/market/stream'];   // USDT-M futures market streams
 function setLive(status) {
   const el = $('stamp'); el.classList.toggle('stale', status !== 'live');
   $('ago').textContent = status === 'live' ? 'LIVE · 1초 갱신' : status === 'connecting' ? '연결 중…' : '연결 끊김 · 재연결 중';
-  el.title = D.generated ? `빌드 ${D.generated} ${D.tz} (OKX·Coinbase CVD 기준)` : '';
+  el.title = D.generated ? `빌드 ${D.generated} ${D.tz}` : '';
 }
 function connect() {
   clearTimeout(wsTimer);
@@ -931,7 +959,7 @@ function subscribe() {
 async function backfill() {
   const d = S; if (!d || state.fallback) return;
   try {
-    const rows = await spotK(d.tf, Math.min(1000, periodsSince(d) + 2));
+    const rows = await futK(d.tf, Math.min(1000, periodsSince(d) + 2));
     if (S !== d) return;
     const follow = state.i1 >= d.K.length - 1, before = d.K.length;
     d.K = mergeRows(d.K, rows); computeLabels(d);
@@ -1013,7 +1041,7 @@ function setTab(t) {
   lsSet('btc-tab', t);
   requestAnimationFrame(() => { resizeAll(); if (S) renderAll(); scrollTo({ top: Math.min(scrollY, $('tabs').offsetTop), behavior: 'instant' }); });
 }
-function resizeAll() { main.resize(); for (const k in P) P[k].chart.resize(); for (const k in SUB) SUB[k].resize(); }
+function resizeAll() { main.resize(); for (const k in P) P[k].chart.resize(); for (const k in SUB) SUB[k].resize(); if (STB) STB.resize(); }
 let rsT = 0, lastW = innerWidth;
 window.addEventListener('resize', () => {   // mobile URL-bar show/hide fires resize constantly: only react to width changes
   clearTimeout(rsT);
@@ -1039,7 +1067,7 @@ const t0 = lsGet('btc-theme', ''); if (t0) document.documentElement.dataset.them
 paintAi();
 const tab0 = lsGet('btc-tab', 'chart'); if (['chart', 'flow', 'fvg', ...($('aitab').hidden ? [] : ['ai'])].includes(tab0)) setTab(tab0);
 paintControls();
-getJSON(`${BN}/api/v3/ticker/24hr?symbol=BTCUSDT`).then(t => { if (!tick) { tick = { c: +t.lastPrice, o: +t.openPrice, h: +t.highPrice, l: +t.lowPrice }; paintHero(); paintKpis(); } }).catch(() => {});
+getJSON(`${FAPI}/fapi/v1/ticker/24hr?symbol=BTCUSDT`).then(t => { if (!tick) { tick = { c: +t.lastPrice, o: +t.openPrice, h: +t.highPrice, l: +t.lowPrice }; paintHero(); paintKpis(); } }).catch(() => {});
 connect();
 loadTF(state.tf);
 setInterval(() => { if (!document.hidden && S && !state.fallback) loadAux(S); }, 20000);    // futures CVD / OI / premium for the forming bar

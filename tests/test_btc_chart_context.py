@@ -54,8 +54,6 @@ def test_parse_onchain_skips_a_half_empty_newest_day():
 
 
 def test_parse_other_groups():
-    assert context.parse_network({"fastestFee": 5, "hourFee": 1}, {"progressPercent": 29.31, "difficultyChange": 5.38, "remainingBlocks": 1425}) == {
-        "fee_fastest_sat_vb": 5, "fee_hour_sat_vb": 1, "difficulty_epoch_progress_pct": 29.3, "expected_difficulty_change_pct": 5.38, "blocks_to_retarget": 1425}
     st = context.parse_stablecoins([
         {"pegType": "peggedUSD", "circulating": {"peggedUSD": 110}, "circulatingPrevDay": {"peggedUSD": 100}, "circulatingPrevWeek": {"peggedUSD": 100},
          "circulatingPrevMonth": {"peggedUSD": 100}},
@@ -71,10 +69,10 @@ def test_parse_other_groups():
 
 def test_collect_isolates_failing_groups_and_honours_skip():
     boom = lambda: (_ for _ in ()).throw(RuntimeError("HTTP 429 api.coingecko.com"))   # noqa: E731
-    out = context.collect({"network"}, groups={"derivatives": lambda: {"funding_rate_8h_pct": 0.01}, "onchain": boom,
-                                               "network": lambda: {"a": 1}, "sentiment": lambda: {}})
+    out = context.collect({"skipme"}, groups={"derivatives": lambda: {"funding_rate_8h_pct": 0.01}, "onchain": boom,
+                                               "skipme": lambda: {"a": 1}, "sentiment": lambda: {}})
     assert out["derivatives"] == {"funding_rate_8h_pct": 0.01}
-    assert "network" not in out and "network" not in out["errors"]
+    assert "skipme" not in out and "skipme" not in out["errors"]
     assert "429" in out["errors"]["onchain"] and out["errors"]["sentiment"] == "no data"
 
 

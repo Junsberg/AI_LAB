@@ -89,12 +89,20 @@ def test_funding_survives_a_failing_exchange():
     assert derivs.funding({"bybit": boom}) == {}
 
 
+def test_parse_stable_chart_keeps_usd_pegged_total_in_billions():
+    rows = [{"date": "1794096000", "totalCirculatingUSD": {"peggedUSD": 292.96e9, "peggedEUR": 1}},
+            {"date": "1794182400", "totalCirculatingUSD": {"peggedUSD": 293.43e9}}, {"date": "1", "totalCirculatingUSD": {}}]
+    assert derivs.parse_stable_chart(rows) == [[1794096000000, 292.96], [1794182400000, 293.43]]
+    assert derivs.parse_stable_chart(rows, keep=1) == [[1794182400000, 293.43]]
+
+
 def test_collect_isolates_failures_and_honours_skip(tmp_path, monkeypatch):
     monkeypatch.setattr(derivs, "oi_candles", lambda *a, **k: (_ for _ in ()).throw(RuntimeError("archive down")))
     monkeypatch.setattr(derivs, "funding", lambda: {"rows": [[1, 0.01, 1]], "exchanges": ["binance"]})
+    monkeypatch.setattr(derivs, "stable_supply", lambda: [[1, 2.0]])
     out = derivs.collect(tmp_path, 0)
     assert "oi" not in out and "archive down" in out["errors"]["oi"] and out["funding"]["rows"]
-    assert "funding" not in derivs.collect(tmp_path, 0, skip={"funding", "oi"})
+    assert "funding" not in derivs.collect(tmp_path, 0, skip={"funding", "oi", "stable"})
 
 
 @pytest.mark.skipif(NODE is None, reason="node not installed")

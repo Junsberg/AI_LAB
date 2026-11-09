@@ -1,7 +1,7 @@
 """Market context for the AI commentary and the 'market indicators' card.
 
 All free public endpoints (no keys): Binance futures positioning, CoinMetrics community on-chain data,
-mempool.space network stats, DefiLlama stablecoin supply, alternative.me Fear & Greed, CoinGecko dominance.
+DefiLlama stablecoin supply, alternative.me Fear & Greed, CoinGecko dominance.
 Every group is fetched independently and may fail on its own; failures are listed in ``errors``.
 Parsers are pure functions so they can be tested on saved responses.
 """
@@ -15,7 +15,6 @@ from . import sources as src
 
 FAPI = "https://fapi.binance.com"
 COINMETRICS = "https://community-api.coinmetrics.io/v4/timeseries/asset-metrics"
-MEMPOOL = "https://mempool.space/api/v1"
 LLAMA_STABLES = "https://stablecoins.llama.fi/stablecoins"
 FEAR_GREED = "https://api.alternative.me/fng/"
 COINGECKO_GLOBAL = "https://api.coingecko.com/api/v3/global"
@@ -97,16 +96,6 @@ def parse_onchain(rows: list[dict]) -> dict[str, Any]:
     }
 
 
-def parse_network(fees: dict, diff: dict) -> dict[str, Any]:
-    return {
-        "fee_fastest_sat_vb": fees.get("fastestFee"),
-        "fee_hour_sat_vb": fees.get("hourFee"),
-        "difficulty_epoch_progress_pct": _r(_f(diff.get("progressPercent")), 1),
-        "expected_difficulty_change_pct": _r(_f(diff.get("difficultyChange")), 2),
-        "blocks_to_retarget": diff.get("remainingBlocks"),
-    }
-
-
 def parse_stablecoins(assets: list[dict]) -> dict[str, Any]:
     def total(key: str) -> float:
         return sum(((a.get(key) or {}).get("peggedUSD") or 0) for a in assets if a.get("pegType") == "peggedUSD")
@@ -154,7 +143,6 @@ def _onchain() -> dict[str, Any]:
 GROUPS: dict[str, Callable[[], dict[str, Any]]] = {
     "derivatives": _derivatives,
     "onchain": _onchain,
-    "network": lambda: parse_network(src.http_json(f"{MEMPOOL}/fees/recommended"), src.http_json(f"{MEMPOOL}/difficulty-adjustment")),
     "stablecoins": lambda: parse_stablecoins(src.http_json(LLAMA_STABLES, {"includePrices": "false"}).get("peggedAssets") or []),
     "sentiment": lambda: parse_fear_greed(src.http_json(FEAR_GREED, {"limit": 8})),
     "dominance": lambda: parse_dominance(src.http_json(COINGECKO_GLOBAL)),
@@ -207,7 +195,7 @@ def display_rows(m: dict[str, Any]) -> list[dict[str, str]]:
     def add(group: str, k: str, v: str, d: str = "") -> None:
         rows.append({"g": group, "k": k, "v": v, "d": d})
 
-    de, oc, nw, st, se = (m.get(x) or {} for x in ("derivatives", "onchain", "network", "stablecoins", "sentiment"))
+    de, oc, st, se = (m.get(x) or {} for x in ("derivatives", "onchain", "stablecoins", "sentiment"))
     if de:
         add("파생", "펀딩비 (8h)", _sgn(de.get("funding_rate_8h_pct"), ".4f") + "%", f"7일 평균 {_sgn(de.get('funding_avg_7d_pct'), '.4f')}%")
         g = de.get("long_short_account_ratio") or {}
@@ -223,9 +211,6 @@ def display_rows(m: dict[str, Any]) -> list[dict[str, str]]:
         add("온체인", "거래소 보유 BTC", _big(oc.get("exchange_balance_btc")), f"7일 {_sgn(oc.get('exchange_balance_change_7d_pct'), '.2f')}%")
         add("온체인", "활성 주소", _big(oc.get("active_addresses")), f"7일 평균 대비 {_sgn(oc.get('active_addresses_vs_7d_avg_pct'), '.1f')}%")
         add("온체인", "해시레이트", f"{oc['hashrate_eh_s']:,.0f} EH/s" if oc.get("hashrate_eh_s") else "–", f"기준일 {oc.get('as_of', '')}")
-    if nw:
-        add("네트워크", "난이도 조정 예상", _sgn(nw.get("expected_difficulty_change_pct"), ".2f") + "%", f"진행 {nw.get('difficulty_epoch_progress_pct', '–')}% · {nw.get('blocks_to_retarget', '–')}블록 남음")
-        add("네트워크", "수수료 (sat/vB)", f"{nw.get('fee_fastest_sat_vb', '–')}", f"1시간 내 {nw.get('fee_hour_sat_vb', '–')}")
     if st:
         add("자금", "스테이블 공급", _usd(st.get("supply_usd")), f"7일 {_sgn(st.get('change_7d_pct'), '.2f')}% · 30일 {_sgn(st.get('change_30d_pct'), '.2f')}%")
     if se:
