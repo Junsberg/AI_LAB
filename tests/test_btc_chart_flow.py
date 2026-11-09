@@ -92,12 +92,12 @@ def _hours(n=48, start=0):
     return out
 
 
-def test_build_payload_normalises_the_cvd_series():
+def test_build_payload_has_raw_hourly_cumulative_for_the_three_big_buckets():
     now = 47 * H + 1000
     p = flow.build_payload(_hours(), now, days=2)
-    assert len(p["t"]) == 48 and p["labels"][0] == "all" and len(p["series"]) == 6 and "heat" not in p
-    for v in p["series"].values():
-        assert min(v) == 0.0 and max(v) == 1.0 or set(v) == {0.5}
+    assert len(p["t"]) == 48 and p["labels"] == ["$10k – $100k", "$100k – $1M", "$1M +"] and set(p["series"]) == set(p["labels"])
+    s = p["series"]["$10k – $100k"]
+    assert s[0] == pytest.approx(round((10.0 * 3 * 1 - 5.0 * 3) / 1e6, 3), abs=1e-3) and s[-1] > s[0]     # cumulative USD millions, not normalised
     assert flow.build_payload({}, now) == {}
 
 

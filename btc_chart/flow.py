@@ -27,7 +27,8 @@ AGG_TRADES = "https://fapi.binance.com/fapi/v1/aggTrades"
 HOUR = 3_600_000
 EDGES = [100.0, 1_000.0, 10_000.0, 100_000.0, 1_000_000.0]   # USD; below the first edge only counts in "all"
 LABELS = ["$100 – $1k", "$1k – $10k", "$10k – $100k", "$100k – $1M", "$1M +"]
-DAYS = 14
+BIG = LABELS[2:]       # the buckets the page shows: orders large enough to move the market
+DAYS = 30
 
 
 def size_bucket(usd: float) -> int:
@@ -139,19 +140,15 @@ def build_payload(hours: dict[int, dict[str, Any]], now_ms: int, days: int = DAY
     if len(ts) < 24:
         return {}
 
-    def cum(get: Callable[[dict[str, Any]], float]) -> list[float | None]:
+    def cum(get: Callable[[dict[str, Any]], float]) -> list[float]:
         out, acc = [], 0.0
         for t in ts:
             acc += get(hours[t])
-            out.append(acc)
-        lo, hi = min(out), max(out)
-        return [round((v - lo) / (hi - lo), 4) if hi > lo else 0.5 for v in out]   # normalised to 0..1 like a sentiment oscillator
+            out.append(round(acc / 1e6, 3))   # USD millions, cumulative from the first hour; the page re-bases it to the visible range
+        return out
 
-    series = {"all": cum(lambda h: h["all"][0] - h["all"][1])}
-    for i, label in enumerate(LABELS):
-        series[label] = cum(lambda h, i=i: h["b"][i][0] - h["b"][i][1])
-
-    return {"asof": ts[-1] + HOUR, "t": ts, "series": series, "labels": ["all"] + LABELS}
+    series = {LABELS[i]: cum(lambda h, i=i: h["b"][i][0] - h["b"][i][1]) for i in (2, 3, 4)}
+    return {"asof": ts[-1] + HOUR, "t": ts, "series": series, "labels": list(BIG)}
 
 
 def collect(cache_dir: Path, now_ms: int, budget_sec: float = 240.0, days: int = DAYS, *,
