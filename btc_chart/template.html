@@ -194,6 +194,30 @@
   @keyframes td { from { color: var(--down); } to { color: var(--fg); } }
   .live-ok .live { animation: pulse 1.6s infinite; }
   @keyframes pulse { 50% { box-shadow: 0 0 0 6px color-mix(in srgb, var(--up) 0%, transparent); } }
+
+  /* desktop: larger type and a calmer column order */
+  @media (min-width: 960px) {
+    body { font-size: 15px; }
+    .page { max-width: 1680px; }
+    .price { font-size: 56px; }
+    .kpis { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; }
+    .kpi { padding: 11px 14px; }
+    .kpi .k { font-size: 13px; } .kpi b { font-size: 21px; } .kpi .d { font-size: 13.5px; }
+    .card { padding: 18px 18px 14px; }
+    .card h2 { font-size: 17px; } .card .sub { font-size: 13px; }
+    .seg button, .chip { font-size: 14px; padding: 6px 14px; }
+    .seg.tf button { font-size: 15px; padding: 9px 0; }
+    #main { height: clamp(460px, calc(100vh - 470px), 640px); }
+    .subc { height: 170px; }
+    .slab { font-size: 13.5px; left: 14px; }
+    .cvd { height: 210px; }
+    .layout { grid-template-columns: minmax(0, 1fr) 500px; }
+    .mkt { order: 10; } .stb { order: 11; }
+    .mkt h4 { font-size: 13px; } .mt { padding: 10px 12px; } .mt .k { font-size: 13px; } .mt b { font-size: 19px; } .mt .d { font-size: 12.5px; }
+    .pval b { font-size: 20px; }
+    .ai h3 { font-size: 20px; } .aib li, .aib p { font-size: 15px; line-height: 1.55; } .ai .wl span { font-size: 14px; } .tfa span { font-size: 14.5px; }
+    .fr .rg { font-size: 14.5px; } .fr .rg small { font-size: 12.5px; } .fr .ds { font-size: 14.5px; }
+  }
 </style>
 </head>
 <body data-tab="chart">
@@ -225,7 +249,6 @@
         <div class="wrap"><div id="main"></div><div class="ld" id="ld">불러오는 중…</div></div>
         <div class="subs" id="subs">
           <div class="sub1"><span class="slab" id="lab-oi"></span><div class="subc" id="sub-oi"></div></div>
-          <div class="sub1"><span class="slab" id="lab-fund"></span><div class="subc" id="sub-fund"></div></div>
         </div>
         <div class="banner" id="banner" hidden></div>
       </section>
@@ -458,7 +481,7 @@ $('panels').innerHTML = mktCard() + stbCard() + PANEL_DEFS.map(d => `<section cl
   <div class="chead"><div class="l"><span class="swatch"></span><div><h2>${esc(d.title)}</h2><div class="sub" id="ps-${d.key}"></div></div></div>
   <div class="pval" id="pv-${d.key}"></div></div><div class="cvd" id="c-${d.key}"></div><div class="none" id="pn-${d.key}" hidden></div></section>`).join('');
 for (const d of PANEL_DEFS) { const c = echarts.init($('c-' + d.key)); c.group = GROUP; P[d.key] = { def: d, chart: c, data: {} }; }
-const SUB = { oi: echarts.init($('sub-oi')), fund: echarts.init($('sub-fund')) };
+const SUB = { oi: echarts.init($('sub-oi')) };
 for (const k in SUB) SUB[k].group = GROUP;
 echarts.connect(GROUP);
 const STB = $('stb-chart') ? echarts.init($('stb-chart')) : null;
@@ -503,7 +526,7 @@ function zoneBoxes(T, ymin, ymax) {
     const col = z.kind === 'bull' ? T.bull : T.bear;
     return [
       { xAxis: S.labels[i0], yAxis: Math.max(z.lo, ymin), itemStyle: { color: col, opacity: 0.15, borderColor: col, borderType: 'dashed', borderWidth: 1 },
-        label: { show: true, position: z.tf === '1D' ? 'insideBottomRight' : 'insideTopRight', color: col, fontSize: tiny ? 10 : 11, fontWeight: 600, formatter: `FVG ${z.tf} ${z.kind === 'bull' ? '▲' : '▼'}` } },
+        label: { show: true, position: z.tf === '1D' ? 'insideBottomRight' : 'insideTopRight', color: col, fontSize: tiny ? 10 : 13, fontWeight: 600, formatter: `FVG ${z.tf} ${z.kind === 'bull' ? '▲' : '▼'}` } },
       { xAxis: S.labels[n - 1], yAxis: Math.min(z.hi, ymax) },
     ];
   }).filter(Boolean);
@@ -517,21 +540,27 @@ function priceLine(T) {
     label: { position: 'insideEndTop', formatter: fmtP(lastPrice()), color: '#fff', backgroundColor: lc, padding: [3, 7], borderRadius: 6, fontWeight: 600 },
     data: [{ yAxis: lastPrice() }] };
 }
+/** ECharts sizes candles from ALL loaded data (1000 rows), not the visible window, which made every body ~1px wide.
+ *  Give it an explicit pixel width from the number of candles actually on screen (TradingView-like: ~70% of the slot). */
+function candleBw(chart) {
+  const w = chart.getWidth() - (narrow() ? 46 : 60) - 8, n = Math.max(1, state.i1 - state.i0 + 1);
+  return Math.max(1, Math.min(40, Math.floor(w / n * 0.7)));
+}
 function mainOption(T) {
   const nr = narrow(), [ymin, ymax] = yRange();
   return {
     animation: false, textStyle: { fontFamily: FONT },
     grid: { left: nr ? 46 : 60, right: 8, top: 14, bottom: 26 },
     xAxis: { type: 'category', data: S.labels, boundaryGap: true, axisLine: { lineStyle: { color: T.rule } },
-      axisTick: { show: false }, axisLabel: { color: T.mute, hideOverlap: true, fontSize: nr ? 10 : 11 }, axisPointer: { label: { show: false } } },
+      axisTick: { show: false }, axisLabel: { color: T.mute, hideOverlap: true, fontSize: nr ? 10 : 13 }, axisPointer: { label: { show: false } } },
     yAxis: { scale: true, min: ymin, max: ymax, splitLine: { lineStyle: { color: T.grid } },
-      axisLabel: { color: T.mute, fontSize: nr ? 10 : 11, formatter: fmtP0 }, axisPointer: { label: { formatter: p => fmtP(p.value) } } },
+      axisLabel: { color: T.mute, fontSize: nr ? 10 : 13, formatter: fmtP0 }, axisPointer: { label: { formatter: p => fmtP(p.value) } } },
     dataZoom: [
       { type: 'inside', xAxisIndex: 0, zoomLock: true, zoomOnMouseWheel: false, moveOnMouseWheel: false, filterMode: 'none', startValue: state.i0, endValue: state.i1, minValueSpan: 10, preventDefaultMouseMove: !coarse },
     ],
     tooltip: { trigger: 'axis', showContent: false, axisPointer: { type: 'cross', lineStyle: { type: 'dashed', color: T.mute }, crossStyle: { color: T.mute }, label: { backgroundColor: T.mute } } },   // crosshair + price label on the left axis only (no OHLC box)
     series: [
-      { id: 'k', name: 'BTC', type: 'candlestick', data: candleData(), barWidth: '72%', barMinWidth: 2, barMaxWidth: 16,   // real bodies, not hairlines
+      { id: 'k', name: 'BTC', type: 'candlestick', data: candleData(), large: false, barWidth: candleBw(main), barMinWidth: 1, barMaxWidth: 40,   // real bodies, not hairlines
         itemStyle: { color: T.up, color0: T.down, borderColor: T.up, borderColor0: T.down, borderWidth: 1 },
         markArea: { silent: true, data: zoneBoxes(T, ymin, ymax) }, markLine: priceLine(T) },
       ...EMA_PERIODS.map(p => ({ id: 'e' + p, name: 'EMA ' + p, type: 'line', data: state.ema[p] ? S.ema[p] : [], showSymbol: false, silent: true, z: 3,
@@ -558,9 +587,9 @@ function panelOption(key, T, view, live) {
     animation: false, textStyle: { fontFamily: FONT },
     grid: { left: nr ? 46 : 56, right: 8, top: 10, bottom: 22 },
     xAxis: { type: 'category', data: S.labels, boundaryGap: pct, axisLine: { lineStyle: { color: T.rule } }, axisTick: { show: false },
-      axisLabel: { color: T.mute, hideOverlap: true, fontSize: 10 }, axisPointer: { label: { show: false } } },
+      axisLabel: { color: T.mute, hideOverlap: true, fontSize: nr ? 10 : 12.5 }, axisPointer: { label: { show: false } } },
     yAxis: { min: lo === Infinity ? undefined : lo - padY, max: hi === -Infinity ? undefined : hi + padY, splitNumber: 2, splitLine: { lineStyle: { color: T.grid } },
-      axisLabel: { color: T.mute, fontSize: 10, formatter: v => f(v, pct ? 2 : 1) }, axisPointer: { label: { show: false } } },
+      axisLabel: { color: T.mute, fontSize: nr ? 10 : 12.5, formatter: v => f(v, pct ? 2 : 1) }, axisPointer: { label: { show: false } } },
     dataZoom: [{ type: 'inside', xAxisIndex: 0, zoomLock: true, zoomOnMouseWheel: false, moveOnMouseWheel: false, filterMode: 'none', startValue: state.i0, endValue: state.i1, minValueSpan: 10, preventDefaultMouseMove: !coarse }],
     tooltip: { trigger: 'axis', confine: true, axisPointer: { type: 'line', lineStyle: { type: 'dashed', color: T.mute } },
       backgroundColor: T.card, borderColor: T.rule, borderWidth: 1, padding: [6, 10], extraCssText: 'border-radius:12px;box-shadow:0 6px 20px rgba(0,0,0,.18)',
@@ -601,27 +630,13 @@ function paintPanel(key, T, live) {
   p.chart.setOption(panelOption(key, T, view, live), !live);
 }
 
-/* ---------- sub charts under the price: open interest candles (BTC) and exchange-averaged funding ---------- */
-let fundRows = (D.derivs && D.derivs.funding && D.derivs.funding.rows || []).map(r => [r[0], r[1]]);   // [settlementMs, mean ratePct] from the build
-const FUND_FROM_BUILD = fundRows.length > 0;
-async function loadFunding() {   // fallback only: Binance alone, when the build had no funding data
-  if (FUND_FROM_BUILD) return;
-  try {
-    fundRows = (await getJSON(`${FAPI}/fapi/v1/fundingRate?symbol=BTCUSDT&limit=1000`)).map(x => [x.fundingTime, +x.fundingRate * 100]);
-    if (S) paintSubs(theme(), true);
-  } catch (e) { /* keep the last rows */ }
-}
+/* ---------- sub chart under the price: open interest candles (BTC) ---------- */
 let oi5 = [];   // newest ~41 h of 5 m open interest [t, BTC]: finishes the candles the build snapshot could not know
 async function loadOi5() {
   try {
     oi5 = (await getJSON(`${FAPI}/futures/data/openInterestHist?symbol=BTCUSDT&period=5m&limit=500`)).map(r => [+r.timestamp, +r.sumOpenInterest]);
     if (S) paintSubs(theme(), true);
   } catch (e) { /* keep the last rows */ }
-}
-function fundingAt(times) {   // the rate in force at each candle open (step series)
-  const out = []; let j = -1;
-  for (const t of times) { while (j + 1 < fundRows.length && fundRows[j + 1][0] <= t) j++; out.push(j >= 0 ? fundRows[j][1] : null); }
-  return out;
 }
 /** ECharts candlestick rows [open, close, low, high] per candle, or null when neither the build nor the live tail has any. */
 function oiCandles() {
@@ -635,49 +650,43 @@ function oiCandles() {
 }
 function subView(kind) {
   if (!S) return null;
-  if (kind === 'oi') return oiCandles() || (S.oi ? alignMap(new Map(S.oi.map(r => [r[0], r[2]])), S.times) : null);
-  return fundRows.length ? fundingAt(S.times) : null;
+  return oiCandles() || (S.oi ? alignMap(new Map(S.oi.map(r => [r[0], r[2]])), S.times) : null);   // candles, else the plain BTC line
 }
 function subOption(kind, T, view, live) {
-  const nr = narrow(), oi = kind === 'oi', col = css(oi ? '--s5' : '--s3');
+  const nr = narrow(), oi = true, col = css('--s5');
   const cand = oi && Array.isArray(view.find(Array.isArray));   // true: candlestick rows, false: plain numbers (fallback line)
   let lo = Infinity, hi = -Infinity;
   for (let i = state.i0; i <= state.i1; i++) {
     const v = view[i]; if (v == null || v === '-') continue;
     lo = Math.min(lo, cand ? v[2] : v); hi = Math.max(hi, cand ? v[3] : v);
   }
-  if (!oi) { lo = Math.min(lo, 0); hi = Math.max(hi, 0); }
-  const pad = (hi - lo) * (oi ? 0.05 : 0.12) || Math.abs(hi) * 0.01 || 1;   // tight autoscale like TradingView so OI bodies are visible
+  const pad = (hi - lo) * 0.05 || Math.abs(hi) * 0.01 || 1;   // tight autoscale like TradingView so OI bodies are visible
   const opt = {
     animation: false, textStyle: { fontFamily: FONT },
     grid: { left: nr ? 46 : 60, right: 8, top: 26, bottom: 6 },   // same left/right as the price chart so the candles line up
     xAxis: { type: 'category', data: S.labels, boundaryGap: true, axisLine: { show: false }, axisTick: { show: false }, axisLabel: { show: false }, axisPointer: { label: { show: false } } },
     yAxis: { min: lo === Infinity ? undefined : lo - pad, max: hi === -Infinity ? undefined : hi + pad, splitNumber: 2, splitLine: { lineStyle: { color: T.grid } },
-      axisLabel: { color: T.mute, fontSize: nr ? 10 : 11, formatter: v => oi ? fmtBig(v, 1) : v.toFixed(4) + '%' }, axisPointer: { label: { show: false } } },
+      axisLabel: { color: T.mute, fontSize: nr ? 10 : 13, formatter: v => fmtBig(v, 1) }, axisPointer: { label: { show: false } } },
     dataZoom: [{ type: 'inside', xAxisIndex: 0, zoomLock: true, zoomOnMouseWheel: false, moveOnMouseWheel: false, filterMode: 'none', startValue: state.i0, endValue: state.i1, minValueSpan: 10, preventDefaultMouseMove: !coarse }],
     tooltip: { trigger: 'axis', showContent: false, axisPointer: { type: 'cross', lineStyle: { type: 'dashed', color: T.mute }, crossStyle: { color: T.mute }, label: { show: false } } },
     series: [cand
-      ? { id: 's', type: 'candlestick', data: view, barWidth: '72%', barMinWidth: 2, barMaxWidth: 16, itemStyle: { color: T.up, color0: T.down, borderColor: T.up, borderColor0: T.down, borderWidth: 1 } }
-      : oi ? { id: 's', type: 'line', data: view, showSymbol: false, lineStyle: { width: 1.8, color: col }, itemStyle: { color: col },
-          areaStyle: { color: { type: 'linear', x: 0, y: 0, x2: 0, y2: 1, colorStops: [{ offset: 0, color: col + '40' }, { offset: 1, color: col + '00' }] } } }
-      : { id: 's', type: 'line', step: 'end', data: view, showSymbol: false, lineStyle: { width: 1.8, color: col }, itemStyle: { color: col },
-          markLine: { silent: true, symbol: 'none', label: { show: false }, lineStyle: { color: T.mute, type: 'dashed', opacity: .5 }, data: [{ yAxis: 0 }] } }],
+      ? { id: 's', type: 'candlestick', data: view, large: false, barWidth: candleBw(SUB.oi), barMinWidth: 1, barMaxWidth: 40, itemStyle: { color: T.up, color0: T.down, borderColor: T.up, borderColor0: T.down, borderWidth: 1 } }
+      : { id: 's', type: 'line', data: view, showSymbol: false, lineStyle: { width: 1.8, color: col }, itemStyle: { color: col },
+          areaStyle: { color: { type: 'linear', x: 0, y: 0, x2: 0, y2: 1, colorStops: [{ offset: 0, color: col + '40' }, { offset: 1, color: col + '00' }] } } }],
   };
   if (live) { delete opt.dataZoom; delete opt.tooltip; }
   return opt;
 }
 function paintSubs(T, live) {
   if (!S || !shown('chart')) return;
-  for (const kind of ['oi', 'fund']) {
+  for (const kind of ['oi']) {
     const view = subView(kind), lab = $('lab-' + kind), box = $('sub-' + kind);
     if (!view || !view.some(v => v != null)) { box.parentElement.hidden = true; SUB[kind].clear(); lab.textContent = ''; continue; }
     box.parentElement.hidden = false;
     const cand = kind === 'oi' && Array.isArray(view.find(Array.isArray)), pick = x => cand ? (Array.isArray(x) ? x[1] : null) : x;   // candle close
     const v = pick(view[state.i1]) != null ? pick(view[state.i1]) : lastOf(view.map(pick));
-    if (kind === 'oi') {
-      const a = pick(view[Math.max(0, state.i0)]), ch = a ? (v / a - 1) * 100 : 0;
-      lab.innerHTML = `OI · Binance 선물<b>${fmtBig(v, 2)} BTC</b><span class="${dir(ch)}"> ${arrow(ch)} ${Math.abs(ch).toFixed(2)}%</span>`;
-    } else lab.innerHTML = `펀딩비 · ${FUND_FROM_BUILD ? D.derivs.funding.exchanges.length + '거래소 평균' : 'Binance'}<b>${sgn(v, x => x.toFixed(4))}%</b>`;
+    const a = pick(view[Math.max(0, state.i0)]), ch = a ? (v / a - 1) * 100 : 0;
+    lab.innerHTML = `OI · Binance 선물<b>${fmtBig(v, 2)} BTC</b><span class="${dir(ch)}"> ${arrow(ch)} ${Math.abs(ch).toFixed(2)}%</span>`;
     SUB[kind].setOption(subOption(kind, T, view, live), !live);
   }
 }
@@ -814,7 +823,7 @@ function refreshView() {   // visible window changed: refit the price axis, FVG 
     viewTimer = 0;
     if (!S) return;
     const T = theme(), [ymin, ymax] = yRange();
-    main.setOption({ yAxis: { min: ymin, max: ymax }, series: [{ id: 'k', markArea: { silent: true, data: zoneBoxes(T, ymin, ymax) } }] });
+    main.setOption({ yAxis: { min: ymin, max: ymax }, series: [{ id: 'k', barWidth: candleBw(main), markArea: { silent: true, data: zoneBoxes(T, ymin, ymax) } }] });
     if (shown('flow')) for (const key in P) paintPanel(key, T);
     paintSubs(T);
     paintKpis(); markCount();
@@ -1072,7 +1081,6 @@ connect();
 loadTF(state.tf);
 setInterval(() => { if (!document.hidden && S && !state.fallback) loadAux(S); }, 20000);    // futures CVD / OI / premium for the forming bar
 setInterval(() => { if (!document.hidden && S && !state.fallback) loadHtf(); }, 60000);     // 4H / 1D candles -> FVG fills
-loadFunding(); setInterval(() => { if (!document.hidden) loadFunding(); }, 300000);   // fallback only
 loadOi5(); setInterval(() => { if (!document.hidden) loadOi5(); }, 30000);   // newest 5 m open interest -> forming OI candles
 loadDom(); setInterval(() => { if (!document.hidden) loadDom(); }, 120000);   // dominance: CoinGecko's free tier is rate limited, so every 2 min
 </script>

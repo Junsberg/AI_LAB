@@ -1,10 +1,9 @@
-"""Open-interest candles and an exchange-averaged funding rate, the way TradingView shows them.
+"""Open-interest candles (and the stablecoin supply series) for the page.
 
 * OI candles: Binance publishes 5-minute open interest as daily files on its public data archive
   (data.binance.vision, ``futures/um/daily/metrics``). The build downloads the last ``days`` days once
   (completed days are cached on disk), tops up the newest ~41 h from the live API and aggregates the 5 m
   points into open/high/low/close per chart timeframe. The page extends the newest candles itself.
-* Funding: Binance, Bybit and OKX BTC-USDT perpetual settlement history, averaged per 8 h settlement.
 """
 
 from __future__ import annotations
@@ -22,15 +21,11 @@ from . import sources as src
 
 ARCHIVE = "https://data.binance.vision/data/futures/um/daily/metrics/BTCUSDT/BTCUSDT-metrics-{day}.zip"
 BINANCE_OI = "https://fapi.binance.com/futures/data/openInterestHist"
-BINANCE_FUNDING = "https://fapi.binance.com/fapi/v1/fundingRate"
-BYBIT_FUNDING = "https://api.bybit.com/v5/market/funding/history"
-OKX_FUNDING = "https://www.okx.com/api/v5/public/funding-rate-history"
 LLAMA_STABLE_CHART = "https://stablecoins.llama.fi/stablecoincharts/all"
 
 MIN = 60_000
 OI_TFS = {"15m": 15 * MIN, "1h": 60 * MIN, "4h": 240 * MIN, "1d": 1440 * MIN}
 KEEP = 1000            # candles kept per timeframe (the page loads 1000 per timeframe)
-FUNDING_ROWS = 450     # settlements kept (~150 days)
 DAY_ROWS = 280         # a day with fewer 5 m rows than this is incomplete and not cached
 
 
@@ -131,68 +126,6 @@ def oi_candles(days: int, cache_dir: Path, now_ms: int, **kw: Any) -> dict[str, 
     return {tf: [[r[0]] + [round(x, 1) for x in r[1:]] for r in ohlc(rows, ms)[-KEEP:]] for tf, ms in OI_TFS.items()}
 
 
-# ---------------------------------------------------------------- funding
-
-
-def _bybit() -> dict[int, float]:
-    out: dict[int, float] = {}
-    end = None
-    for _ in range(4):
-        p: dict[str, Any] = {"category": "linear", "symbol": "BTCUSDT", "limit": 200}
-        if end:
-            p["endTime"] = end
-        lst = (src.http_json(BYBIT_FUNDING, p).get("result") or {}).get("list") or []
-        if not lst:
-            break
-        for r in lst:
-            out[int(r["fundingRateTimestamp"]) // MIN * MIN] = float(r["fundingRate"]) * 100
-        end = min(int(r["fundingRateTimestamp"]) for r in lst) - 1
-    return out
-
-
-def _okx() -> dict[int, float]:
-    out: dict[int, float] = {}
-    after = None
-    for _ in range(5):
-        p: dict[str, Any] = {"instId": "BTC-USDT-SWAP", "limit": 100}
-        if after:
-            p["after"] = after
-        lst = src.http_json(OKX_FUNDING, p).get("data") or []
-        if not lst:
-            break
-        for r in lst:
-            out[int(r["fundingTime"]) // MIN * MIN] = float(r["realizedRate"] or r["fundingRate"]) * 100
-        after = min(int(r["fundingTime"]) for r in lst)
-    return out
-
-
-def _binance() -> dict[int, float]:
-    res = src.http_json(BINANCE_FUNDING, {"symbol": "BTCUSDT", "limit": 1000})
-    return {int(r["fundingTime"]) // MIN * MIN: float(r["fundingRate"]) * 100 for r in res}
-
-
-def average_funding(series: dict[str, dict[int, float]], keep: int = FUNDING_ROWS) -> dict[str, Any]:
-    """Mean rate (%) per settlement time over the exchanges that have it; newest ``keep`` settlements."""
-    times = sorted({t for s in series.values() for t in s})
-    rows = []
-    for t in times:
-        vals = [s[t] for s in series.values() if t in s]
-        rows.append([t, round(sum(vals) / len(vals), 5), len(vals)])
-    return {"rows": rows[-keep:], "exchanges": sorted(series)}
-
-
-def funding(fetchers: dict[str, Callable[[], dict[int, float]]] | None = None) -> dict[str, Any]:
-    series: dict[str, dict[int, float]] = {}
-    for name, fn in (fetchers or {"binance": _binance, "bybit": _bybit, "okx": _okx}).items():
-        try:
-            data = fn()
-            if data:
-                series[name] = data
-        except Exception as e:   # one exchange down only thins the average
-            print(f"[derivs:funding:{name}] {type(e).__name__}: {str(e)[:100]}", file=sys.stderr)
-    return average_funding(series) if series else {}
-
-
 # ---------------------------------------------------------------- stablecoin liquidity
 
 
@@ -216,7 +149,7 @@ def stable_supply() -> list[list[float]]:
 def collect(cache_dir: Path, now_ms: int, skip: set[str] | None = None, days: int = 200) -> dict[str, Any]:
     out: dict[str, Any] = {}
     errors: dict[str, str] = {}
-    for name, fn in (("oi", lambda: oi_candles(days, cache_dir, now_ms)), ("funding", funding), ("stable", stable_supply)):
+    for name, fn in (("oi", lambda: oi_candles(days, cache_dir, now_ms)), ("stable", stable_supply)):
         if skip and name in skip:
             continue
         try:

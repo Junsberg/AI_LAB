@@ -74,21 +74,6 @@ def test_oi_candles_have_all_timeframes_and_rounded_values(tmp_path):
     assert t % (60 * MIN) == 0 and o == 100.0 and h == 111.0 and lo == 100.0 and c == 111.0   # 12 five-minute points per hour
 
 
-def test_average_funding_uses_available_exchanges_and_keeps_the_newest():
-    out = derivs.average_funding({"binance": {1: 0.01, 2: 0.02, 3: 0.03}, "bybit": {2: 0.04, 3: 0.01}, "okx": {3: 0.02}}, keep=2)
-    assert out["exchanges"] == ["binance", "bybit", "okx"]
-    assert out["rows"] == [[2, 0.03, 2], [3, 0.02, 3]]
-
-
-def test_funding_survives_a_failing_exchange():
-    def boom():
-        raise RuntimeError("HTTP 403")
-
-    out = derivs.funding({"binance": lambda: {1: 0.01}, "bybit": boom, "okx": lambda: {}})
-    assert out["exchanges"] == ["binance"] and out["rows"] == [[1, 0.01, 1]]
-    assert derivs.funding({"bybit": boom}) == {}
-
-
 def test_parse_stable_chart_keeps_usd_pegged_total_in_billions():
     rows = [{"date": "1794096000", "totalCirculatingUSD": {"peggedUSD": 292.96e9, "peggedEUR": 1}},
             {"date": "1794182400", "totalCirculatingUSD": {"peggedUSD": 293.43e9}}, {"date": "1", "totalCirculatingUSD": {}}]
@@ -98,11 +83,10 @@ def test_parse_stable_chart_keeps_usd_pegged_total_in_billions():
 
 def test_collect_isolates_failures_and_honours_skip(tmp_path, monkeypatch):
     monkeypatch.setattr(derivs, "oi_candles", lambda *a, **k: (_ for _ in ()).throw(RuntimeError("archive down")))
-    monkeypatch.setattr(derivs, "funding", lambda: {"rows": [[1, 0.01, 1]], "exchanges": ["binance"]})
     monkeypatch.setattr(derivs, "stable_supply", lambda: [[1, 2.0]])
     out = derivs.collect(tmp_path, 0)
-    assert "oi" not in out and "archive down" in out["errors"]["oi"] and out["funding"]["rows"]
-    assert "funding" not in derivs.collect(tmp_path, 0, skip={"funding", "oi", "stable"})
+    assert "oi" not in out and "archive down" in out["errors"]["oi"] and out["stable"]
+    assert "funding" not in derivs.collect(tmp_path, 0, skip={"oi", "stable"})
 
 
 @pytest.mark.skipif(NODE is None, reason="node not installed")

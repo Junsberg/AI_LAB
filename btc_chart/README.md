@@ -69,16 +69,13 @@ inflow/outflow/balance, active addresses, hashrate; daily, newest day is prelimi
 shows live dominance tiles (browser fetches CoinGecko every 2 min). Some CoinMetrics metrics (realized cap, NVT,
 long-term holder supply) are paid and not used.
 
-## OI candles and funding under the price chart
+## OI candles under the price chart
 
 `btc_chart/derivs.py` (build time, ~5 s, cached): Binance publishes **5-minute open interest** as daily files on
 its public archive (`data.binance.vision/data/futures/um/daily/metrics/BTCUSDT`); the build downloads the last 200
 days (completed days cached in `out/cache/oi5m/`), fills everything after the newest archive day from the live
 `openInterestHist` API and aggregates it to open/high/low/close candles for 15m/1H/4H/1D. The page finishes the
-newest candles itself from the live 5 m feed (refreshed every 30 s). Funding is the **mean of Binance, Bybit and OKX**
-BTC-USDT perpetual settlements (8 h steps, ~150 days); if the build has none the page falls back to Binance alone.
-Both sub-charts sit under the price chart with the same candle positions, zoom and crosshair. Not available:
-TradingView's wider multi-exchange aggregate (we average three exchanges).
+newest candles itself from the live 5 m feed (refreshed every 30 s). TradingView's wider multi-exchange aggregate (we average three exchanges).
 
 ## Stablecoin liquidity
 

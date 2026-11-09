@@ -119,7 +119,7 @@ def build(hours: int, out_path: Path, utc_offset: int, skip: set[str], fvg_per_t
         "derivs": {},
         "ai": None,
     }
-    if "derivs" not in skip:   # OI candles (5 m archive) and exchange-averaged funding for the sub-charts
+    if "derivs" not in skip:   # OI candles (5 m archive) for the sub-chart
         payload["derivs"] = derivs.collect(out_dir / "cache", now_ms, skip)
     if "context" not in skip:
         payload["market"] = context.collect(skip)   # a failing free API only blanks its own group
