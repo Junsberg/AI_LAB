@@ -107,6 +107,11 @@
   .chip:not(.on) { opacity: .45; } .chip:not(.on) i { background: var(--mute); }
   #main { height: clamp(340px, 54vh, 500px); touch-action: pan-y; }
   .cvd { height: 170px; touch-action: pan-y; }
+  .subs { margin-top: 2px; border-top: 1px solid var(--rule); }
+  .sub1 { position: relative; border-bottom: 1px solid var(--rule); } .sub1:last-child { border-bottom: 0; }
+  .subc { height: 116px; touch-action: pan-y; }
+  .slab { position: absolute; left: 10px; top: 4px; z-index: 2; pointer-events: none; font-size: 11.5px; color: var(--mute); font-variant-numeric: tabular-nums; }
+  .slab b { color: var(--fg); font-weight: 650; margin-left: 4px; } .slab .up { color: var(--up); } .slab .down { color: var(--down); }
   .none { padding: 26px 0 18px; color: var(--mute); font-size: 12.5px; }
   .pan .chead .l { display: flex; align-items: center; gap: 8px; min-width: 0; }
   .swatch { width: 10px; height: 10px; border-radius: 3px; background: var(--c); flex: none; }
@@ -218,6 +223,10 @@
         <div class="tfrow"><div class="seg tf" id="tfs"></div></div>
         <div class="tools"><div class="seg" id="counts"></div><div id="emarow" style="display:contents"></div></div>
         <div class="wrap"><div id="main"></div><div class="ld" id="ld">불러오는 중…</div></div>
+        <div class="subs" id="subs">
+          <div class="sub1"><span class="slab" id="lab-oi"></span><div class="subc" id="sub-oi"></div></div>
+          <div class="sub1"><span class="slab" id="lab-fund"></span><div class="subc" id="sub-fund"></div></div>
+        </div>
         <div class="banner" id="banner" hidden></div>
       </section>
       <section class="card" data-sec="fvg">
@@ -370,7 +379,7 @@ const toK = rows => rows.map(r => [r[0], +r[1], +r[2], +r[3], +r[4], +r[7], +r[1
 const spotK = (tf, limit) => getJSON(`${BN}/api/v3/klines?symbol=BTCUSDT&interval=${tf}&limit=${limit}`).then(toK);
 const futK = (tf, limit) => getJSON(`${FAPI}/fapi/v1/klines?symbol=BTCUSDT&interval=${tf}&limit=${limit}`).then(toK);
 const oiHist = (tf, limit) => getJSON(`${FAPI}/futures/data/openInterestHist?symbol=BTCUSDT&period=${tf}&limit=${limit}`)
-  .then(rows => rows.map(r => [+r.timestamp, +r.sumOpenInterestValue]));
+  .then(rows => rows.map(r => [+r.timestamp, +r.sumOpenInterestValue, +r.sumOpenInterest]));   // [t, USD, BTC]
 /** Coinbase BTC-USD closes -> Map(openMs -> close). 4h is built from 1h (Coinbase has no 4h). */
 async function cbCloses(tf, pages, recent = false) {
   const gran = { '15m': 900, '1h': 3600, '4h': 3600, '1d': 86400 }[tf];
@@ -454,6 +463,8 @@ $('panels').innerHTML = mktCard() + PANEL_DEFS.map(d => `<section class="card pa
   <div class="chead"><div class="l"><span class="swatch"></span><div><h2>${esc(d.title)}</h2><div class="sub" id="ps-${d.key}"></div></div></div>
   <div class="pval" id="pv-${d.key}"></div></div><div class="cvd" id="c-${d.key}"></div><div class="none" id="pn-${d.key}" hidden></div></section>`).join('');
 for (const d of PANEL_DEFS) { const c = echarts.init($('c-' + d.key)); c.group = GROUP; P[d.key] = { def: d, chart: c, data: {} }; }
+const SUB = { oi: echarts.init($('sub-oi')), fund: echarts.init($('sub-fund')) };
+for (const k in SUB) SUB[k].group = GROUP;
 echarts.connect(GROUP);
 
 $('tfs').innerHTML = Object.keys(TFS).map(t => `<button data-tf="${t}">${t === '1d' ? '1D' : t === '1h' ? '1H' : t === '4h' ? '4H' : '15m'}</button>`).join('');
@@ -595,6 +606,62 @@ function paintPanel(key, T, live) {
   p.chart.setOption(panelOption(key, T, view, live), !live);
 }
 
+/* ---------- sub charts under the price: open interest (BTC) and funding rate ---------- */
+let fundRows = [];   // [settlementMs, ratePct] every 8 h
+async function loadFunding() {
+  try {
+    fundRows = (await getJSON(`${FAPI}/fapi/v1/fundingRate?symbol=BTCUSDT&limit=1000`)).map(x => [x.fundingTime, +x.fundingRate * 100]);
+    if (S) paintSubs(theme(), true);
+  } catch (e) { /* keep the last rows */ }
+}
+function fundingAt(times) {   // the rate in force at each candle open (step series)
+  const out = []; let j = -1;
+  for (const t of times) { while (j + 1 < fundRows.length && fundRows[j + 1][0] <= t) j++; out.push(j >= 0 ? fundRows[j][1] : null); }
+  return out;
+}
+function subView(kind) {
+  if (!S) return null;
+  if (kind === 'oi') return S.oi ? alignMap(new Map(S.oi.map(r => [r[0], r[2]])), S.times) : null;
+  return fundRows.length ? fundingAt(S.times) : null;
+}
+function subOption(kind, T, view, live) {
+  const nr = narrow(), oi = kind === 'oi', col = css(oi ? '--s5' : '--s3');
+  let lo = Infinity, hi = -Infinity;
+  for (let i = state.i0; i <= state.i1; i++) { const v = view[i]; if (v != null) { lo = Math.min(lo, v); hi = Math.max(hi, v); } }
+  if (!oi) { lo = Math.min(lo, 0); hi = Math.max(hi, 0); }
+  const pad = (hi - lo) * 0.12 || Math.abs(hi) * 0.01 || 1;
+  const opt = {
+    animation: false, textStyle: { fontFamily: FONT },
+    grid: { left: nr ? 46 : 60, right: 8, top: 26, bottom: 6 },   // same left/right as the price chart so the candles line up
+    xAxis: { type: 'category', data: S.labels, boundaryGap: true, axisLine: { show: false }, axisTick: { show: false }, axisLabel: { show: false }, axisPointer: { label: { show: false } } },
+    yAxis: { min: lo === Infinity ? undefined : lo - pad, max: hi === -Infinity ? undefined : hi + pad, splitNumber: 2, splitLine: { lineStyle: { color: T.grid } },
+      axisLabel: { color: T.mute, fontSize: nr ? 10 : 11, formatter: v => oi ? fmtBig(v, 1) : v.toFixed(4) + '%' }, axisPointer: { label: { show: false } } },
+    dataZoom: [{ type: 'inside', xAxisIndex: 0, filterMode: 'none', startValue: state.i0, endValue: state.i1, minValueSpan: 10, preventDefaultMouseMove: !coarse }],
+    tooltip: { trigger: 'axis', showContent: false, axisPointer: { type: 'cross', lineStyle: { type: 'dashed', color: T.mute }, crossStyle: { color: T.mute }, label: { show: false } } },
+    series: [oi
+      ? { id: 's', type: 'line', data: view, showSymbol: false, lineStyle: { width: 1.8, color: col }, itemStyle: { color: col },
+          areaStyle: { color: { type: 'linear', x: 0, y: 0, x2: 0, y2: 1, colorStops: [{ offset: 0, color: col + '40' }, { offset: 1, color: col + '00' }] } } }
+      : { id: 's', type: 'line', step: 'end', data: view, showSymbol: false, lineStyle: { width: 1.8, color: col }, itemStyle: { color: col },
+          markLine: { silent: true, symbol: 'none', label: { show: false }, lineStyle: { color: T.mute, type: 'dashed', opacity: .5 }, data: [{ yAxis: 0 }] } }],
+  };
+  if (live) { delete opt.dataZoom; delete opt.tooltip; }
+  return opt;
+}
+function paintSubs(T, live) {
+  if (!S || !shown('chart')) return;
+  for (const kind of ['oi', 'fund']) {
+    const view = subView(kind), lab = $('lab-' + kind), box = $('sub-' + kind);
+    if (!view || !anyVal(view)) { box.parentElement.hidden = true; SUB[kind].clear(); lab.textContent = ''; continue; }
+    box.parentElement.hidden = false;
+    const v = view[state.i1] != null ? view[state.i1] : lastOf(view);
+    if (kind === 'oi') {
+      const a = view[Math.max(0, state.i0)], ch = a ? (v / a - 1) * 100 : 0;
+      lab.innerHTML = `OI · Binance 선물<b>${fmtBig(v, 2)} BTC</b><span class="${dir(ch)}"> ${arrow(ch)} ${Math.abs(ch).toFixed(2)}%</span>`;
+    } else lab.innerHTML = `펀딩비 (8h)<b>${sgn(v, x => x.toFixed(4))}%</b>`;
+    SUB[kind].setOption(subOption(kind, T, view, live), !live);
+  }
+}
+
 /* ---------- FVG list ---------- */
 function fvgList(T) {
   const price = tick ? tick.c : lastPrice();
@@ -686,6 +753,7 @@ function renderAll() {
   const T = theme();
   for (const key in P) paintPanel(key, T);       // fills P[key].data first
   main.setOption(mainOption(T), true);
+  paintSubs(T);
   paintFvg(T);
   paintHero(); paintKpis(); paintControls();
   $('theme').innerHTML = css('--mode') === 'dark'
@@ -704,6 +772,7 @@ function refreshView() {   // visible window changed: refit the price axis, FVG 
     const T = theme(), [ymin, ymax] = yRange();
     main.setOption({ yAxis: { min: ymin, max: ymax }, series: [{ id: 'k', markArea: { silent: true, data: zoneBoxes(T, ymin, ymax) } }] });
     if (shown('flow')) for (const key in P) paintPanel(key, T);
+    paintSubs(T);
     paintKpis(); markCount();
   }, 90);
 }
@@ -762,6 +831,7 @@ async function loadAux(d) {
   if (S !== d) return;   // timeframe changed while loading
   loadPanelData();
   const T = theme(); if (shown('flow')) for (const key in P) paintPanel(key, T, true);
+  paintSubs(T, true);
   paintKpis();
 }
 let dom = null;   // market-cap dominance (CoinGecko global): BTC / USDT / everything outside the top 10
@@ -902,6 +972,7 @@ function renderLive() {
     lastFull = now;
     if (panelDirty) { panelDirty = false; loadPanelData(); }
     if (shown('flow')) for (const key in P) paintPanel(key, T, true);
+    paintSubs(T, true);
     if (shown('fvg')) paintFvg(T);
     paintKpis();
   }
@@ -926,7 +997,7 @@ function setTab(t) {
   lsSet('btc-tab', t);
   requestAnimationFrame(() => { resizeAll(); if (S) renderAll(); scrollTo({ top: Math.min(scrollY, $('tabs').offsetTop), behavior: 'instant' }); });
 }
-function resizeAll() { main.resize(); for (const k in P) P[k].chart.resize(); }
+function resizeAll() { main.resize(); for (const k in P) P[k].chart.resize(); for (const k in SUB) SUB[k].resize(); }
 let rsT = 0, lastW = innerWidth;
 window.addEventListener('resize', () => {   // mobile URL-bar show/hide fires resize constantly: only react to width changes
   clearTimeout(rsT);
@@ -957,6 +1028,7 @@ connect();
 loadTF(state.tf);
 setInterval(() => { if (!document.hidden && S && !state.fallback) loadAux(S); }, 20000);    // futures CVD / OI / premium for the forming bar
 setInterval(() => { if (!document.hidden && S && !state.fallback) loadHtf(); }, 60000);     // 4H / 1D candles -> FVG fills
+loadFunding(); setInterval(() => { if (!document.hidden) loadFunding(); }, 300000);   // funding settles every 8 h; refresh every 5 min
 loadDom(); setInterval(() => { if (!document.hidden) loadDom(); }, 120000);   // dominance: CoinGecko's free tier is rate limited, so every 2 min
 </script>
 </body>
