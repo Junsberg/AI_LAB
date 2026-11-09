@@ -75,7 +75,7 @@ long-term holder supply) are paid and not used.
 its public archive (`data.binance.vision/data/futures/um/daily/metrics/BTCUSDT`); the build downloads the last 200
 days (completed days cached in `out/cache/oi5m/`), fills everything after the newest archive day from the live
 `openInterestHist` API and aggregates it to open/high/low/close candles for 15m/1H/4H/1D. The page finishes the
-newest candles itself from the live 5 m feed (refreshed every 30 s). TradingView's wider multi-exchange aggregate (we average three exchanges).
+newest candles itself from the live 5 m feed (refreshed every 30 s).
 
 ## Stablecoin liquidity
 
