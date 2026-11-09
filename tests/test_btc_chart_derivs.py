@@ -21,6 +21,13 @@ def test_parse_metrics_csv_utc_and_btc_amount():
     assert derivs.parse_metrics_csv("") == []
 
 
+def test_clean_drops_zeros_and_isolated_spikes_but_keeps_real_moves():
+    pts = [[0, 100.0], [1, 0.0], [2, 101.0], [3, 250.0], [4, 102.0], [5, 90.0], [6, 80.0], [7, 79.0]]
+    out = derivs.clean(pts)
+    assert [r[0] for r in out] == [0, 2, 4, 5, 6, 7]          # the 0.0 and the lone 250 spike are gone, the steady decline stays
+    assert derivs.clean([[0, 0.0]]) == []
+
+
 def test_ohlc_buckets_are_utc_aligned_and_ordered():
     pts = [[0, 10], [5 * MIN, 12], [10 * MIN, 9], [15 * MIN, 11], [20 * MIN, 13]]
     assert derivs.ohlc(pts, 15 * MIN) == [[0, 10, 12, 9, 9], [15 * MIN, 11, 13, 11, 13]]
@@ -33,7 +40,7 @@ def _zip_day(day: str, n: int = 288, base: float = 100.0) -> bytes:
     t0 = int(__import__("datetime").datetime.strptime(day, "%Y-%m-%d").replace(tzinfo=__import__("datetime").timezone.utc).timestamp())
     for i in range(n):
         ts = __import__("datetime").datetime.fromtimestamp(t0 + i * 300, __import__("datetime").timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
-        lines.append(f"{ts},BTCUSDT,{base + i},0")
+        lines.append(f"{ts},BTCUSDT,{base + i * 0.01},0")
     b = io.BytesIO()
     with zipfile.ZipFile(b, "w") as z:
         z.writestr(f"BTCUSDT-metrics-{day}.csv", "\n".join(lines))
@@ -53,14 +60,14 @@ def test_oi_history_caches_complete_days_skips_missing_and_fills_the_gap_from_li
 
     def live(since):
         live_calls.append(since)
-        return [[since + 5 * MIN, 999.0]]
+        return [[since + 5 * MIN, 100.5]]
 
     now = 1794225600000   # 2026-11-09 12:00 UTC
     rows = derivs.oi_5m(4, tmp_path, now, fetch=fetch, live=live)
     assert sorted(calls) == ["2026-11-05", "2026-11-06", "2026-11-07", "2026-11-08"]
     cached = sorted(p.name for p in (tmp_path / "oi5m").iterdir())
     assert cached == ["2026-11-07.json", "2026-11-08.json"]            # only complete days are cached
-    assert live_calls == [rows[-2][0]] and rows[-1][1] == 999.0       # live starts after the newest archive row
+    assert live_calls == [rows[-2][0]] and rows[-1][1] == 100.5       # live starts after the newest archive row
     calls.clear()
     derivs.oi_5m(4, tmp_path, now, fetch=fetch, live=live)
     assert sorted(calls) == ["2026-11-05", "2026-11-06"]               # cached days are not downloaded again
@@ -71,7 +78,7 @@ def test_oi_candles_have_all_timeframes_and_rounded_values(tmp_path):
     out = derivs.oi_candles(3, tmp_path, now, fetch=lambda d: _zip_day(d), live=lambda s: [])
     assert set(out) == {"15m", "1h", "4h", "1d"}
     t, o, h, lo, c = out["1h"][0]
-    assert t % (60 * MIN) == 0 and o == 100.0 and h == 111.0 and lo == 100.0 and c == 111.0   # 12 five-minute points per hour
+    assert t % (60 * MIN) == 0 and o == 100.0 and h == 100.1 and lo == 100.0 and c == 100.1   # 12 five-minute points per hour
 
 
 def test_parse_stable_chart_keeps_usd_pegged_total_in_billions():

@@ -634,7 +634,7 @@ function paintPanel(key, T, live) {
 let oi5 = [];   // newest ~41 h of 5 m open interest [t, BTC]: finishes the candles the build snapshot could not know
 async function loadOi5() {
   try {
-    oi5 = (await getJSON(`${FAPI}/futures/data/openInterestHist?symbol=BTCUSDT&period=5m&limit=500`)).map(r => [+r.timestamp, +r.sumOpenInterest]);
+    oi5 = (await getJSON(`${FAPI}/futures/data/openInterestHist?symbol=BTCUSDT&period=5m&limit=500`)).map(r => [+r.timestamp, +r.sumOpenInterest]).filter(r => r[1] > 0);
     if (S) paintSubs(theme(), true);
   } catch (e) { /* keep the last rows */ }
 }

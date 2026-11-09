@@ -47,6 +47,20 @@ def parse_metrics_csv(text: str) -> list[list[float]]:
     return out
 
 
+def clean(rows: list[list[float]], jump: float = 0.25) -> list[list[float]]:
+    """Drop bad archive points: zero/negative values (missing data) and isolated spikes that differ from both
+    neighbours by more than ``jump`` (a single 0.0 stretched the 4H OI axis down to zero)."""
+    pts = [r for r in rows if r[1] and r[1] > 0]
+    out = []
+    for i, r in enumerate(pts):
+        prev, nxt = (pts[i - 1][1] if i else None), (pts[i + 1][1] if i + 1 < len(pts) else None)
+        near = [x for x in (prev, nxt) if x]
+        if near and all(abs(r[1] / x - 1) > jump for x in near):
+            continue
+        out.append(r)
+    return out
+
+
 def ohlc(rows: list[list[float]], tf_ms: int) -> list[list[float]]:
     """5 m points -> [[bucket_open_ms, o, h, l, c], ...] on UTC-aligned buckets (like the exchange klines)."""
     out: dict[int, list[float]] = {}
@@ -101,7 +115,7 @@ def oi_5m(days: int, cache_dir: Path, now_ms: int, fetch: Callable[[str], bytes 
     since = max(rows) if rows else None
     for t, v in (live or _live_5m)(since):   # the live API fills everything after the newest archive day
         rows[int(t)] = v
-    return [[t, rows[t]] for t in sorted(rows)]
+    return clean([[t, rows[t]] for t in sorted(rows)])
 
 
 def _live_5m(since: int | None = None) -> list[list[float]]:
