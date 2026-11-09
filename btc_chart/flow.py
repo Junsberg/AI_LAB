@@ -1,4 +1,4 @@
-"""Order-size CVD and a traded-volume-by-price heatmap from Binance USDT-M BTCUSDT aggregated trades.
+"""Order-size CVD from Binance USDT-M BTCUSDT aggregated trades.
 
 Binance publishes every aggregated trade as a daily file on its public archive (yesterday and older). Each
 trade is classified by its USD size ($100-1k, 1k-10k, 10k-100k, 100k-1M, 1M+), aggregated per hour and
@@ -27,7 +27,6 @@ AGG_TRADES = "https://fapi.binance.com/fapi/v1/aggTrades"
 HOUR = 3_600_000
 EDGES = [100.0, 1_000.0, 10_000.0, 100_000.0, 1_000_000.0]   # USD; below the first edge only counts in "all"
 LABELS = ["$100 – $1k", "$1k – $10k", "$10k – $100k", "$100k – $1M", "$1M +"]
-BIN = 250.0           # price bin of the heatmap, USD
 DAYS = 14
 
 
@@ -37,7 +36,7 @@ def size_bucket(usd: float) -> int:
 
 
 def _hour() -> dict[str, Any]:
-    return {"all": [0.0, 0.0], "b": [[0.0, 0.0] for _ in LABELS], "p": {}}
+    return {"all": [0.0, 0.0], "b": [[0.0, 0.0] for _ in LABELS]}
 
 
 def add_trade(hours: dict[int, dict[str, Any]], ts: int, price: float, qty: float, buyer_maker: bool) -> None:
@@ -50,8 +49,6 @@ def add_trade(hours: dict[int, dict[str, Any]], ts: int, price: float, qty: floa
     b = size_bucket(usd)
     if b >= 0:
         h["b"][b][side] += usd
-    pb = str(int(price // BIN))
-    h["p"][pb] = h["p"].get(pb, 0.0) + usd
 
 
 def aggregate_csv(lines: Iterable[str]) -> tuple[dict[int, dict[str, Any]], int]:
@@ -135,7 +132,7 @@ def catch_up(live: dict[str, Any], start_id: int, now_ms: int, budget_sec: float
 # ---------------------------------------------------------------- the chart payload
 
 
-def build_payload(hours: dict[int, dict[str, Any]], closes: dict[int, float], now_ms: int, days: int = DAYS) -> dict[str, Any]:
+def build_payload(hours: dict[int, dict[str, Any]], now_ms: int, days: int = DAYS) -> dict[str, Any]:
     end = now_ms - now_ms % HOUR
     ts = [end - i * HOUR for i in range(days * 24 - 1, -1, -1)]
     ts = [t for t in ts if t in hours]
@@ -154,20 +151,10 @@ def build_payload(hours: dict[int, dict[str, Any]], closes: dict[int, float], no
     for i, label in enumerate(LABELS):
         series[label] = cum(lambda h, i=i: h["b"][i][0] - h["b"][i][1])
 
-    bins = sorted({int(b) for t in ts for b in hours[t]["p"]})
-    lo_b, hi_b = bins[0], bins[-1]
-    cells = []
-    for xi, t in enumerate(ts):
-        for b, v in hours[t]["p"].items():
-            cells.append([xi, int(b) - lo_b, round(v / 1e6, 2)])
-    return {
-        "asof": ts[-1] + HOUR, "t": ts, "series": series,
-        "heat": {"bin": BIN, "lo": lo_b * BIN, "rows": hi_b - lo_b + 1, "cells": cells, "close": [round(closes.get(t, 0.0), 1) or None for t in ts]},
-        "labels": ["all"] + LABELS,
-    }
+    return {"asof": ts[-1] + HOUR, "t": ts, "series": series, "labels": ["all"] + LABELS}
 
 
-def collect(cache_dir: Path, now_ms: int, closes: dict[int, float], budget_sec: float = 240.0, days: int = DAYS, *,
+def collect(cache_dir: Path, now_ms: int, budget_sec: float = 240.0, days: int = DAYS, *,
             fetch: Callable[[str], bytes | None] = _download, rest: Callable[[int], list[dict]] = _rest,
             sleep: Callable[[float], None] = time.sleep) -> dict[str, Any]:
     cache = cache_dir / "flow"
@@ -194,12 +181,11 @@ def collect(cache_dir: Path, now_ms: int, closes: dict[int, float], budget_sec: 
     for k, v in live["hours"].items():
         merged.setdefault(int(k), v)                     # the archive wins where both exist
     keep = {t for t in merged if t >= now_ms - (days + 1) * 24 * HOUR}
-    return build_payload({t: merged[t] for t in keep}, closes, now_ms, days)
+    return build_payload({t: merged[t] for t in keep}, now_ms, days)
 
 
 if __name__ == "__main__":   # one-off: python -m btc_chart.flow  -> catch up fully (long budget) and report
     here = Path(__file__).parent / "out"
     now = int(time.time() * 1000)
-    bars = src.binance_klines(src.BINANCE_FUT_KLINES, "BTCUSDT", "1h", 400)
-    res = collect(here / "cache", now, {b.t: b.close for b in bars}, budget_sec=3600)
+    res = collect(here / "cache", now, budget_sec=3600)
     print("hours:", len(res.get("t", [])), "asof:", res.get("asof"))

@@ -15,7 +15,7 @@ def test_size_buckets_edges():
     assert [flow.size_bucket(x) for x in (100, 999.99, 1000, 9999, 10_000, 99_999, 100_000, 999_999, 1_000_000, 50_000_000)] == [0, 0, 1, 1, 2, 2, 3, 3, 4, 4]
 
 
-def test_add_trade_splits_taker_side_size_and_price_bin():
+def test_add_trade_splits_taker_side_and_size():
     hours = {}
     flow.add_trade(hours, 5, 80_100.0, 0.5, False)      # 40 050 USD, taker BUY (buyer is not the maker)
     flow.add_trade(hours, 6, 80_100.0, 0.001, True)     # 80 USD, taker SELL, tiny: only in "all"
@@ -23,8 +23,7 @@ def test_add_trade_splits_taker_side_size_and_price_bin():
     h0, h1 = hours[0], hours[H]
     assert h0["all"] == pytest.approx([40_050.0, 80.1])
     assert h0["b"][2] == pytest.approx([40_050.0, 0.0]) and sum(sum(x) for x in h0["b"]) == pytest.approx(40_050.0)
-    assert h0["p"] == {str(int(80_100 // flow.BIN)): pytest.approx(40_130.1)}
-    assert h1["b"][4] == pytest.approx([0.0, 79_999.0 * 20]) and list(h1["p"]) == [str(int(79_999 // flow.BIN))]
+    assert h1["b"][4] == pytest.approx([0.0, 79_999.0 * 20])
 
 
 def test_aggregate_csv_skips_header_and_returns_last_id():
@@ -89,21 +88,17 @@ def _hours(n=48, start=0):
         h["all"] = [100.0 + i, 90.0]
         for b in range(5):
             h["b"][b] = [10.0 * (b + 1) * (i % 3 + 1), 5.0 * (b + 1)]
-        h["p"] = {str(320 + (i % 4)): 2_000_000.0}
         out[start + i * H] = h
     return out
 
 
-def test_build_payload_normalises_cvd_and_lays_out_the_heatmap():
+def test_build_payload_normalises_the_cvd_series():
     now = 47 * H + 1000
-    p = flow.build_payload(_hours(), {i * H: 80_000.0 + i for i in range(48)}, now, days=2)
-    assert len(p["t"]) == 48 and p["labels"][0] == "all" and len(p["series"]) == 6
+    p = flow.build_payload(_hours(), now, days=2)
+    assert len(p["t"]) == 48 and p["labels"][0] == "all" and len(p["series"]) == 6 and "heat" not in p
     for v in p["series"].values():
         assert min(v) == 0.0 and max(v) == 1.0 or set(v) == {0.5}
-    heat = p["heat"]
-    assert heat["rows"] == 4 and heat["lo"] == 320 * flow.BIN and all(0 <= c[1] < 4 for c in heat["cells"]) and len(heat["cells"]) == 48
-    assert heat["cells"][0][2] == 2.0 and heat["close"][3] == 80_003.0
-    assert flow.build_payload({}, {}, now) == {}
+    assert flow.build_payload({}, now) == {}
 
 
 def test_collect_merges_archive_and_live_and_archive_wins(tmp_path):
@@ -121,6 +116,6 @@ def test_collect_merges_archive_and_live_and_archive_wins(tmp_path):
 
     day_start = int(datetime(2026, 11, 9, tzinfo=timezone.utc).timestamp() * 1000)
     live_rows = [{"a": 6000 + i, "p": "80000.0", "q": "1.0", "T": day_start + H + i * 600_000, "m": False} for i in range(6)]   # today 00:00-ish
-    p = flow.collect(tmp_path, now, {}, 10.0, days=2, fetch=fetch, rest=lambda fid: live_rows if fid == 5000 + 23 + 1 else [], sleep=lambda s: None)
+    p = flow.collect(tmp_path, now, 10.0, days=2, fetch=fetch, rest=lambda fid: live_rows if fid == 5000 + 23 + 1 else [], sleep=lambda s: None)
     assert p and p["t"][-1] <= now
     assert json.loads((tmp_path / "flow" / "live.json").read_text())["cursor"] == 6006

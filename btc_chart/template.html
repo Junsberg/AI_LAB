@@ -150,7 +150,7 @@
   .pan.combo .pval { display: flex; flex-direction: column; align-items: flex-end; gap: 1px; font-size: 14px; }
   .pan.combo .cb { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; } .pan.combo .cb i { width: 10px; height: 3px; border-radius: 2px; }
   .pan.combo .cb b { font-size: 16px; font-variant-numeric: tabular-nums; } .pan.combo .cb b.up { color: var(--up); } .pan.combo .cb b.down { color: var(--down); }
-  .flcv { height: 250px; } .flcv.tall { height: 340px; }
+  .flcv { height: 300px; }
   .mkt h4 { margin: 12px 0 6px; font-size: 12px; font-weight: 600; letter-spacing: .02em; color: var(--mute); }
   .mg { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
   .mt { background: color-mix(in srgb, var(--fg) 4%, transparent); border-radius: 12px; padding: 8px 10px; min-width: 0; }
@@ -218,7 +218,7 @@
     .cvd { height: 210px; }
     .layout { grid-template-columns: minmax(0, 1fr) 500px; }
     .pan.combo .cvd { height: 380px; }
-    .flcv { height: 300px; } .flcv.tall { height: 400px; }
+    .flcv { height: 380px; }
     .mkt { order: 10; } .stb { order: 11; }
     .mkt h4 { font-size: 13px; } .mt { padding: 10px 12px; } .mt .k { font-size: 13px; } .mt b { font-size: 19px; } .mt .d { font-size: 12.5px; }
     .pval b { font-size: 20px; }
@@ -486,8 +486,7 @@ const mktCard = () => {
 const stbCard = () => (D.derivs && D.derivs.stable && D.derivs.stable.length > 30) ? `<section class="card stb"><div class="chead"><div><h2>스테이블코인 시장 유동성</h2><div class="sub">USD 스테이블코인 전체 공급량 · DefiLlama (일봉)</div></div><div class="pval" id="stb-val"></div></div>
   <div class="tools"><div class="seg" id="stb-rng"><button data-d="90">3개월</button><button data-d="365">1년</button><button data-d="1095">3년</button></div></div><div class="cvd" id="stb-chart"></div></section>` : '';
 const flowCards = () => (D.flow && D.flow.t && D.flow.t.length > 24) ? `
-  <section class="card flc"><div class="chead"><div><h2>주문 크기별 CVD</h2><div class="sub">Binance 선물 체결을 주문 크기($)로 나눈 누적 순매수 · 0~1 정규화 · 최근 ${Math.round(D.flow.t.length / 24)}일</div></div></div><div class="flcv" id="flow-cvd"></div></section>
-  <section class="card flc"><div class="chead"><div><h2>가격대별 거래량</h2><div class="sub">시간 × 가격 구간(${D.flow.heat.bin}$)별 체결 금액(백만 USDT) · 파란 선: 종가</div></div></div><div class="flcv tall" id="flow-heat"></div></section>` : '';
+  <section class="card flc"><div class="chead"><div><h2>주문 크기별 CVD</h2><div class="sub">Binance 선물 체결을 주문 크기($)로 나눈 누적 순매수 · 0~1 정규화 · 최근 ${Math.round(D.flow.t.length / 24)}일</div></div></div><div class="flcv" id="flow-cvd"></div></section>` : '';
 $('panels').innerHTML = flowCards() + mktCard() + stbCard() + PANEL_DEFS.filter(d => !d.hidden).map(d => `<section class="card pan${d.kind === 'combo' ? ' combo' : ''}" id="p-${d.key}" style="--c:var(--${d.color})">
   <div class="chead"><div class="l"><span class="swatch"></span><div><h2>${esc(d.title)}</h2><div class="sub" id="ps-${d.key}"></div></div></div>
   <div class="pval" id="pv-${d.key}"></div></div><div class="cvd" id="c-${d.key}"></div><div class="none" id="pn-${d.key}" hidden></div></section>`).join('');
@@ -496,7 +495,7 @@ const SUB = { oi: echarts.init($('sub-oi')) };
 for (const k in SUB) SUB[k].group = GROUP;
 echarts.connect(GROUP);
 const STB = $('stb-chart') ? echarts.init($('stb-chart')) : null;
-const FLC = $('flow-cvd') ? echarts.init($('flow-cvd')) : null, FLH = $('flow-heat') ? echarts.init($('flow-heat')) : null;
+const FLC = $('flow-cvd') ? echarts.init($('flow-cvd')) : null;
 let stbDays = +lsGet('btc-stb', 365) || 365;
 
 $('tfs').innerHTML = Object.keys(TFS).map(t => `<button data-tf="${t}">${t === '1d' ? '1D' : t === '1h' ? '1H' : t === '4h' ? '4H' : '15m'}</button>`).join('');
@@ -759,14 +758,14 @@ function paintStb(T) {
 }
 if ($('stb-rng')) $('stb-rng').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; stbDays = +b.dataset.d; lsSet('btc-stb', stbDays); paintStb(theme()); });
 
-/* ---------- order-size CVD and traded-volume heatmap (hourly, from the build; own time axis) ---------- */
+/* ---------- order-size CVD (hourly, from the build; own time axis) ---------- */
 const FLOW_COLORS = ['--fg2', '--s1', '--s3', '--s4', '--s2', '--s5'];
 function paintFlow(T) {
   if (!FLC || !shown('flow')) return;
   const F = D.flow, nr = narrow(), fs = nr ? 10 : 12.5, labels = F.t.map(t => fmtT(t, '1h')), asof = new Date(F.asof);
   FLC.setOption({
     animation: false, textStyle: { fontFamily: FONT },
-    legend: { top: 0, left: 0, textStyle: { color: T.fg2, fontSize: fs }, itemWidth: 14, itemHeight: 3, icon: 'roundRect', itemGap: 10, data: F.labels.map(l => l === 'all' ? '전체' : l) },
+    legend: { top: 0, left: 0, textStyle: { color: T.fg, fontSize: fs }, itemWidth: 14, itemHeight: 3, icon: 'roundRect', itemGap: 10, data: F.labels.map(l => l === 'all' ? '전체' : l) },
     grid: { left: 40, right: 8, top: nr ? 62 : 40, bottom: 24 },
     xAxis: { type: 'category', data: labels, boundaryGap: false, axisLine: { lineStyle: { color: T.rule } }, axisTick: { show: false }, axisLabel: { color: T.mute, fontSize: fs, hideOverlap: true } },
     yAxis: { type: 'value', min: 0, max: 1, splitNumber: 4, splitLine: { lineStyle: { color: T.grid } }, axisLabel: { color: T.mute, fontSize: fs, formatter: v => v.toFixed(1) } },
@@ -774,23 +773,6 @@ function paintFlow(T) {
       axisPointer: { type: 'line', lineStyle: { type: 'dashed', color: T.mute } } },
     series: F.labels.map((l, i) => ({ name: l === 'all' ? '전체' : l, type: 'line', data: F.series[l], showSymbol: false, smooth: false,
       lineStyle: { width: i === 0 ? 2.4 : 1.6, color: css(FLOW_COLORS[i]) }, itemStyle: { color: css(FLOW_COLORS[i]) }, z: i === 0 ? 5 : 3 })),
-  }, true);
-  const H = F.heat, rowsLabel = Array.from({ length: H.rows }, (_, i) => ((H.lo + i * H.bin) / 1000).toFixed(1) + 'k');
-  const sorted = H.cells.map(c => c[2]).sort((a, b) => a - b), cap = sorted[Math.floor(sorted.length * 0.97)] || 1, dark = css('--mode') === 'dark';   // a few huge cells must not wash everything else out
-  const heat = H.cells.map(c => [c[0], c[1], c[2], Math.sqrt(Math.min(c[2], cap))]);      // colour on a square-root scale, capped at the 97th percentile
-  const ramp = dark ? ['#12151c', '#3d1230', '#8a1c3c', '#d6452b', '#f59f00', '#ffe066'] : ['#eef1f6', '#ffe8a3', '#ffb347', '#f26b38', '#c92a2a', '#5c0a0a'];
-  FLH.setOption({
-    animation: false, textStyle: { fontFamily: FONT },
-    grid: { left: 44, right: 8, top: 8, bottom: nr ? 56 : 62 },
-    xAxis: { type: 'category', data: labels, splitArea: { show: false }, axisLine: { lineStyle: { color: T.rule } }, axisTick: { show: false }, axisLabel: { color: T.mute, fontSize: fs, hideOverlap: true } },
-    yAxis: [{ type: 'category', data: rowsLabel, axisLine: { show: false }, axisTick: { show: false }, axisLabel: { color: T.mute, fontSize: fs, interval: Math.max(0, Math.ceil(H.rows / 12) - 1) } },
-            { type: 'value', show: false, min: H.lo, max: H.lo + H.rows * H.bin }],
-    visualMap: { dimension: 3, min: 0, max: Math.sqrt(cap), calculable: false, orient: 'horizontal', left: 'center', bottom: 0, itemWidth: 12, itemHeight: nr ? 120 : 200, text: ['많음', '적음'], formatter: v => Math.round(v * v) + 'M', textStyle: { color: T.mute, fontSize: fs },
-      inRange: { color: ramp }, seriesIndex: 0 },
-    tooltip: { trigger: 'item', confine: true, backgroundColor: T.card, borderColor: T.rule, borderWidth: 1, textStyle: { color: T.fg, fontSize: 12 }, extraCssText: 'border-radius:12px',
-      formatter: p => p.seriesType === 'heatmap' ? `${labels[p.value[0]]}<br>$${(H.lo + p.value[1] * H.bin).toLocaleString()} – ${(H.lo + (p.value[1] + 1) * H.bin).toLocaleString()}<br><b>${p.value[2].toFixed(1)}M</b>` : '' },
-    series: [{ type: 'heatmap', data: heat, progressive: 0, itemStyle: { borderWidth: 0 }, emphasis: { disabled: true } },
-             { type: 'line', yAxisIndex: 1, data: H.close, showSymbol: false, silent: true, z: 5, connectNulls: true, lineStyle: { width: 1.6, color: '#3b8bd9' } }],
   }, true);
 }
 
@@ -1131,7 +1113,7 @@ function setTab(t) {
   lsSet('btc-tab', t);
   requestAnimationFrame(() => { resizeAll(); if (S) renderAll(); scrollTo({ top: Math.min(scrollY, $('tabs').offsetTop), behavior: 'instant' }); });
 }
-function resizeAll() { main.resize(); for (const k in P) if (P[k].chart) P[k].chart.resize(); for (const k in SUB) SUB[k].resize(); if (STB) STB.resize(); if (FLC) FLC.resize(); if (FLH) FLH.resize(); }
+function resizeAll() { main.resize(); for (const k in P) if (P[k].chart) P[k].chart.resize(); for (const k in SUB) SUB[k].resize(); if (STB) STB.resize(); if (FLC) FLC.resize(); }
 let rsT = 0, lastW = innerWidth;
 window.addEventListener('resize', () => {   // mobile URL-bar show/hide fires resize constantly: only react to width changes
   clearTimeout(rsT);

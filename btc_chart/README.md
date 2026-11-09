@@ -69,11 +69,11 @@ inflow/outflow/balance, active addresses, hashrate; daily, newest day is prelimi
 shows live dominance tiles (browser fetches CoinGecko every 2 min). Some CoinMetrics metrics (realized cap, NVT,
 long-term holder supply) are paid and not used.
 
-## Order-size CVD and traded-volume heatmap
+## Order-size CVD
 
-`btc_chart/flow.py` builds the two charts at the top of the 수급 tab from Binance USDT-M BTCUSDT **aggregated trades**:
+`btc_chart/flow.py` builds the chart at the top of the 수급 tab from Binance USDT-M BTCUSDT **aggregated trades**:
 each trade is classified by its USD size ($100-1k, 1k-10k, 10k-100k, 100k-1M, 1M+) and its taker side, summed per hour
-(CVD per size bucket, normalised 0-1 over the window) and per $250 price bin (heatmap with the close line). Days up to
+(CVD per size bucket, normalised 0-1 over the window; a price-by-time volume heatmap was tried and dropped as unreadable). Days up to
 yesterday come from Binance's public archive (`data.binance.vision`, ~17 MB zip/day, aggregated and cached in
 `out/cache/flow/`, the raw file is not kept); today comes from the live `aggTrades` endpoint, paged by id with a time
 budget per build (default 240 s) and a persistent cursor, so the first builds catch up gradually. To catch up at once:

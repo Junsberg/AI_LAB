@@ -122,9 +122,9 @@ def build(hours: int, out_path: Path, utc_offset: int, skip: set[str], fvg_per_t
     }
     if "derivs" not in skip:   # OI candles (5 m archive) for the sub-chart
         payload["derivs"] = derivs.collect(out_dir / "cache", now_ms, skip)
-    if "flow" not in skip:   # order-size CVD + traded-volume heatmap from Binance aggregated trades (bounded work per build)
+    if "flow" not in skip:   # order-size CVD from Binance aggregated trades (bounded work per build)
         try:
-            payload["flow"] = flow.collect(out_dir / "cache", now_ms, {b.t: b.close for b in bars})
+            payload["flow"] = flow.collect(out_dir / "cache", now_ms)
         except Exception as e:   # a failing source must never break the chart build
             print(f"[flow] {type(e).__name__}: {str(e)[:150]}", file=sys.stderr)
     if "context" not in skip:
