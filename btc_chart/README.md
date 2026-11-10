@@ -80,6 +80,12 @@ budget per build (default 240 s) and a persistent cursor, so the first builds ca
 `python -m btc_chart.flow`. Window: last 90 days (15m and 1H 1000 candles, 4H 500 candles all covered; 1D only the latest 90; the page lays the hourly series on the candles and re-bases/normalises it over the visible range). Only the three large buckets ($10k-100k, $100k-1M, $1M+) are shown. `--skip flow` disables it. Limit: an aggregated trade merges one
 taker order's fills at one price, so sizes are a proxy for order size (not for iceberg/split orders).
 
+## View settings, split handle, gauges
+
+- **Settings button** (top right of the price card): switches for the order-size CVD, spot/futures CVD, OI, FVG zones and EMA lines, a slider for the indicator height and a reset button. Remembered per device (`localStorage` key `btc-view`).
+- **Split handle** between the price chart and the indicators: drag up/down to resize the price chart (arrow keys work too), double-click or Home to reset.
+- **Gauges** at the top of the market-indicator card: Fear & Greed, long-account share, funding rate and the Coinbase premium shown as a marker between their usual extremes; the value turns amber near an extreme.
+
 ## OI candles under the price chart
 
 `btc_chart/derivs.py` (build time, ~5 s, cached): Binance publishes **5-minute open interest** as daily files on

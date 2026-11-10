@@ -105,11 +105,11 @@
   .chip i { width: 14px; height: 3px; border-radius: 2px; background: var(--c); }
   .chip, .seg button { white-space: nowrap; }
   .chip:not(.on) { opacity: .45; } .chip:not(.on) i { background: var(--mute); }
-  #main { height: clamp(340px, 54vh, 500px); touch-action: pan-y; }
+  #main { height: var(--main-h, clamp(340px, 54vh, 500px)); touch-action: pan-y; }
   .cvd { height: 170px; touch-action: pan-y; }
   .subs { margin-top: 2px; border-top: 1px solid var(--rule); }
   .sub1 { position: relative; border-bottom: 1px solid var(--rule); } .sub1:last-child { border-bottom: 0; }
-  .subc { height: 104px; touch-action: pan-y; }
+  .subc { height: var(--sub-h, 104px); touch-action: pan-y; }
   .slab { position: absolute; left: 10px; top: 4px; z-index: 2; pointer-events: none; font-size: 11.5px; color: var(--mute); font-variant-numeric: tabular-nums; }
   .slab .cb { display: inline-flex; align-items: center; gap: 4px; margin-left: 10px; } .slab .cb i { width: 10px; height: 3px; border-radius: 2px; }
   .slab b { color: var(--fg); font-weight: 650; margin-left: 4px; } .slab .up { color: var(--up); } .slab .down { color: var(--down); }
@@ -151,8 +151,30 @@
   .fvgc > summary::after { content: '▾'; color: var(--mute); font-size: 16px; transition: transform .15s; } .fvgc:not([open]) > summary::after { transform: rotate(-90deg); }
   .fvgc[open] > summary { margin-bottom: 10px; }
 
+  /* view settings popover, split handle, gauges */
+  .card { position: relative; }
+  .vpop { position: absolute; right: 14px; top: 56px; z-index: 40; width: 250px; background: var(--card); border: 1px solid var(--rule); border-radius: 16px; padding: 10px 14px 12px; box-shadow: 0 14px 40px rgba(0,0,0,.35); }
+  .vpop[hidden] { display: none; }
+  .vrow { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 7px 0; font-size: 13.5px; }
+  .vrow label { cursor: pointer; }
+  input.sw { appearance: none; -webkit-appearance: none; width: 36px; height: 21px; border-radius: 999px; background: color-mix(in srgb, var(--mute) 35%, transparent); position: relative; cursor: pointer; transition: background .15s; flex: none; margin: 0; }
+  input.sw::after { content: ''; position: absolute; top: 2.5px; left: 2.5px; width: 16px; height: 16px; border-radius: 50%; background: #fff; transition: left .15s; box-shadow: 0 1px 3px rgba(0,0,0,.3); }
+  input.sw:checked { background: var(--s1); } input.sw:checked::after { left: 17.5px; }
+  input.sw:focus-visible, .vpop input[type=range]:focus-visible, .split:focus-visible { outline: 2px solid var(--s1); outline-offset: 2px; }
+  .vrow.vs { padding-top: 10px; border-top: 1px solid var(--rule); margin-top: 4px; } .vrow.vs input { flex: 1; min-width: 0; accent-color: var(--s1); } .vrow.vs output { width: 44px; text-align: right; font-size: 12px; color: var(--mute); font-variant-numeric: tabular-nums; }
+  .vreset { margin-top: 8px; width: 100%; font: inherit; font-size: 12.5px; color: var(--fg2); background: transparent; border: 1px solid var(--rule); border-radius: 10px; padding: 6px; cursor: pointer; }
+  .split { height: 16px; margin: 2px 0; display: flex; align-items: center; justify-content: center; cursor: row-resize; touch-action: none; user-select: none; -webkit-user-select: none; }
+  .split i { width: 46px; height: 4px; border-radius: 2px; background: color-mix(in srgb, var(--mute) 45%, transparent); transition: background .15s, width .15s; }
+  .split:hover i, .split.drag i { background: var(--s1); width: 64px; }
+  .gz { display: grid; gap: 10px; margin: 12px 0 4px; }
+  .gz .g { display: grid; grid-template-columns: 92px 1fr 78px; align-items: center; gap: 10px; }
+  .gz .gl { font-size: 12.5px; color: var(--mute); } .gz .gv { text-align: right; font-weight: 650; font-size: 14px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .gz .gb { height: 10px; border-radius: 6px; position: relative; } .gz .gb i { position: absolute; top: -4px; width: 4px; height: 18px; border-radius: 2px; background: var(--fg); box-shadow: 0 0 0 2px var(--card); transform: translateX(-50%); }
+  .gz .g.ext .gv { color: var(--s4); } .gz .g.ext .gb i { height: 20px; top: -5px; }
+  @media (min-width: 960px) { .gz .g { grid-template-columns: 110px 1fr 90px; } .gz .gl { font-size: 13px; } .gz .gv { font-size: 15px; } }
+
   /* market indicators */
-  .subc.big { height: 132px; }
+  .subc.big { height: calc(var(--sub-h, 104px) * 1.28); }
   .mkt h4 { margin: 12px 0 6px; font-size: 12px; font-weight: 600; letter-spacing: .02em; color: var(--mute); }
   .mg { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
   .mt { background: color-mix(in srgb, var(--fg) 4%, transparent); border-radius: 12px; padding: 8px 10px; min-width: 0; }
@@ -214,12 +236,12 @@
     .card h2 { font-size: 17px; } .card .sub { font-size: 13px; }
     .seg button, .chip { font-size: 14px; padding: 6px 14px; }
     .seg.tf button { font-size: 15px; padding: 9px 0; }
-    #main { height: clamp(460px, calc(100vh - 470px), 640px); }
-    .subc { height: 116px; }
+    #main { height: var(--main-h, clamp(460px, calc(100vh - 470px), 640px)); }
+    .subc { height: var(--sub-h, 116px); }
     .slab { font-size: 13.5px; left: 14px; }
     .cvd { height: 210px; }
     .layout { grid-template-columns: minmax(0, 1fr) 500px; }
-    .subc.big { height: 150px; }
+    .subc.big { height: calc(var(--sub-h, 116px) * 1.28); }
     .mkt { order: 10; } .stb { order: 11; }
     .mkt h4 { font-size: 13px; } .mt { padding: 10px 12px; } .mt .k { font-size: 13px; } .mt b { font-size: 19px; } .mt .d { font-size: 12.5px; }
     .pval b { font-size: 20px; }
@@ -251,10 +273,22 @@
   <div class="layout">
     <div class="col">
       <section class="card" data-sec="chart">
-        <div class="chead"><div><h2>가격 · EMA · FVG</h2><div class="sub" id="hint"></div></div></div>
+        <div class="chead"><div><h2>가격 · EMA · FVG</h2><div class="sub" id="hint"></div></div>
+          <button class="icon" id="viewbtn" aria-label="보기 설정" aria-expanded="false" title="보기 설정"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/></svg></button>
+          <div class="vpop" id="viewpop" hidden>
+            <div class="vrow"><label for="v-flow">주문 크기별 CVD</label><input type="checkbox" class="sw" id="v-flow" data-k="flow"></div>
+            <div class="vrow"><label for="v-cvd">현물·선물 CVD</label><input type="checkbox" class="sw" id="v-cvd" data-k="cvd"></div>
+            <div class="vrow"><label for="v-oi">OI 캔들</label><input type="checkbox" class="sw" id="v-oi" data-k="oi"></div>
+            <div class="vrow"><label for="v-fvg">FVG 구간 표시</label><input type="checkbox" class="sw" id="v-fvg" data-k="fvg"></div>
+            <div class="vrow"><label for="v-ema">EMA 선</label><input type="checkbox" class="sw" id="v-ema" data-k="ema"></div>
+            <div class="vrow vs"><label for="v-h">지표 높이</label><input type="range" id="v-h" min="72" max="240" step="4"><output id="v-ho"></output></div>
+            <button class="vreset" id="v-reset">기본값으로</button>
+          </div>
+        </div>
         <div class="tfrow"><div class="seg tf" id="tfs"></div></div>
         <div class="tools"><div class="seg" id="counts"></div><div id="emarow" style="display:contents"></div></div>
         <div class="wrap"><div id="main"></div><div class="ld" id="ld">불러오는 중…</div></div>
+        <div class="split" id="split" role="separator" aria-orientation="horizontal" tabindex="0" title="위아래로 끌어서 차트 높이 조절 · 더블클릭 = 기본값"><i></i></div>
         <div class="subs" id="subs">
           <div class="sub1"><span class="slab" id="lab-flow"></span><div class="subc big" id="sub-flow"></div></div>
           <div class="sub1"><span class="slab" id="lab-cvd"></span><div class="subc" id="sub-cvd"></div></div>
@@ -479,10 +513,29 @@ const GROUP = 'btc';
 const main = echarts.init($('main'));
 main.group = GROUP;
 const P = {};   // panel key -> { def, card, charts, data }
+/** Gauges: where a value sits between its usual extremes (163/299 style). `lo..hi` is the scale, `bad` says which end is the crowded/risky one. */
+const GAUGES = [
+  { id: 'fg', label: '공포·탐욕', lo: 0, hi: 100, bg: 'linear-gradient(90deg,#ee6a8f,#c98500 50%,#4cc9a0)', val: m => m.sentiment && m.sentiment.now, txt: m => `${m.sentiment.now} ${m.sentiment.label || ''}` },
+  { id: 'lng', label: '롱 계정 비중', lo: 30, hi: 90, bg: 'linear-gradient(90deg,#4cc9a0,#c98500 55%,#ee6a8f)', val: m => m.derivatives && m.derivatives.long_short_account_ratio && m.derivatives.long_short_account_ratio.long_pct, txt: m => m.derivatives.long_short_account_ratio.long_pct + '%' },
+  { id: 'fr', label: '펀딩비 (8h)', lo: -0.03, hi: 0.06, bg: 'linear-gradient(90deg,#4cc9a0,#7d8597 33%,#c98500 66%,#ee6a8f)', val: m => m.derivatives && m.derivatives.funding_rate_8h_pct, txt: m => sgn(m.derivatives.funding_rate_8h_pct, x => x.toFixed(4)) + '%' },
+  { id: 'prem', label: 'Coinbase 프리미엄', lo: -0.3, hi: 0.3, bg: 'linear-gradient(90deg,#ee6a8f,#7d8597 50%,#4cc9a0)', val: () => null, txt: () => '' },
+];
+function gaugeRow(g, v, txt) {
+  if (v == null) return '';
+  const pos = Math.max(0, Math.min(100, (v - g.lo) / (g.hi - g.lo) * 100));
+  return `<div class="g${pos < 12 || pos > 88 ? ' ext' : ''}" id="gz-${g.id}"><span class="gl">${g.label}</span><div class="gb" style="background:${g.bg}"><i style="left:${pos.toFixed(1)}%"></i></div><span class="gv">${esc(txt)}</span></div>`;
+}
+const gaugesHtml = () => { const m = D.market || {}; return '<div class="gz" id="gz">' + GAUGES.map(g => g.id === 'prem' ? '<span id="gz-prem-slot"></span>' : (g.val(m) == null ? '' : gaugeRow(g, g.val(m), g.txt(m)))).join('') + '</div>'; };
+function paintGauges() {   // the premium moves with the page, the rest come from the build
+  const slot = $('gz-prem-slot') || $('gz-prem'); if (!slot || !P.cb_premium || !P.cb_premium.data.values) return;
+  const v = lastOf(P.cb_premium.data.values); if (v == null) return;
+  const g = GAUGES.find(x => x.id === 'prem'), el = document.createElement('div'); el.innerHTML = gaugeRow(g, v, sgn(v, x => x.toFixed(3)) + '%');
+  if (el.firstChild) slot.replaceWith(el.firstChild);
+}
 const mktCard = () => {
   const rows = D.market_rows || []; if (!rows.length) return '';
   const groups = [...new Set(rows.map(r => r.g))];
-  return `<section class="card mkt"><div class="chead"><div><h2>시장 지표</h2><div class="sub">파생 · 온체인 · 자금 · 심리 (빌드 시점, 온체인은 일봉)</div></div></div>` +
+  return `<section class="card mkt"><div class="chead"><div><h2>시장 지표</h2><div class="sub">파생 · 온체인 · 자금 · 심리 (빌드 시점, 온체인은 일봉)</div></div></div>` + gaugesHtml() +
     groups.map(g => `<h4>${esc(g)}</h4><div class="mg">${rows.filter(r => r.g === g).map(r => `<div class="mt"><span class="k">${esc(r.k)}</span><b>${esc(r.v)}</b><span class="d">${esc(r.d)}</span></div>`).join('')}</div>`).join('') + '</section>';
 };
 const stbCard = () => (D.derivs && D.derivs.stable && D.derivs.stable.length > 30) ? `<section class="card stb"><div class="chead"><div><h2>스테이블코인 시장 유동성</h2><div class="sub">USD 스테이블코인 전체 공급량 · DefiLlama (일봉)</div></div><div class="pval" id="stb-val"></div></div>
@@ -533,7 +586,7 @@ function zoneBoxes(T, ymin, ymax) {
   const n = S.K.length, tiny = narrow();
   // 4H and 1D zones often share edges: give each timeframe its own label column (left of the price tag) and its own box style
   const dx = { '4H': tiny ? -54 : -70, '1D': tiny ? -118 : -150 };
-  return fvgZones.filter(z => z.hi > ymin && z.lo < ymax).map(z => {
+  return (VIEW.fvg ? fvgZones : []).filter(z => z.hi > ymin && z.lo < ymax).map(z => {
     let i0 = S.times.findIndex(t => t >= z.t); if (i0 < 0) return null;
     const col = z.kind === 'bull' ? T.bull : T.bear, d1 = z.tf === '1D';
     return [
@@ -710,6 +763,7 @@ function subOption(kind, T, view, live) {
   return opt;
 }
 function paintCvdSub(T, live) {
+  if (!VIEW.cvd) return;
   const sp = panelView('binance_spot'), fu = panelView('binance_fut'), lab = $('lab-cvd'), box = $('sub-cvd');
   if (!sp && !fu) { box.parentElement.hidden = true; SUB.cvd.clear(); lab.textContent = ''; return; }
   box.parentElement.hidden = false;
@@ -722,7 +776,7 @@ function paintSubs(T, live) {
   if (!S || !shown('chart')) return;
   paintFlowSub(T, live);
   paintCvdSub(T, live);
-  for (const kind of ['oi']) {
+  for (const kind of VIEW.oi ? ['oi'] : []) {
     const view = subView(kind), lab = $('lab-' + kind), box = $('sub-' + kind);
     if (!view || !view.some(v => v != null)) { box.parentElement.hidden = true; SUB[kind].clear(); lab.textContent = ''; continue; }
     box.parentElement.hidden = false;
@@ -789,6 +843,7 @@ function flowOption(T, view, live) {
   return o;
 }
 function paintFlowSub(T, live) {
+  if (!VIEW.flow) return;
   const view = flowView(), lab = $('lab-flow'), box = $('sub-flow');
   if (!view) { box.parentElement.hidden = true; SUB.flow.clear(); lab.textContent = ''; return; }
   box.parentElement.hidden = false;
@@ -831,6 +886,7 @@ function paintHero() {
 function kpi(k, v, d, cls) { return `<div class="kpi"><span class="k">${k}</span><b>${v}</b>${d ? `<span class="d ${cls || ''}">${d}</span>` : ''}</div>`; }
 function paintKpis() {
   if (!S) return;
+  paintGauges();
   const px = tick ? tick.c : lastPrice(), rows = [];
   if (tick) rows.push(kpi('24h 고가', fmtP0(tick.h), sgn((tick.h / px - 1) * 100, v => v.toFixed(2)) + '%', 'flat'), kpi('24h 저가', fmtP0(tick.l), sgn((tick.l / px - 1) * 100, v => v.toFixed(2)) + '%', 'flat'));
   if (dom) for (const [k, v] of [['BTC', dom.btc], ['USDT', dom.usdt], ['기타', dom.oth]]) if (v != null) rows.push(kpi(k + ' 도미넌스', v.toFixed(2) + '%', k === '기타' ? '상위 10 밖 시총 비중' : '전체 시총 비중', 'flat'));
@@ -874,6 +930,50 @@ function paintAi() {
   $('ai').hidden = false; $('aitab').hidden = false;
 }
 function paintFvg(T) { const h = fvgList(T); if (h !== fvgSig) { fvgSig = h; $('fvgmap').innerHTML = h; } }
+
+/* ---------- view settings (which charts, heights) and the split handle; remembered per device ---------- */
+const VIEW_DEFAULT = { flow: 1, cvd: 1, oi: 1, fvg: 1, mainH: 0, subH: 0 };   // 0 = the responsive CSS default
+const VIEW = (() => { try { return { ...VIEW_DEFAULT, ...JSON.parse(lsGet('btc-view', '{}')) }; } catch (e) { return { ...VIEW_DEFAULT }; } })();
+const MAIN_MIN = 280, MAIN_MAX = 780, SUB_MIN = 72, SUB_MAX = 240;
+function applyView(redraw) {
+  const r = document.documentElement.style;
+  VIEW.mainH ? r.setProperty('--main-h', VIEW.mainH + 'px') : r.removeProperty('--main-h');
+  VIEW.subH ? r.setProperty('--sub-h', VIEW.subH + 'px') : r.removeProperty('--sub-h');
+  for (const k of ['flow', 'cvd', 'oi']) $('sub-' + k).parentElement.style.display = VIEW[k] ? '' : 'none';   // label + chart go together
+  for (const el of document.querySelectorAll('#viewpop input.sw')) el.checked = el.dataset.k === 'ema' ? EMA_PERIODS.some(k => state.ema[k]) : !!VIEW[el.dataset.k];
+  const h = VIEW.subH || parseFloat(getComputedStyle($('sub-cvd')).height) || 116;
+  $('v-h').value = h; $('v-ho').textContent = Math.round(h) + 'px';
+  lsSet('btc-view', JSON.stringify(VIEW));
+  if (redraw && S) { resizeAll(); renderAll(); }
+}
+const viewOpen = on => { $('viewpop').hidden = !on; $('viewbtn').setAttribute('aria-expanded', on ? 'true' : 'false'); if (on) applyView(false); };
+$('viewbtn').addEventListener('click', e => { e.stopPropagation(); viewOpen($('viewpop').hidden); });
+document.addEventListener('click', e => { if (!$('viewpop').hidden && !e.target.closest('#viewpop')) viewOpen(false); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && !$('viewpop').hidden) { viewOpen(false); $('viewbtn').focus(); } });
+$('viewpop').addEventListener('change', e => {
+  const el = e.target.closest('input.sw'); if (!el) return;
+  if (el.dataset.k === 'ema') { $('emaall').click(); return; }
+  VIEW[el.dataset.k] = el.checked ? 1 : 0; applyView(true);
+});
+$('v-h').addEventListener('input', e => { VIEW.subH = +e.target.value; applyView(true); });
+$('v-reset').addEventListener('click', () => { Object.assign(VIEW, VIEW_DEFAULT); applyView(true); });
+(() => {   // 101: drag the handle to resize the price chart (indicators keep their size), double-click or Home to reset
+  const el = $('split'); let y0 = 0, h0 = 0, raf = 0;
+  const setH = h => { VIEW.mainH = Math.max(MAIN_MIN, Math.min(MAIN_MAX, Math.round(h))); document.documentElement.style.setProperty('--main-h', VIEW.mainH + 'px'); if (!raf) raf = requestAnimationFrame(() => { raf = 0; main.resize(); for (const k in SUB) SUB[k].resize(); }); };
+  el.addEventListener('pointerdown', e => { y0 = e.clientY; h0 = $('main').getBoundingClientRect().height; el.setPointerCapture(e.pointerId); el.classList.add('drag'); e.preventDefault(); });
+  el.addEventListener('pointermove', e => { if (el.classList.contains('drag')) setH(h0 + e.clientY - y0); });
+  const end = () => { if (!el.classList.contains('drag')) return; el.classList.remove('drag'); applyView(true); };
+  el.addEventListener('pointerup', end); el.addEventListener('pointercancel', end);
+  el.addEventListener('dblclick', () => { VIEW.mainH = 0; applyView(true); });
+  el.addEventListener('keydown', e => {
+    const cur = $('main').getBoundingClientRect().height;
+    if (e.key === 'ArrowUp') { setH(cur - 20); applyView(true); e.preventDefault(); }
+    else if (e.key === 'ArrowDown') { setH(cur + 20); applyView(true); e.preventDefault(); }
+    else if (e.key === 'Home') { VIEW.mainH = 0; applyView(true); }
+  });
+})();
+
+applyView(false);
 
 /* ---------- render ---------- */
 const wide = () => matchMedia('(min-width: 960px)').matches;
