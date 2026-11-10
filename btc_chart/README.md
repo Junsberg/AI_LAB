@@ -36,7 +36,7 @@ and turn Pages off in the repo settings.
 The hourly build asks Claude for Korean market commentary, shown in the page's **AI** tab. The page itself
 never calls an API, so no key is ever published: only the resulting text goes into `index.html`.
 
-- One job by default: the **briefing** (Fable 5.1, effort `xhigh`, every 4 hours (`BTC_AI_MIN_MINUTES`, default 235 so
+- One job by default: the **briefing** (Fable 5.2, effort `xhigh`, every 4 hours (`BTC_AI_MIN_MINUTES`, default 235 so
   every 4th hourly build); `plan()` stretches the interval if it would overspend). A second **deep** job exists but is off (`BTC_AI_DEEP=on` turns it on, with
   `BTC_AI_DEEP_MODEL`/`_EFFORT`/`_MIN_MINUTES`); set `BTC_AI_MODEL=claude-opus-5-5` for a cheaper hourly note.
 - Uses the **Message Batches API** (50 % cheaper) because the Console promo credit applies to Batch API /
@@ -55,7 +55,7 @@ never calls an API, so no key is ever published: only the resulting text goes in
 - `python -m btc_chart --ai compare` runs one batch with the same facts at `BTC_AI_COMPARE_EFFORTS`
   (default `high,xhigh,max`) for `BTC_AI_MODEL` and writes `out/ai_compare_<model>.md`. Measured so far
   (Opus 5.5): high 2.7k tokens $0.03, xhigh 5.3k $0.06, max hit the 32k token limit and was cut off ($0.33).
-  Fable 5.1: high $0.11, xhigh $0.13.
+  Fable 5.1: high $0.11, xhigh $0.13. Fable 5.2 ($8/$40 per MTok, cheaper than 5.1's $10/$50) is the default since 2026-11-10.
 - Needs `pip install anthropic`.
 
 ## Market context (free public APIs, no keys)

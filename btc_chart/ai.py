@@ -26,11 +26,12 @@ KEY_FILE = Path.home() / ".btc_chart" / "anthropic_key.txt"
 STATE_NAME = "ai.json"
 CUSTOM_ID = "analysis"
 BATCH_DISCOUNT = 0.5
-# USD per million tokens (input, output) -- cached 2026-10-06 from the Claude API docs.
+# USD per million tokens (input, output) -- checked 2026-11-10 against the Claude API docs.
 PRICES = {
     "claude-opus-5-5": (4.0, 20.0),
     "claude-sonnet-5-5": (2.0, 10.0),
     "claude-haiku-5-5": (0.10, 0.50),
+    "claude-fable-5-2": (8.0, 40.0),
     "claude-fable-5-1": (10.0, 50.0),
 }
 TFS = ("4h", "1d")   # the only chart timeframes the commentary covers
@@ -194,17 +195,17 @@ This is the deeper briefing, written a few times a day. Same rules and format, b
 def _cfg() -> dict[str, Any]:
     e = os.environ.get
     return {
-        "model": e("BTC_AI_MODEL", "claude-fable-5-1"),   # also what `--ai compare` uses
+        "model": e("BTC_AI_MODEL", "claude-fable-5-2"),   # also what `--ai compare` uses
         "effort": e("BTC_AI_EFFORT", "xhigh"),
         "budget": float(e("BTC_AI_BUDGET_USD", "90")),
         "expires": e("BTC_AI_EXPIRES", "2026-11-18"),
         "max_calls_day": int(e("BTC_AI_MAX_CALLS_PER_DAY", "30")),
         "wait_sec": float(e("BTC_AI_WAIT_SEC", "120")),
         "jobs": {
-            "hourly": {"enabled": True, "model": e("BTC_AI_MODEL", "claude-fable-5-1"), "effort": e("BTC_AI_EFFORT", "xhigh"),
+            "hourly": {"enabled": True, "model": e("BTC_AI_MODEL", "claude-fable-5-2"), "effort": e("BTC_AI_EFFORT", "xhigh"),
                        "min_minutes": float(e("BTC_AI_MIN_MINUTES", "235")), "max_tokens": 24000, "est": 0.15,
                        "system": SYSTEM},
-            "deep": {"enabled": e("BTC_AI_DEEP", "off") == "on", "model": e("BTC_AI_DEEP_MODEL", "claude-fable-5-1"), "effort": e("BTC_AI_DEEP_EFFORT", "xhigh"),
+            "deep": {"enabled": e("BTC_AI_DEEP", "off") == "on", "model": e("BTC_AI_DEEP_MODEL", "claude-fable-5-2"), "effort": e("BTC_AI_DEEP_EFFORT", "xhigh"),
                      "min_minutes": float(e("BTC_AI_DEEP_MIN_MINUTES", "660")), "max_tokens": 32000, "est": 0.15,
                      "system": SYSTEM + DEEP_ADDENDUM},
         },

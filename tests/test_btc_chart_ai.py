@@ -106,6 +106,7 @@ def test_batch_cost_is_half_price():
     assert ai.batch_cost("claude-opus-5-5", 1_000_000, 0) == pytest.approx(2.0)
     assert ai.batch_cost("claude-opus-5-5", 0, 1_000_000) == pytest.approx(10.0)
     assert ai.batch_cost("claude-fable-5-1", 1_000_000, 1_000_000) == pytest.approx(30.0)
+    assert ai.batch_cost("claude-fable-5-2", 1_000_000, 1_000_000) == pytest.approx(24.0)
 
 
 def test_no_key_means_off_and_never_crashes(tmp_path, monkeypatch):
@@ -126,18 +127,18 @@ def test_first_build_submits_both_jobs_with_their_own_model_and_collects(tmp_pat
     info = run(tmp_path, c)
     assert c.jobs() == ["deep", "hourly"]
     by = {r["custom_id"]: r["params"] for reqs in c.created for r in reqs}
-    assert by["hourly"]["model"] == "claude-opus-5-5" and by["deep"]["model"] == "claude-fable-5-1"
+    assert by["hourly"]["model"] == "claude-opus-5-5" and by["deep"]["model"] == "claude-fable-5-2"
     assert by["hourly"]["output_config"]["effort"] == "xhigh" and by["hourly"]["max_tokens"] == 24000
     assert by["deep"]["max_tokens"] == 32000 and "deeper briefing" in by["deep"]["system"]
     assert "deeper briefing" not in by["hourly"]["system"]
     assert by["hourly"]["output_config"]["format"]["type"] == "json_schema"
     assert "thinking" not in by["hourly"] and "temperature" not in by["hourly"]
-    assert info["hourly"]["analysis"]["headline"] == ANSWER["headline"] and info["deep"]["model"] == "claude-fable-5-1"
+    assert info["hourly"]["analysis"]["headline"] == ANSWER["headline"] and info["deep"]["model"] == "claude-fable-5-2"
     st = ai.load_state(tmp_path / "ai.json")
     assert st["jobs"]["hourly"]["pending"] is None
     assert st["spend"]["by_job"]["hourly"] == pytest.approx(0.026, abs=1e-6)      # (3000*4+2000*20)/1e6/2
-    assert st["spend"]["by_job"]["deep"] == pytest.approx(0.04, abs=1e-6)         # (3000*10+1000*50)/1e6/2
-    assert st["spend"]["total_usd"] == pytest.approx(0.066, abs=1e-6)
+    assert st["spend"]["by_job"]["deep"] == pytest.approx(0.032, abs=1e-6)        # Fable 5.2: (3000*8+1000*40)/1e6/2
+    assert st["spend"]["total_usd"] == pytest.approx(0.058, abs=1e-6)
 
 
 def test_default_is_one_fable_job_and_the_deep_job_is_off(tmp_path, monkeypatch):
@@ -146,7 +147,7 @@ def test_default_is_one_fable_job_and_the_deep_job_is_off(tmp_path, monkeypatch)
     c = FakeClient()
     info = run(tmp_path, c)
     assert c.jobs() == ["hourly"]
-    assert c.created[0][0]["params"]["model"] == "claude-fable-5-1"
+    assert c.created[0][0]["params"]["model"] == "claude-fable-5-2"
     assert info["hourly"]["analysis"] and info["deep"]["analysis"] is None
     assert ai.plan(ai._empty_state(), ai._cfg(), NOW)["deep"] == float("inf")
 
@@ -299,7 +300,7 @@ def test_real_sdk_round_trip_against_stub_server(tmp_path, monkeypatch):
     posts = [(p, b) for p, b in Stub.log if b]
     assert all(p == "/v1/messages/batches" for p, _ in posts) and len(posts) == 2
     by_job = {b["requests"][0]["custom_id"]: b["requests"][0]["params"] for _, b in posts}
-    assert by_job["deep"]["model"] == "claude-fable-5-1"
+    assert by_job["deep"]["model"] == "claude-fable-5-2"
     params = by_job["hourly"]
     assert params["output_config"]["effort"] == "xhigh" and params["max_tokens"] == 24000
     assert "Fact sheet" in params["messages"][0]["content"]
