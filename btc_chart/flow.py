@@ -28,7 +28,7 @@ HOUR = 3_600_000
 EDGES = [100.0, 1_000.0, 10_000.0, 100_000.0, 1_000_000.0]   # USD; below the first edge only counts in "all"
 LABELS = ["$100 – $1k", "$1k – $10k", "$10k – $100k", "$100k – $1M", "$1M +"]
 BIG = LABELS[2:]       # the buckets the page shows: orders large enough to move the market
-DAYS = 30
+DAYS = 90
 
 
 def size_bucket(usd: float) -> int:

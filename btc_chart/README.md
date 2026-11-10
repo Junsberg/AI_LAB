@@ -77,7 +77,7 @@ each trade is classified by its USD size ($100-1k, 1k-10k, 10k-100k, 100k-1M, 1M
 yesterday come from Binance's public archive (`data.binance.vision`, ~17 MB zip/day, aggregated and cached in
 `out/cache/flow/`, the raw file is not kept); today comes from the live `aggTrades` endpoint, paged by id with a time
 budget per build (default 240 s) and a persistent cursor, so the first builds catch up gradually. To catch up at once:
-`python -m btc_chart.flow`. Window: last 30 days (1H shows all of it, 4H 180 candles, 1D 30; the page lays the hourly series on the candles and re-bases/normalises it over the visible range). Only the three large buckets ($10k-100k, $100k-1M, $1M+) are shown. `--skip flow` disables it. Limit: an aggregated trade merges one
+`python -m btc_chart.flow`. Window: last 90 days (15m and 1H 1000 candles, 4H 500 candles all covered; 1D only the latest 90; the page lays the hourly series on the candles and re-bases/normalises it over the visible range). Only the three large buckets ($10k-100k, $100k-1M, $1M+) are shown. `--skip flow` disables it. Limit: an aggregated trade merges one
 taker order's fills at one price, so sizes are a proxy for order size (not for iceberg/split orders).
 
 ## OI candles under the price chart
