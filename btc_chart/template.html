@@ -146,6 +146,11 @@
     #main { height: 600px; }
   }
 
+  /* FVG list: collapsed by default (the zones are already drawn on the chart) */
+  .fvgc > summary { cursor: pointer; list-style: none; align-items: center; } .fvgc > summary::-webkit-details-marker { display: none; }
+  .fvgc > summary::after { content: '▾'; color: var(--mute); font-size: 16px; transition: transform .15s; } .fvgc:not([open]) > summary::after { transform: rotate(-90deg); }
+  .fvgc[open] > summary { margin-bottom: 10px; }
+
   /* market indicators */
   .subc.big { height: 200px; }
   .mkt h4 { margin: 12px 0 6px; font-size: 12px; font-weight: 600; letter-spacing: .02em; color: var(--mute); }
@@ -257,10 +262,10 @@
         </div>
         <div class="banner" id="banner" hidden></div>
       </section>
-      <section class="card" data-sec="fvg">
-        <div class="chead"><div><h2>FVG 맵</h2><div class="sub">4H · 1D, 아직 채워지지 않은 구간</div></div></div>
+      <details class="card fvgc" data-sec="fvg" id="fvgbox">
+        <summary class="chead"><div><h2>FVG 맵</h2><div class="sub">4H · 1D, 아직 채워지지 않은 구간 · 눌러서 펼치기</div></div></summary>
         <div id="fvgmap"></div>
-      </section>
+      </details>
       <section class="card ai" data-sec="ai" id="ai" hidden>
         <div class="chead"><div><h2>AI 시황 코멘트</h2><div class="sub" id="aisub"></div></div></div>
         <div id="aibody"></div>
@@ -526,12 +531,14 @@ function yRange() {
 }
 function zoneBoxes(T, ymin, ymax) {
   const n = S.K.length, tiny = narrow();
+  // 4H and 1D zones often share edges: give each timeframe its own label column (left of the price tag) and its own box style
+  const dx = { '4H': tiny ? -54 : -70, '1D': tiny ? -118 : -150 };
   return fvgZones.filter(z => z.hi > ymin && z.lo < ymax).map(z => {
     let i0 = S.times.findIndex(t => t >= z.t); if (i0 < 0) return null;
-    const col = z.kind === 'bull' ? T.bull : T.bear;
+    const col = z.kind === 'bull' ? T.bull : T.bear, d1 = z.tf === '1D';
     return [
-      { xAxis: S.labels[i0], yAxis: Math.max(z.lo, ymin), itemStyle: { color: col, opacity: 0.15, borderColor: col, borderType: 'dashed', borderWidth: 1 },
-        label: { show: true, position: z.tf === '1D' ? 'insideBottomRight' : 'insideTopRight', color: col, fontSize: tiny ? 10 : 13, fontWeight: 600, formatter: `FVG ${z.tf} ${z.kind === 'bull' ? '▲' : '▼'}` } },
+      { xAxis: S.labels[i0], yAxis: Math.max(z.lo, ymin), itemStyle: { color: col, opacity: d1 ? 0.09 : 0.17, borderColor: col, borderType: d1 ? 'solid' : 'dashed', borderWidth: d1 ? 1.5 : 1 },
+        label: { show: true, position: 'insideTopRight', offset: [dx[z.tf] || 0, 0], color: col, fontSize: tiny ? 10 : 12.5, fontWeight: 700, formatter: `${z.tf} ${z.kind === 'bull' ? '▲' : '▼'}` } },
       { xAxis: S.labels[n - 1], yAxis: Math.min(z.hi, ymax) },
     ];
   }).filter(Boolean);
@@ -1121,6 +1128,7 @@ $('emarow').addEventListener('click', e => {
 $('tabs').addEventListener('click', e => { const b = e.target.closest('button'); if (b) setTab(b.dataset.tab); });
 function setTab(t) {
   document.body.dataset.tab = t;
+  if (t === 'fvg' && !wide()) $('fvgbox').open = true;   // on the phone the tab itself is the toggle
   for (const b of $('tabs').children) b.classList.toggle('on', b.dataset.tab === t);
   lsSet('btc-tab', t);
   requestAnimationFrame(() => { resizeAll(); if (S) renderAll(); scrollTo({ top: Math.min(scrollY, $('tabs').offsetTop), behavior: 'instant' }); });
