@@ -11,7 +11,7 @@
   :root {
     color-scheme: light; --mode: light;
     --bg: #f4f5f8; --card: #ffffff; --fg: #14161c; --fg2: #4a5060; --mute: #7b8190;
-    --grid: #eef0f4; --rule: #e4e7ed; --shadow: 0 1px 2px rgba(20,22,28,.04), 0 6px 18px rgba(20,22,28,.05);
+    --grid: #eef0f4; --rule: #e4e7ed; --sep: #c9cfdb; --shadow: 0 1px 2px rgba(20,22,28,.04), 0 6px 18px rgba(20,22,28,.05);
     --up: #2f9e7c; --down: #d1496f;
     --e20: #2c7a8c; --e50: #8e5ba8; --e100: #b9812f; --e200: #4a5fb5;
     --bull: #2f9e7c; --bear: #d1496f;
@@ -22,7 +22,7 @@
     :root:not([data-theme="light"]) {
       color-scheme: dark; --mode: dark;
       --bg: #0b0d12; --card: #14171e; --fg: #eceef3; --fg2: #b6bccb; --mute: #8b92a3;
-      --grid: #1f232c; --rule: #262b36; --shadow: 0 1px 2px rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.35);
+      --grid: #1f232c; --rule: #262b36; --sep: #3a4152; --shadow: 0 1px 2px rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.35);
       --up: #4cc9a0; --down: #ee6a8f;
       --e20: #4fb0c4; --e50: #b284cc; --e100: #d9a14d; --e200: #7b8fe0;
       --bull: #4cc9a0; --bear: #ee6a8f;
@@ -33,7 +33,7 @@
   :root[data-theme="dark"] {
     color-scheme: dark; --mode: dark;
     --bg: #0b0d12; --card: #14171e; --fg: #eceef3; --fg2: #b6bccb; --mute: #8b92a3;
-    --grid: #1f232c; --rule: #262b36; --shadow: 0 1px 2px rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.35);
+    --grid: #1f232c; --rule: #262b36; --sep: #3a4152; --shadow: 0 1px 2px rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.35);
     --up: #4cc9a0; --down: #ee6a8f;
     --e20: #4fb0c4; --e50: #b284cc; --e100: #d9a14d; --e200: #7b8fe0;
     --bull: #4cc9a0; --bear: #ee6a8f;
@@ -107,11 +107,11 @@
   .chip:not(.on) { opacity: .45; } .chip:not(.on) i { background: var(--mute); }
   #main { height: var(--main-h, clamp(340px, 54vh, 500px)); touch-action: pan-y; }
   .cvd { height: 170px; touch-action: pan-y; }
-  .subs { margin-top: 2px; border-top: 1px solid var(--rule); }
-  .sub1 { position: relative; border-bottom: 1px solid var(--rule); } .sub1:last-child { border-bottom: 0; }
+  .subs { margin-top: 6px; border-top: 2px solid var(--sep); }
+  .sub1 { position: relative; border-bottom: 2px solid var(--sep); } .sub1:last-child { border-bottom: 0; }
   .subc { height: var(--sub-h, 104px); touch-action: pan-y; }
-  .slab { position: absolute; left: 10px; top: 4px; z-index: 2; pointer-events: none; font-size: 11.5px; color: var(--mute); font-variant-numeric: tabular-nums; }
-  .slab .cb { display: inline-flex; align-items: center; gap: 4px; margin-left: 10px; } .slab .cb i { width: 10px; height: 3px; border-radius: 2px; }
+  .slab { position: absolute; left: 8px; top: 5px; z-index: 2; pointer-events: none; font-size: 12.5px; font-weight: 600; color: var(--fg2); font-variant-numeric: tabular-nums; background: color-mix(in srgb, var(--card) 88%, transparent); padding: 2px 8px; border-radius: 6px; line-height: 1.4; }
+  .slab .cb { display: inline-flex; align-items: center; gap: 4px; margin-left: 10px; color: var(--fg); font-weight: 600; } .slab .cb i { width: 10px; height: 3px; border-radius: 2px; }
   .slab b { color: var(--fg); font-weight: 650; margin-left: 4px; } .slab .up { color: var(--up); } .slab .down { color: var(--down); }
   .none { padding: 26px 0 18px; color: var(--mute); font-size: 12.5px; }
   .pan .chead .l { display: flex; align-items: center; gap: 8px; min-width: 0; }
@@ -271,7 +271,7 @@
     .toolbar .seg.tf { width: auto; } .toolbar .seg.tf button { flex: none; min-width: 68px; padding: 8px 20px; font-size: 14.5px; }
     #main { height: var(--main-h, clamp(460px, calc(100vh - 470px), 640px)); }
     .subc { height: var(--sub-h, 116px); }
-    .slab { font-size: 13.5px; left: 14px; }
+    .slab { font-size: 13.5px; left: 10px; }
     .cvd { height: 210px; }
     .layout { grid-template-columns: minmax(0, 1fr) 500px; }
     .subc.big { height: calc(var(--sub-h, 116px) * 1.28); }
