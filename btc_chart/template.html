@@ -110,7 +110,7 @@
   .subs { margin-top: 6px; border-top: 2px solid var(--sep); }
   .sub1 { position: relative; border-bottom: 2px solid var(--sep); } .sub1:last-child { border-bottom: 0; }
   .subc { height: var(--sub-h, 104px); touch-action: pan-y; }
-  .slab { position: absolute; left: 8px; top: 5px; z-index: 2; pointer-events: none; font-size: 12.5px; font-weight: 600; color: var(--fg2); font-variant-numeric: tabular-nums; background: color-mix(in srgb, var(--card) 88%, transparent); padding: 2px 8px; border-radius: 6px; line-height: 1.4; }
+  .slab { max-width: calc(100% - 16px); position: absolute; left: 8px; top: 5px; z-index: 2; pointer-events: none; font-size: 12.5px; font-weight: 600; color: var(--fg2); font-variant-numeric: tabular-nums; background: color-mix(in srgb, var(--card) 88%, transparent); padding: 2px 8px; border-radius: 6px; line-height: 1.4; }
   .slab .cb { display: inline-flex; align-items: center; gap: 4px; margin-left: 10px; color: var(--fg); font-weight: 600; } .slab .cb i { width: 10px; height: 3px; border-radius: 2px; }
   .slab b { color: var(--fg); font-weight: 650; margin-left: 4px; } .slab .up { color: var(--up); } .slab .down { color: var(--down); }
   .none { padding: 26px 0 18px; color: var(--mute); font-size: 12.5px; }
@@ -718,7 +718,7 @@ function comboOption(T, sp, fu, live) {   // spot vs futures cumulative CVD, lai
   const pad = (hi - lo) * 0.08 || 1;
   const o = {
     animation: false, textStyle: { fontFamily: FONT },
-    grid: { left: nr ? 46 : 60, right: 8, top: 26, bottom: 6 },   // same left/right as the price chart so the candles line up
+    grid: { left: nr ? 46 : 60, right: 8, top: nr ? 52 : 36, bottom: 6 },   // same left/right as the price chart so the candles line up
     xAxis: { type: 'category', data: S.labels, boundaryGap: true, axisLine: { show: false }, axisTick: { show: false }, axisLabel: { show: false }, axisPointer: { label: { show: false } } },
     yAxis: { min: lo - pad, max: hi + pad, splitNumber: 2, splitLine: { lineStyle: { color: T.grid } }, axisLabel: { color: T.mute, fontSize: fs, formatter: v => fmtBig(v, 1) }, axisPointer: { label: { show: false } } },
     dataZoom: [{ type: 'inside', xAxisIndex: 0, zoomLock: true, zoomOnMouseWheel: false, moveOnMouseWheel: false, filterMode: 'none', startValue: state.i0, endValue: state.i1, minValueSpan: 10, preventDefaultMouseMove: !coarse }],
@@ -788,7 +788,7 @@ function subOption(kind, T, view, live) {
   const pad = (hi - lo) * 0.05 || Math.abs(hi) * 0.01 || 1;   // tight autoscale like TradingView so OI bodies are visible
   const opt = {
     animation: false, textStyle: { fontFamily: FONT },
-    grid: { left: nr ? 46 : 60, right: 8, top: 26, bottom: 6 },   // same left/right as the price chart so the candles line up
+    grid: { left: nr ? 46 : 60, right: 8, top: nr ? 52 : 36, bottom: 6 },   // same left/right as the price chart so the candles line up
     xAxis: { type: 'category', data: S.labels, boundaryGap: true, axisLine: { show: false }, axisTick: { show: false }, axisLabel: { show: false }, axisPointer: { label: { show: false } } },
     yAxis: { min: lo === Infinity ? undefined : lo - pad, max: hi === -Infinity ? undefined : hi + pad, splitNumber: 2, splitLine: { lineStyle: { color: T.grid } },
       axisLabel: { color: T.mute, fontSize: nr ? 10 : 13, formatter: v => fmtBig(v, 1) }, axisPointer: { label: { show: false } } },
@@ -872,7 +872,7 @@ function flowOption(T, view, live) {
   const nr = narrow(), fs = nr ? 10 : 12.5;
   const o = {
     animation: false, textStyle: { fontFamily: FONT },
-    grid: { left: nr ? 46 : 60, right: 8, top: 26, bottom: 6 },   // same left/right as the price chart so the candles line up
+    grid: { left: nr ? 46 : 60, right: 8, top: nr ? 52 : 36, bottom: 6 },   // same left/right as the price chart so the candles line up
     xAxis: { type: 'category', data: S.labels, boundaryGap: true, axisLine: { show: false }, axisTick: { show: false }, axisLabel: { show: false }, axisPointer: { label: { show: false } } },
     yAxis: { min: 0, max: 1, splitNumber: 2, splitLine: { lineStyle: { color: T.grid } }, axisLabel: { color: T.mute, fontSize: fs, formatter: v => v.toFixed(1) }, axisPointer: { label: { show: false } } },
     dataZoom: [{ type: 'inside', xAxisIndex: 0, zoomLock: true, zoomOnMouseWheel: false, moveOnMouseWheel: false, filterMode: 'none', startValue: state.i0, endValue: state.i1, minValueSpan: 10, preventDefaultMouseMove: !coarse }],
