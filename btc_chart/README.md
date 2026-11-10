@@ -80,6 +80,10 @@ budget per build (default 240 s) and a persistent cursor, so the first builds ca
 `python -m btc_chart.flow`. Window: last 90 days (15m and 1H 1000 candles, 4H 500 candles all covered; 1D only the latest 90; the page lays the hourly series on the candles and re-bases/normalises it over the visible range). Only the three large buckets ($10k-100k, $100k-1M, $1M+) are shown. `--skip flow` disables it. Limit: an aggregated trade merges one
 taker order's fills at one price, so sizes are a proxy for order size (not for iceberg/split orders).
 
+## Header
+
+Left: price, 24 h change and a 24 h range bar (where the price sits between the low and high). Right: four grouped cards - market-cap dominance as one stacked bar, OI, Coinbase premium and 24 h net taker flow (spot/futures bars). Under it a one-line AI verdict (click = open the AI briefing). On desktop a slim price bar appears at the top once the header scrolls away, and the timeframe, candle-count and EMA controls sit on one row.
+
 ## View settings, split handle, gauges
 
 - **Settings button** (top right of the price card): switches for the order-size CVD, spot/futures CVD, OI, FVG zones and EMA lines, a slider for the indicator height and a reset button. Remembered per device (`localStorage` key `btc-view`).

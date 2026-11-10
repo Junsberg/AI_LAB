@@ -139,10 +139,21 @@
     body[data-tab="flow"] [data-sec="flow"] { display: grid; }
   }
   @media (min-width: 960px) {
+    body .hero { display: grid; grid-template-columns: minmax(360px, 440px) minmax(0, 1fr); gap: 20px; align-items: center; margin-top: 10px; }
+    .hero .pxrow { margin-top: 0; }
+    body .kpis { margin: 0; padding: 0; grid-auto-flow: row; grid-template-columns: repeat(4, minmax(0, 1fr)); overflow: visible; gap: 12px; }
+    .kpi { padding: 12px 14px; min-height: 92px; }
+    .aibar { margin-top: 16px; padding: 11px 16px; } .aibar .at { font-size: 14.5px; -webkit-line-clamp: 1; }
+    body .miniq { position: fixed; top: 0; left: 0; right: 0; z-index: 35; display: flex; align-items: center; gap: 12px; padding: 7px 22px; background: color-mix(in srgb, var(--bg) 84%, transparent);
+      -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); border-bottom: 1px solid var(--rule); font-size: 14px; }
+    body .miniq[hidden] { display: none; } .miniq .logo { width: 22px; height: 22px; border-radius: 7px; display: grid; place-items: center; color: #fff; font-size: 12px; font-weight: 700; background: linear-gradient(135deg, var(--s2), var(--s4)); }
+    .miniq b { font-size: 18px; font-variant-numeric: tabular-nums; } .miniq .mqs { margin-left: auto; color: var(--mute); font-size: 12px; }
+    body .toolbar { display: flex; align-items: center; gap: 12px 16px; flex-wrap: wrap; margin: 12px 0 4px; }
+    .toolbar .tfrow { margin: 0; }
+    .toolbar .tools { margin: 0; padding: 0; overflow: visible; }
     .page { padding-top: 22px; }
     .tabs { display: none; }
     .layout { grid-template-columns: minmax(0, 1fr) 430px; gap: 16px; margin-top: 14px; }
-    .kpis { margin: 16px 0 0; padding: 2px 2px 6px; grid-auto-flow: row; grid-template-columns: repeat(auto-fit, minmax(124px, 1fr)); overflow: visible; }
     #main { height: 600px; }
   }
 
@@ -150,6 +161,28 @@
   .fvgc > summary { cursor: pointer; list-style: none; align-items: center; } .fvgc > summary::-webkit-details-marker { display: none; }
   .fvgc > summary::after { content: '▾'; color: var(--mute); font-size: 16px; transition: transform .15s; } .fvgc:not([open]) > summary::after { transform: rotate(-90deg); }
   .fvgc[open] > summary { margin-bottom: 10px; }
+
+  /* hero: price + 24h range on the left, grouped KPI cards on the right */
+  .pxcol { min-width: 0; }
+  .rng24 { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 4px 10px; margin: 10px 0 2px; max-width: 460px; font-size: 12.5px; color: var(--fg2); font-variant-numeric: tabular-nums; }
+  .rng24 em { grid-column: 1 / -1; font-style: normal; color: var(--mute); font-size: 11.5px; margin-top: -2px; }
+  .rng24 .rb { height: 6px; border-radius: 4px; background: color-mix(in srgb, var(--mute) 28%, transparent); position: relative; }
+  .rng24 .rb i { position: absolute; top: -4px; width: 4px; height: 14px; border-radius: 2px; background: var(--fg); box-shadow: 0 0 0 2px var(--bg); transform: translateX(-50%); }
+  .kpi.dom, .kpi.fl { display: block; }
+  .kpi .sb { display: flex; height: 8px; border-radius: 5px; overflow: hidden; gap: 2px; margin: 8px 0 7px; background: transparent; } .kpi .sb i { display: block; height: 100%; min-width: 2px; }
+  .kpi .lg { display: flex; flex-wrap: wrap; gap: 2px 10px; font-size: 11.5px; color: var(--fg2); font-variant-numeric: tabular-nums; } .kpi .lg span { white-space: nowrap; } .kpi .lg s { display: inline-block; width: 7px; height: 7px; border-radius: 2px; margin-right: 4px; text-decoration: none; }
+  .kpi .lg b { display: inline; font-size: 11.5px; margin: 0; color: var(--fg); }
+  .kpi .fr { display: grid; grid-template-columns: 30px 1fr auto; align-items: center; gap: 8px; margin-top: 7px; font-size: 12px; }
+  .kpi .fr span:first-child { color: var(--mute); } .kpi .fr b { display: inline; font-size: 13.5px; margin: 0; }
+  .kpi .fb { height: 8px; position: relative; border-radius: 4px; background: color-mix(in srgb, var(--mute) 16%, transparent); } .kpi .fb::after { content: ''; position: absolute; left: 50%; top: -2px; bottom: -2px; width: 1px; background: var(--mute); opacity: .6; }
+  .kpi .fb i { position: absolute; top: 0; bottom: 0; border-radius: 4px; } .kpi .fb i.up { left: 50%; background: var(--up); } .kpi .fb i.down { right: 50%; background: var(--down); }
+  .aibar { display: flex; align-items: center; gap: 10px; width: 100%; margin-top: 12px; padding: 9px 14px; font: inherit; text-align: left; color: var(--fg); cursor: pointer;
+    background: color-mix(in srgb, var(--s5) 11%, var(--card)); border: 1px solid color-mix(in srgb, var(--s5) 32%, var(--rule)); border-radius: 14px; }
+  .aibar[hidden] { display: none; } .aibar:hover { border-color: var(--s5); }
+  .aibar .ab { flex: none; font-size: 12px; font-weight: 700; padding: 2px 10px; border-radius: 999px; border: 1px solid currentColor; color: var(--fg2); white-space: nowrap; } .aibar .ab.up { color: var(--up); } .aibar .ab.down { color: var(--down); }
+  .aibar .at { flex: 1; min-width: 0; font-size: 13.5px; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .aibar .ag { flex: none; font-size: 12px; color: var(--mute); white-space: nowrap; }
+  .miniq { display: none; }
 
   /* view settings popover, split handle, gauges */
   .card { position: relative; }
@@ -235,7 +268,7 @@
     .card { padding: 18px 18px 14px; }
     .card h2 { font-size: 17px; } .card .sub { font-size: 13px; }
     .seg button, .chip { font-size: 14px; padding: 6px 14px; }
-    .seg.tf button { font-size: 15px; padding: 9px 0; }
+    .toolbar .seg.tf { width: auto; } .toolbar .seg.tf button { flex: none; min-width: 68px; padding: 8px 20px; font-size: 14.5px; }
     #main { height: var(--main-h, clamp(460px, calc(100vh - 470px), 640px)); }
     .subc { height: var(--sub-h, 116px); }
     .slab { font-size: 13.5px; left: 14px; }
@@ -259,9 +292,16 @@
       <div class="stamp" id="stamp"><span class="live"></span><span id="ago">연결 중…</span></div>
       <button class="icon" id="theme" aria-label="라이트/다크 전환" title="라이트/다크 전환"></button>
     </div>
-    <div class="pxrow"><div class="price" id="px">–</div><span class="pill" id="chg"></span></div>
-    <div class="kpis" id="kpis"></div>
+    <div class="hero">
+      <div class="pxcol">
+        <div class="pxrow"><div class="price" id="px">–</div><span class="pill" id="chg"></span></div>
+        <div class="rng24" id="rng24" hidden><span class="rl" id="rng-lo"></span><div class="rb"><i id="rng-mk"></i></div><span class="rh" id="rng-hi"></span><em>24시간 범위</em></div>
+      </div>
+      <div class="kpis" id="kpis"></div>
+    </div>
+    <button class="aibar" id="aibar" hidden aria-label="AI 시황 브리핑 열기"><span class="ab" id="aibar-b"></span><span class="at" id="aibar-t"></span><span class="ag">AI 브리핑 ›</span></button>
   </header>
+  <div class="miniq" id="miniq" hidden><span class="logo">₿</span><b id="mq-px"></b><span class="pill" id="mq-chg"></span><span class="mqs" id="mq-live"></span></div>
 
   <nav class="tabs" id="tabs" aria-label="화면 전환">
     <button data-tab="chart" class="on">차트</button>
@@ -285,8 +325,8 @@
             <button class="vreset" id="v-reset">기본값으로</button>
           </div>
         </div>
-        <div class="tfrow"><div class="seg tf" id="tfs"></div></div>
-        <div class="tools"><div class="seg" id="counts"></div><div id="emarow" style="display:contents"></div></div>
+        <div class="toolbar"><div class="tfrow"><div class="seg tf" id="tfs"></div></div>
+        <div class="tools"><div class="seg" id="counts"></div><div id="emarow" style="display:contents"></div></div></div>
         <div class="wrap"><div id="main"></div><div class="ld" id="ld">불러오는 중…</div></div>
         <div class="split" id="split" role="separator" aria-orientation="horizontal" tabindex="0" title="위아래로 끌어서 차트 높이 조절 · 더블클릭 = 기본값"><i></i></div>
         <div class="subs" id="subs">
@@ -881,25 +921,39 @@ function paintHero() {
   el.innerHTML = fmtP(px) + '<small>USDT</small>';
   if (px !== prev) { el.classList.remove('tu', 'td'); void el.offsetWidth; el.classList.add(px > prev ? 'tu' : 'td'); }
   el.dataset.v = px;
-  if (tick) { const chg = (tick.c / tick.o - 1) * 100; $('chg').className = 'pill ' + dir(chg); $('chg').textContent = `${arrow(chg)} ${Math.abs(chg).toFixed(2)}% · 24h`; }
+  if (tick) {
+    const chg = (tick.c / tick.o - 1) * 100, txt = `${arrow(chg)} ${Math.abs(chg).toFixed(2)}% · 24h`;
+    $('chg').className = 'pill ' + dir(chg); $('chg').textContent = txt;
+    $('mq-px').textContent = fmtP(px); $('mq-chg').className = 'pill ' + dir(chg); $('mq-chg').textContent = txt;
+    const span = tick.h - tick.l;   // where the price sits inside the last 24 hours
+    if (span > 0) { $('rng24').hidden = false; $('rng-lo').textContent = fmtP0(tick.l); $('rng-hi').textContent = fmtP0(tick.h); $('rng-mk').style.left = Math.max(0, Math.min(100, (px - tick.l) / span * 100)).toFixed(1) + '%'; }
+  }
 }
+new IntersectionObserver(([e]) => { $('miniq').hidden = e.isIntersecting; }, { threshold: 0 }).observe(document.querySelector('.hero'));   // CSS shows the mini bar on desktop only
 function kpi(k, v, d, cls) { return `<div class="kpi"><span class="k">${k}</span><b>${v}</b>${d ? `<span class="d ${cls || ''}">${d}</span>` : ''}</div>`; }
 function paintKpis() {
   if (!S) return;
   paintGauges();
-  const px = tick ? tick.c : lastPrice(), rows = [];
-  if (tick) rows.push(kpi('24h 고가', fmtP0(tick.h), sgn((tick.h / px - 1) * 100, v => v.toFixed(2)) + '%', 'flat'), kpi('24h 저가', fmtP0(tick.l), sgn((tick.l / px - 1) * 100, v => v.toFixed(2)) + '%', 'flat'));
-  if (dom) for (const [k, v] of [['BTC', dom.btc], ['USDT', dom.usdt], ['기타', dom.oth]]) if (v != null) rows.push(kpi(k + ' 도미넌스', v.toFixed(2) + '%', k === '기타' ? '상위 10 밖 시총 비중' : '전체 시총 비중', 'flat'));
+  const rows = [];
+  if (dom) {   // one card for the market-cap split instead of three tiles
+    const rest = Math.max(0, 100 - dom.btc - dom.usdt - dom.oth), seg = [['BTC', dom.btc, 'var(--s4)'], ['USDT', dom.usdt, 'var(--s3)'], ['기타', dom.oth, 'var(--s5)'], ['나머지', rest, 'color-mix(in srgb, var(--mute) 40%, transparent)']];
+    rows.push(`<div class="kpi dom"><span class="k">시총 도미넌스</span><div class="sb">${seg.map(x => `<i style="width:${x[1].toFixed(2)}%;background:${x[2]}"></i>`).join('')}</div><div class="lg">${seg.slice(0, 3).map(x => `<span><s style="background:${x[2]}"></s>${x[0]} <b>${x[1].toFixed(2)}%</b></span>`).join('')}</div></div>`);
+  }
   const oi = P.binance_oi.data.values, pr = P.cb_premium.data.values;
   if (anyVal(oi)) { const v = lastOf(oi), cut = Date.now() - 24 * HOUR, j = S.times.findIndex(t => t >= cut), a = j >= 0 ? oi[j] : null, c = a && TFS[S.tf] <= 4 * HOUR ? (v / a - 1) * 100 : null;
     rows.push(kpi('OI · Binance 선물', '$' + fmtBig(v, 2), c == null ? '' : `${arrow(c)} ${Math.abs(c).toFixed(2)}% · 24h`, c == null ? '' : dir(c))); }
-  if (anyVal(pr)) rows.push(kpi('Coinbase 프리미엄', sgn(lastOf(pr), x => x.toFixed(3)) + '%', 'Coinbase − Binance', 'flat'));
-  for (const key of ['binance_spot', 'binance_fut']) {
+  if (anyVal(pr)) rows.push(kpi('Coinbase 프리미엄', sgn(lastOf(pr), x => x.toFixed(3)) + '%', 'Coinbase − Binance 현물', 'flat'));
+  const flows = [];
+  for (const [key, name] of [['binance_spot', '현물'], ['binance_fut', '선물']]) {
     const d = P[key].data.deltas, tfMs = TFS[S.tf];
     if (!d || !anyVal(d) || tfMs > 4 * HOUR) continue;   // a 24h sum is only meaningful on <=4h bars
-    const cut = Date.now() - 24 * HOUR; let s = 0;
-    S.times.forEach((t, i) => { if (t >= cut && d[i] != null) s += d[i]; });
-    rows.push(kpi(P[key].def.title.replace(' CVD', '') + ' 24h', sgn(s, x => fmtBig(x, 1)), `${arrow(s)} ${s >= 0 ? '순매수' : '순매도'}`, dir(s)));
+    const cut = Date.now() - 24 * HOUR; let sum = 0;
+    S.times.forEach((t, i) => { if (t >= cut && d[i] != null) sum += d[i]; });
+    flows.push([name, sum]);
+  }
+  if (flows.length) {
+    const mx = Math.max(...flows.map(f => Math.abs(f[1]))) || 1;
+    rows.push(`<div class="kpi fl"><span class="k">24h 순매수 · Binance</span>${flows.map(([n, v]) => `<div class="fr"><span>${n}</span><div class="fb"><i class="${v >= 0 ? 'up' : 'down'}" style="width:${(Math.abs(v) / mx * 50).toFixed(1)}%"></i></div><b class="${dir(v)}" style="color:var(--${v >= 0 ? 'up' : 'down'})">${sgn(v, x => fmtBig(x, 1))}</b></div>`).join('')}</div>`);
   }
   const sig = rows.join('');
   if (sig !== kpiSig) { kpiSig = sig; $('kpis').innerHTML = sig; }
@@ -928,7 +982,16 @@ function paintAi() {
   const newest = Math.max(...AI_JOBS.map(([k]) => (ai[k] && ai[k].generated_ms) || 0));
   $('aisub').textContent = newest ? `${aiAge(newest)} 갱신` : '';
   $('ai').hidden = false; $('aitab').hidden = false;
+  const top = AI_JOBS.map(([k]) => ai[k]).find(j => j && j.analysis);   // one-line verdict under the header
+  if (top) {
+    const a = top.analysis, cls = a.bias.includes('상승') ? 'up' : a.bias.includes('하락') ? 'down' : '';
+    $('aibar-b').className = 'ab ' + cls; $('aibar-b').textContent = a.bias; $('aibar-t').textContent = a.headline + (top.generated_ms ? ` · ${aiAge(top.generated_ms)}` : ''); $('aibar').hidden = false;
+  }
 }
+$('aibar').addEventListener('click', () => {
+  if (wide()) { const d = document.querySelector('#aibody details'); if (d) d.open = true; $('ai').scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+  else { setTab('ai'); scrollTo({ top: $('tabs').offsetTop, behavior: 'smooth' }); }
+});
 function paintFvg(T) { const h = fvgList(T); if (h !== fvgSig) { fvgSig = h; $('fvgmap').innerHTML = h; } }
 
 /* ---------- view settings (which charts, heights) and the split handle; remembered per device ---------- */
@@ -1111,7 +1174,7 @@ let ws = null, wsTries = 0, wsSubTf = null, wsReady = false, wsTimer = 0, lastMs
 const HOSTS = ['wss://fstream.binance.com/market/stream'];   // USDT-M futures market streams
 function setLive(status) {
   const el = $('stamp'); el.classList.toggle('stale', status !== 'live');
-  $('ago').textContent = status === 'live' ? 'LIVE · 1초 갱신' : status === 'connecting' ? '연결 중…' : '연결 끊김 · 재연결 중';
+  $('mq-live').textContent = status === 'live' ? 'LIVE' : '재연결 중'; $('ago').textContent = status === 'live' ? 'LIVE · 1초 갱신' : status === 'connecting' ? '연결 중…' : '연결 끊김 · 재연결 중';
   el.title = D.generated ? `빌드 ${D.generated} ${D.tz}` : '';
 }
 function connect() {
