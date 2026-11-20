@@ -198,7 +198,7 @@ def _cfg() -> dict[str, Any]:
         "model": e("BTC_AI_MODEL", "claude-fable-5-2"),   # also what `--ai compare` uses
         "effort": e("BTC_AI_EFFORT", "xhigh"),
         "budget": float(e("BTC_AI_BUDGET_USD", "90")),
-        "expires": e("BTC_AI_EXPIRES", "2026-11-18"),
+        "expires": e("BTC_AI_EXPIRES", ""),   # empty = credit auto-refills: no end date, budget is a rolling 30-day cap
         "max_calls_day": int(e("BTC_AI_MAX_CALLS_PER_DAY", "30")),
         "wait_sec": float(e("BTC_AI_WAIT_SEC", "120")),
         "jobs": {
@@ -245,6 +245,8 @@ def _day(ms: int) -> str:
 
 
 def _expiry_ms(cfg: dict[str, Any]) -> int:
+    if not cfg["expires"]:
+        return 1 << 60
     d = datetime.strptime(cfg["expires"], "%Y-%m-%d").replace(tzinfo=timezone.utc)
     return int(d.timestamp() * 1000) + DAY   # usable through the end of that day
 
@@ -270,8 +272,12 @@ def plan(state: dict[str, Any], cfg: dict[str, Any], now_ms: int) -> dict[str, f
     Costs are the measured last cost of each job, so adding facts (more tokens) automatically slows the
     hourly job instead of overspending. The deep job is funded first, the hourly job gets what is left.
     """
-    days_left = max(1.0, (_expiry_ms(cfg) - now_ms) / DAY)
-    per_day = max(0.0, cfg["budget"] - state["spend"]["total_usd"]) / days_left
+    if not cfg["expires"]:   # auto-refilled credit: the cap is per rolling 30 days
+        recent = sum(v["usd"] for d, v in state["spend"]["by_day"].items() if d >= _day(now_ms - 30 * DAY))
+        per_day = max(0.0, cfg["budget"] - recent) / 30
+    else:
+        days_left = max(1.0, (_expiry_ms(cfg) - now_ms) / DAY)
+        per_day = max(0.0, cfg["budget"] - state["spend"]["total_usd"]) / days_left
     jobs = cfg["jobs"]
     est = {n: state["jobs"][n]["last_cost_usd"] or jobs[n]["est"] for n in jobs}
     out: dict[str, float] = {n: float("inf") for n in jobs}

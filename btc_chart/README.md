@@ -46,7 +46,7 @@ never calls an API, so no key is ever published: only the resulting text goes in
   credit, then set `ANTHROPIC_API_KEY` or save it as `%USERPROFILE%\.btc_chart\anthropic_key.txt`.
   No key means the AI tab stays hidden. `--ai off` disables, `--ai force` submits both jobs now.
 - **Pacing**: `plan()` spreads the remaining budget (`BTC_AI_BUDGET_USD`, default 90) over the days left until
-  `BTC_AI_EXPIRES` (2026-11-18) using each job's measured last cost. If calls get pricier (more facts in the
+  `BTC_AI_EXPIRES` (empty by default because the credit auto-refills; then the budget is a rolling 30-day cap) using each job's measured last cost. If calls get pricier (more facts in the
   fact sheet -> more tokens) the hourly note automatically slows down instead of overspending; the deep report
   keeps its slot. Also a daily call cap, and 3 failures in a row pause a job for 6 h (e.g. credit used up).
 - Env knobs: `BTC_AI_MODEL`/`BTC_AI_EFFORT`/`BTC_AI_MIN_MINUTES` (hourly), `BTC_AI_DEEP*` (deep, off by default),
