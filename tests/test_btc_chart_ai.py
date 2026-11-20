@@ -192,8 +192,10 @@ def test_plan_slows_down_when_calls_get_more_expensive_and_stops_when_broke():
     st["jobs"]["hourly"]["last_cost_usd"] = 0.6                 # e.g. many more facts / tokens
     slower = ai.plan(st, cfg, now)
     assert slower["hourly"] > 235 and slower["deep"] == 660      # the deep report keeps its slot
-    st["spend"]["total_usd"] = 89.9
+    st["spend"]["by_day"][ai._day(now)] = {"calls": 1, "usd": 89.9}      # no end date: rolling 30-day cap
     assert ai.plan(st, cfg, now)["hourly"] == float("inf")
+    st["spend"]["by_day"] = {ai._day(now - 40 * ai.DAY): {"calls": 1, "usd": 89.9}}   # older than 30 days: no longer counts
+    assert ai.plan(st, cfg, now)["hourly"] < float("inf")
 
 
 def test_daily_call_cap_and_total_budget(tmp_path, monkeypatch):

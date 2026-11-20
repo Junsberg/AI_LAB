@@ -251,6 +251,14 @@ def _expiry_ms(cfg: dict[str, Any]) -> int:
     return int(d.timestamp() * 1000) + DAY   # usable through the end of that day
 
 
+def _spent(state: dict[str, Any], cfg: dict[str, Any], now_ms: int) -> float:
+    """What counts against the budget: everything with an end date, else the last 30 days (auto-refilled credit)."""
+    if cfg["expires"]:
+        return state["spend"]["total_usd"]
+    since = _day(now_ms - 30 * DAY)
+    return sum(v["usd"] for d, v in state["spend"]["by_day"].items() if d >= since)
+
+
 def make_client() -> Any | None:
     """Official SDK client from the environment or the key file; None when there is no key or SDK."""
     try:
@@ -273,8 +281,7 @@ def plan(state: dict[str, Any], cfg: dict[str, Any], now_ms: int) -> dict[str, f
     hourly job instead of overspending. The deep job is funded first, the hourly job gets what is left.
     """
     if not cfg["expires"]:   # auto-refilled credit: the cap is per rolling 30 days
-        recent = sum(v["usd"] for d, v in state["spend"]["by_day"].items() if d >= _day(now_ms - 30 * DAY))
-        per_day = max(0.0, cfg["budget"] - recent) / 30
+        per_day = max(0.0, cfg["budget"] - _spent(state, cfg, now_ms)) / 30
     else:
         days_left = max(1.0, (_expiry_ms(cfg) - now_ms) / DAY)
         per_day = max(0.0, cfg["budget"] - state["spend"]["total_usd"]) / days_left
@@ -418,8 +425,8 @@ def run(
                 status[name] = status.get(name) or ("not due yet" if pace[name] != float("inf") else "over budget pace")
             elif today["calls"] >= cfg["max_calls_day"]:
                 status[name] = f"daily call cap reached ({cfg['max_calls_day']})"
-            elif state["spend"]["total_usd"] + est > cfg["budget"]:
-                status[name] = f"budget cap reached (${state['spend']['total_usd']:.2f} of ${cfg['budget']:.0f})"
+            elif _spent(state, cfg, now_ms) + est > cfg["budget"]:
+                status[name] = f"budget cap reached (${_spent(state, cfg, now_ms):.2f} of ${cfg['budget']:.0f})"
             else:
                 facts = facts or market_facts(payload, fetch())
                 sheet = {**facts, "previous_report": _previous_report(job)} if name == "deep" else facts
