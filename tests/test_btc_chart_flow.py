@@ -119,3 +119,32 @@ def test_collect_merges_archive_and_live_and_archive_wins(tmp_path):
     p = flow.collect(tmp_path, now, 10.0, days=2, fetch=fetch, rest=lambda fid: live_rows if fid == 5000 + 23 + 1 else [], sleep=lambda s: None)
     assert p and p["t"][-1] <= now
     assert json.loads((tmp_path / "flow" / "live.json").read_text())["cursor"] == 6006
+
+
+def test_spot_archive_rows_use_microseconds_and_capitalised_booleans():
+    csv = ["agg_trade_id,price,quantity,first_trade_id,last_trade_id,transact_time,is_buyer_maker,is_best_match",
+           "1,80000.0,1.0,1,1,1700000000123456,True,True", "2,80000.0,2.0,2,2,1700000000999999,False,True"]
+    hours, last = flow.aggregate_csv(csv)
+    assert last == 2 and list(hours) == [1_700_000_000_123 - 1_700_000_000_123 % H]
+    assert hours[1_699_999_200_000]["all"] == pytest.approx([160_000.0, 80_000.0])      # False = taker buy, True = taker sell
+
+
+def test_collect_keeps_each_market_in_its_own_cache_and_skips_downloads_past_the_budget(tmp_path):
+    now = int(datetime(2026, 11, 10, 6, tzinfo=timezone.utc).timestamp() * 1000)
+    got = []
+
+    def fetch(day):
+        got.append(day)
+        ms = int(datetime.strptime(day, "%Y-%m-%d").replace(tzinfo=timezone.utc).timestamp() * 1000)
+        lines = ["agg_trade_id,price,quantity,first_trade_id,last_trade_id,transact_time,is_buyer_maker"]
+        lines += [f"{5000 + h},80000.0,1.0,1,1,{(ms + h * H + 5) * 1000},false" for h in range(24)]
+        b = io.BytesIO()
+        with zipfile.ZipFile(b, "w") as z:
+            z.writestr("x.csv", "\n".join(lines))
+        return b.getvalue()
+
+    ticks = iter([0.0, 0.0, 99.0, 99.0, 99.0, 99.0])           # the first download fits the budget, the older ones do not
+    p = flow.collect(tmp_path, now, 1.0, days=3, market="spot", fetch=fetch, rest=lambda fid: [], sleep=lambda s: None,
+                     clock=lambda: next(ticks, 99.0), archive_budget_sec=5.0)
+    assert got == ["2026-11-09"] and (tmp_path / "flow_spot" / "2026-11-09.json").exists() and not (tmp_path / "flow").exists()
+    assert len(p["t"]) == 24                                     # the one downloaded day is enough to draw

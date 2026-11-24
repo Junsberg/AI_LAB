@@ -1,4 +1,4 @@
-"""Order-size CVD from Binance USDT-M BTCUSDT aggregated trades.
+"""Order-size CVD from Binance BTCUSDT aggregated trades (spot and USDT-M futures, each its own market).
 
 Binance publishes every aggregated trade as a daily file on its public archive (yesterday and older). Each
 trade is classified by its USD size ($100-1k, 1k-10k, 10k-100k, 100k-1M, 1M+), aggregated per hour and
@@ -22,8 +22,14 @@ from typing import Any, Callable, Iterable
 
 from . import sources as src
 
-ARCHIVE = "https://data.binance.vision/data/futures/um/daily/aggTrades/BTCUSDT/BTCUSDT-aggTrades-{day}.zip"
-AGG_TRADES = "https://fapi.binance.com/fapi/v1/aggTrades"
+MARKETS = {
+    "fut": {"archive": "https://data.binance.vision/data/futures/um/daily/aggTrades/BTCUSDT/BTCUSDT-aggTrades-{day}.zip",
+            "rest": "https://fapi.binance.com/fapi/v1/aggTrades", "dir": "flow"},
+    "spot": {"archive": "https://data.binance.vision/data/spot/daily/aggTrades/BTCUSDT/BTCUSDT-aggTrades-{day}.zip",
+             "rest": "https://data-api.binance.vision/api/v3/aggTrades", "dir": "flow_spot"},   # market-data mirror: no key, same data
+}
+ARCHIVE = MARKETS["fut"]["archive"]
+AGG_TRADES = MARKETS["fut"]["rest"]
 HOUR = 3_600_000
 EDGES = [100.0, 1_000.0, 10_000.0, 100_000.0, 1_000_000.0]   # USD; below the first edge only counts in "all"
 LABELS = ["$100 – $1k", "$1k – $10k", "$10k – $100k", "$100k – $1M", "$1M +"]
@@ -60,7 +66,10 @@ def aggregate_csv(lines: Iterable[str]) -> tuple[dict[int, dict[str, Any]], int]
         c = ln.split(",")
         if not c[0][:1].isdigit():             # header
             continue
-        add_trade(hours, int(c[5]), float(c[1]), float(c[2]), c[6].strip() == "true")
+        ts = int(c[5])
+        if ts > 10**14:                        # spot archive files from 2025 on carry microseconds
+            ts //= 1000
+        add_trade(hours, ts, float(c[1]), float(c[2]), c[6].strip().lower() == "true")
         last = int(c[0])
     return hours, last
 
@@ -68,17 +77,22 @@ def aggregate_csv(lines: Iterable[str]) -> tuple[dict[int, dict[str, Any]], int]
 # ---------------------------------------------------------------- cache & archive
 
 
-def _download(day: str) -> bytes | None:
+def _downloader(market: str = "fut") -> Callable[[str], bytes | None]:
     import urllib.error
     import urllib.request
 
-    try:
-        with urllib.request.urlopen(urllib.request.Request(ARCHIVE.format(day=day), headers=src._UA), timeout=120) as r:
-            return r.read()
-    except urllib.error.HTTPError as e:
-        if e.code in (403, 404):
-            return None
-        raise
+    def download(day: str) -> bytes | None:
+        try:
+            with urllib.request.urlopen(urllib.request.Request(MARKETS[market]["archive"].format(day=day), headers=src._UA), timeout=180) as r:
+                return r.read()
+        except urllib.error.HTTPError as e:
+            if e.code in (403, 404):
+                return None
+            raise
+    return download
+
+
+_download = _downloader("fut")
 
 
 def load_day(day: str, cache: Path, fetch: Callable[[str], bytes | None] = _download) -> dict[str, Any] | None:
@@ -103,8 +117,11 @@ def load_day(day: str, cache: Path, fetch: Callable[[str], bytes | None] = _down
 # ---------------------------------------------------------------- live catch-up
 
 
-def _rest(from_id: int) -> list[dict]:
-    return src.http_json(AGG_TRADES, {"symbol": "BTCUSDT", "fromId": from_id, "limit": 1000})
+def _rester(market: str = "fut") -> Callable[[int], list[dict]]:
+    return lambda from_id: src.http_json(MARKETS[market]["rest"], {"symbol": "BTCUSDT", "fromId": from_id, "limit": 1000})
+
+
+_rest = _rester("fut")
 
 
 def catch_up(live: dict[str, Any], start_id: int, now_ms: int, budget_sec: float, rest: Callable[[int], list[dict]] = _rest,
@@ -152,14 +169,22 @@ def build_payload(hours: dict[int, dict[str, Any]], now_ms: int, days: int = DAY
 
 
 def collect(cache_dir: Path, now_ms: int, budget_sec: float = 240.0, days: int = DAYS, *,
-            fetch: Callable[[str], bytes | None] = _download, rest: Callable[[int], list[dict]] = _rest,
-            sleep: Callable[[float], None] = time.sleep) -> dict[str, Any]:
-    cache = cache_dir / "flow"
+            market: str = "fut", fetch: Callable[[str], bytes | None] | None = None, rest: Callable[[int], list[dict]] | None = None,
+            sleep: Callable[[float], None] = time.sleep, clock: Callable[[], float] = time.time,
+            archive_budget_sec: float | None = None) -> dict[str, Any]:
+    """Cached days + live tail for one market. Missing archive days are fetched newest first until ``archive_budget_sec``
+    runs out (default: unlimited), so a first run can be spread over several builds: the recent window is always contiguous."""
+    fetch = fetch or _downloader(market)
+    rest = rest or _rester(market)
+    cache = cache_dir / MARKETS[market]["dir"]
     today = datetime.fromtimestamp(now_ms / 1000, timezone.utc).date()
-    day_list = [(today - timedelta(days=i)).isoformat() for i in range(days, 0, -1)]
+    day_list = [(today - timedelta(days=i)).isoformat() for i in range(1, days + 1)]   # newest first
     merged: dict[int, dict[str, Any]] = {}
     last_id = 0
+    stop_at = clock() + archive_budget_sec if archive_budget_sec is not None else None
     for day in day_list:
+        if not (cache / f"{day}.json").exists() and stop_at is not None and clock() > stop_at:
+            continue                                      # out of download time: a later build continues with the older days
         d = load_day(day, cache, fetch)
         if not d:
             continue
@@ -174,7 +199,7 @@ def collect(cache_dir: Path, now_ms: int, budget_sec: float = 240.0, days: int =
         calls = catch_up(live, last_id + 1, now_ms, budget_sec, rest, sleep) if now_ms else 0
         cache.mkdir(parents=True, exist_ok=True)
         lf.write_text(json.dumps(live), encoding="utf-8")
-        print(f"[flow] live catch-up: {calls} calls, cursor {live['cursor']}", file=sys.stderr)
+        print(f"[flow:{market}] live catch-up: {calls} calls, cursor {live['cursor']}", file=sys.stderr)
     for k, v in live["hours"].items():
         merged.setdefault(int(k), v)                     # the archive wins where both exist
     keep = {t for t in merged if t >= now_ms - (days + 1) * 24 * HOUR}
@@ -184,5 +209,6 @@ def collect(cache_dir: Path, now_ms: int, budget_sec: float = 240.0, days: int =
 if __name__ == "__main__":   # one-off: python -m btc_chart.flow  -> catch up fully (long budget) and report
     here = Path(__file__).parent / "out"
     now = int(time.time() * 1000)
-    res = collect(here / "cache", now, budget_sec=3600)
-    print("hours:", len(res.get("t", [])), "asof:", res.get("asof"))
+    for m in (sys.argv[1:] or ["spot", "fut"]):
+        res = collect(here / "cache", now, budget_sec=3600, market=m)
+        print(m, "hours:", len(res.get("t", [])), "asof:", res.get("asof"))

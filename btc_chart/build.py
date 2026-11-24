@@ -118,15 +118,17 @@ def build(hours: int, out_path: Path, utc_offset: int, skip: set[str], fvg_per_t
         "market_rows": [],
         "derivs": {},
         "flow": {},
+        "flow_spot": {},
         "ai": None,
     }
     if "derivs" not in skip:   # OI candles (5 m archive) for the sub-chart
         payload["derivs"] = derivs.collect(out_dir / "cache", now_ms, skip)
     if "flow" not in skip:   # order-size CVD from Binance aggregated trades (bounded work per build)
-        try:
-            payload["flow"] = flow.collect(out_dir / "cache", now_ms)
-        except Exception as e:   # a failing source must never break the chart build
-            print(f"[flow] {type(e).__name__}: {str(e)[:150]}", file=sys.stderr)
+        for market, key in (("spot", "flow_spot"), ("fut", "flow")):   # each market on its own: one failing never blocks the other
+            try:
+                payload[key] = flow.collect(out_dir / "cache", now_ms, market=market, archive_budget_sec=300.0)
+            except Exception as e:   # a failing source must never break the chart build
+                print(f"[flow:{market}] {type(e).__name__}: {str(e)[:150]}", file=sys.stderr)
     if "context" not in skip:
         payload["market"] = context.collect(skip)   # a failing free API only blanks its own group
         payload["market_rows"] = context.display_rows(payload["market"])

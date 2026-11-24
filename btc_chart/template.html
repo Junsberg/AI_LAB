@@ -112,6 +112,10 @@
   .subc { height: var(--sub-h, 104px); touch-action: pan-y; }
   .slab { max-width: calc(100% - 16px); position: absolute; left: 8px; top: 5px; z-index: 2; pointer-events: none; font-size: 12.5px; font-weight: 600; color: var(--fg2); font-variant-numeric: tabular-nums; background: color-mix(in srgb, var(--card) 88%, transparent); padding: 2px 8px; border-radius: 6px; line-height: 1.4; }
   .slab .cb { display: inline-flex; align-items: center; gap: 4px; margin-left: 10px; color: var(--fg); font-weight: 600; } .slab .cb i { width: 10px; height: 3px; border-radius: 2px; }
+  #lab-flow { max-width: calc(100% - 128px); }
+  .fmk { position: absolute; right: 10px; top: 5px; z-index: 3; display: inline-flex; border: 1px solid var(--sep); border-radius: 8px; overflow: hidden; background: var(--card); }
+  .fmk button { border: 0; background: transparent; color: var(--fg2); font: inherit; font-size: 12px; font-weight: 600; padding: 3px 10px; cursor: pointer; }
+  .fmk button.on { background: var(--fg); color: var(--card); }
   .slab b { color: var(--fg); font-weight: 650; margin-left: 4px; } .slab .up { color: var(--up); } .slab .down { color: var(--down); }
   .none { padding: 26px 0 18px; color: var(--mute); font-size: 12.5px; }
   .pan .chead .l { display: flex; align-items: center; gap: 8px; min-width: 0; }
@@ -330,7 +334,7 @@
         <div class="wrap"><div id="main"></div><div class="ld" id="ld">불러오는 중…</div></div>
         <div class="split" id="split" role="separator" aria-orientation="horizontal" tabindex="0" title="위아래로 끌어서 차트 높이 조절 · 더블클릭 = 기본값"><i></i></div>
         <div class="subs" id="subs">
-          <div class="sub1"><span class="slab" id="lab-flow"></span><div class="subc big" id="sub-flow"></div></div>
+          <div class="sub1"><span class="slab" id="lab-flow"></span><div class="fmk" id="fmk" role="group" aria-label="주문 크기별 CVD 시장"><button data-m="spot">현물</button><button data-m="fut">선물</button></div><div class="subc big" id="sub-flow"></div></div>
           <div class="sub1"><span class="slab" id="lab-cvd"></span><div class="subc" id="sub-cvd"></div></div>
           <div class="sub1"><span class="slab" id="lab-oi"></span><div class="subc oi" id="sub-oi"></div></div>
         </div>
@@ -856,8 +860,14 @@ if ($('stb-rng')) $('stb-rng').addEventListener('click', e => { const b = e.targ
 /* ---------- order-size CVD sub-chart (big orders only), aligned to the candles above ---------- */
 const FLOW_SHOW = { '$10k – $100k': '#d9484f', '$100k – $1M': '#9b7be6', '$1M +': '#a9744f' };
 /** Hourly cumulative series from the build, laid on the current candles (value at each candle's last hour), re-based and 0-1 normalised over the visible range. */
+/** Order-size flow of the chosen market (spot by default); falls back to the other one while it has no data yet. */
+function flowSrc() {
+  const ok = F => F && F.t && F.t.length >= 24, want = VIEW.fm === 'fut' ? D.flow : D.flow_spot, other = VIEW.fm === 'fut' ? D.flow_spot : D.flow;
+  return ok(want) ? want : (ok(other) ? other : null);
+}
+function flowMarket() { return flowSrc() === D.flow && D.flow !== D.flow_spot ? 'fut' : 'spot'; }
 function flowView() {
-  const F = D.flow; if (!F || !F.t || F.t.length < 24 || !S) return null;
+  const F = flowSrc(); if (!F || !F.t || F.t.length < 24 || !S) return null;
   const tfMs = TFS[S.tf], idx = S.times.map(t => { const end = t + Math.max(tfMs - HOUR, 0); let lo = 0, hi = F.t.length - 1, r = -1; while (lo <= hi) { const m = (lo + hi) >> 1; if (F.t[m] <= end) { r = m; lo = m + 1; } else hi = m - 1; } return r; });
   const out = {};
   for (const l of Object.keys(FLOW_SHOW)) {
@@ -889,7 +899,9 @@ function paintFlowSub(T, live) {
   const view = flowView(), lab = $('lab-flow'), box = $('sub-flow');
   if (!view) { box.parentElement.hidden = true; SUB.flow.clear(); lab.textContent = ''; return; }
   box.parentElement.hidden = false;
-  lab.innerHTML = '주문 크기별 CVD · 큰 주문만 (0~1)' + Object.keys(FLOW_SHOW).map(l => `<span class="cb"><i style="background:${FLOW_SHOW[l]}"></i>${l}</span>`).join('');
+  const fm = flowMarket();
+  for (const b of $('fmk').children) { b.classList.toggle('on', b.dataset.m === fm); b.disabled = !(b.dataset.m === 'fut' ? D.flow : D.flow_spot) || !(b.dataset.m === 'fut' ? D.flow : D.flow_spot).t; }
+  lab.innerHTML = `주문 크기별 CVD · ${fm === 'spot' ? '현물' : '선물'} · 큰 주문만 (0~1)` + Object.keys(FLOW_SHOW).map(l => `<span class="cb"><i style="background:${FLOW_SHOW[l]}"></i>${l}</span>`).join('');
   SUB.flow.setOption(flowOption(T, view, live), !live);
 }
 
@@ -997,9 +1009,10 @@ $('aibar').addEventListener('click', () => {
 function paintFvg(T) { const h = fvgList(T); if (h !== fvgSig) { fvgSig = h; $('fvgmap').innerHTML = h; } }
 
 /* ---------- view settings (which charts, heights) and the split handle; remembered per device ---------- */
-const VIEW_DEFAULT = { flow: 1, cvd: 1, oi: 1, fvg: 1, mainH: 0, subH: 0 };   // 0 = the responsive CSS default
+const VIEW_DEFAULT = { fm: 'spot', flow: 1, cvd: 1, oi: 1, fvg: 1, mainH: 0, subH: 0 };   // 0 = the responsive CSS default
 const VIEW = (() => { try { return { ...VIEW_DEFAULT, ...JSON.parse(lsGet('btc-view', '{}')) }; } catch (e) { return { ...VIEW_DEFAULT }; } })();
 const MAIN_MIN = 280, MAIN_MAX = 780, SUB_MIN = 72, SUB_MAX = 240;
+$('fmk').addEventListener('click', e => { const b = e.target.closest('button'); if (!b || b.disabled) return; VIEW.fm = b.dataset.m; applyView(true); });
 function applyView(redraw) {
   const r = document.documentElement.style;
   VIEW.mainH ? r.setProperty('--main-h', VIEW.mainH + 'px') : r.removeProperty('--main-h');
