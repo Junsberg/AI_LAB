@@ -716,7 +716,7 @@ function panelOption(key, T, view, live) {
     markLine: lo < 0 && hi > 0 ? zero : undefined }] };
 }
 /** Plot top = below the label chip (it wraps on narrow screens), so neither lines nor the top axis tick hide under it. */
-function labTop(kind) { const el = $('lab-' + kind), h = el && el.offsetHeight ? el.offsetTop + el.offsetHeight : 0; return Math.max(narrow() ? 52 : 36, h + 12); }
+function labTop(kind) { const el = $('lab-' + kind), h = el && el.offsetHeight ? 5 + el.offsetHeight : 0;   // the chip sits 5px from the top (.slab) return Math.max(narrow() ? 52 : 36, h + 12); }
 function comboOption(T, sp, fu, live) {   // spot vs futures cumulative CVD, laid out exactly like the price chart above it
   const nr = narrow(), fs = nr ? 10 : 12.5, c1 = css('--s1'), c2 = css('--s2');
   let lo = 0, hi = 0;
