@@ -715,6 +715,8 @@ function panelOption(key, T, view, live) {
     areaStyle: { color: { type: 'linear', x: 0, y: 0, x2: 0, y2: 1, colorStops: [{ offset: 0, color: col + '40' }, { offset: 1, color: col + '00' }] } },
     markLine: lo < 0 && hi > 0 ? zero : undefined }] };
 }
+/** Plot top = below the label chip (it wraps on narrow screens), so neither lines nor the top axis tick hide under it. */
+function labTop(kind) { const el = $('lab-' + kind), h = el && el.offsetHeight ? el.offsetTop + el.offsetHeight : 0; return Math.max(narrow() ? 52 : 36, h + 12); }
 function comboOption(T, sp, fu, live) {   // spot vs futures cumulative CVD, laid out exactly like the price chart above it
   const nr = narrow(), fs = nr ? 10 : 12.5, c1 = css('--s1'), c2 = css('--s2');
   let lo = 0, hi = 0;
@@ -722,7 +724,7 @@ function comboOption(T, sp, fu, live) {   // spot vs futures cumulative CVD, lai
   const pad = (hi - lo) * 0.08 || 1;
   const o = {
     animation: false, textStyle: { fontFamily: FONT },
-    grid: { left: nr ? 46 : 60, right: 8, top: nr ? 52 : 36, bottom: 6 },   // same left/right as the price chart so the candles line up
+    grid: { left: nr ? 46 : 60, right: 8, top: labTop('cvd'), bottom: 6 },   // same left/right as the price chart so the candles line up
     xAxis: { type: 'category', data: S.labels, boundaryGap: true, axisLine: { show: false }, axisTick: { show: false }, axisLabel: { show: false }, axisPointer: { label: { show: false } } },
     yAxis: { min: lo - pad, max: hi + pad, splitNumber: 2, splitLine: { lineStyle: { color: T.grid } }, axisLabel: { color: T.mute, fontSize: fs, formatter: v => fmtBig(v, 1) }, axisPointer: { label: { show: false } } },
     dataZoom: [{ type: 'inside', xAxisIndex: 0, zoomLock: true, zoomOnMouseWheel: false, moveOnMouseWheel: false, filterMode: 'none', startValue: state.i0, endValue: state.i1, minValueSpan: 10, preventDefaultMouseMove: !coarse }],
@@ -792,7 +794,7 @@ function subOption(kind, T, view, live) {
   const pad = (hi - lo) * 0.05 || Math.abs(hi) * 0.01 || 1;   // tight autoscale like TradingView so OI bodies are visible
   const opt = {
     animation: false, textStyle: { fontFamily: FONT },
-    grid: { left: nr ? 46 : 60, right: 8, top: nr ? 52 : 36, bottom: 6 },   // same left/right as the price chart so the candles line up
+    grid: { left: nr ? 46 : 60, right: 8, top: labTop(kind), bottom: 6 },   // same left/right as the price chart so the candles line up
     xAxis: { type: 'category', data: S.labels, boundaryGap: true, axisLine: { show: false }, axisTick: { show: false }, axisLabel: { show: false }, axisPointer: { label: { show: false } } },
     yAxis: { min: lo === Infinity ? undefined : lo - pad, max: hi === -Infinity ? undefined : hi + pad, splitNumber: 2, splitLine: { lineStyle: { color: T.grid } },
       axisLabel: { color: T.mute, fontSize: nr ? 10 : 13, formatter: v => fmtBig(v, 1) }, axisPointer: { label: { show: false } } },
@@ -884,7 +886,7 @@ function flowOption(T, view, live) {
   const nr = narrow(), fs = nr ? 10 : 12.5;
   const o = {
     animation: false, textStyle: { fontFamily: FONT },
-    grid: { left: nr ? 46 : 60, right: 8, top: nr ? 52 : 36, bottom: 6 },   // same left/right as the price chart so the candles line up
+    grid: { left: nr ? 46 : 60, right: 8, top: labTop('flow'), bottom: 6 },   // same left/right as the price chart so the candles line up
     xAxis: { type: 'category', data: S.labels, boundaryGap: true, axisLine: { show: false }, axisTick: { show: false }, axisLabel: { show: false }, axisPointer: { label: { show: false } } },
     yAxis: { min: 0, max: 1, splitNumber: 2, splitLine: { lineStyle: { color: T.grid } }, axisLabel: { color: T.mute, fontSize: fs, formatter: v => v.toFixed(1) }, axisPointer: { label: { show: false } } },
     dataZoom: [{ type: 'inside', xAxisIndex: 0, zoomLock: true, zoomOnMouseWheel: false, moveOnMouseWheel: false, filterMode: 'none', startValue: state.i0, endValue: state.i1, minValueSpan: 10, preventDefaultMouseMove: !coarse }],
